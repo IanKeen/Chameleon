@@ -1,0 +1,5 @@
+Procfile
+Packages
+.build
+.DS_Store
+*.xcodeproj
