@@ -17,7 +17,7 @@ public final class Box<T> {
 //It's not ideal - but it doesn't really impact the code that much and is not overly verbose either...
 //this can be removed once structs get something along the lines of `indirect`
 //
-//Finally it seems it must be a class rather than a struct, even when the recursion is only the `T` :(
+//Finally it seems it must be a class rather than a struct, even when the recursion is only the `T` specifier :(
 
 public final class FailableBox<T> {
     public let value: T

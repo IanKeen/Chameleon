@@ -24,15 +24,13 @@ public struct RTMStart: WebAPIMethod {
         self.dataReady = dataReady
     }
     
-    public var networkRequest: NetworkRequest {
+    public var networkRequest: HTTPRequest {
         let params = self.authenticationParameters
         
-        return NetworkRequest(
-            method: .GET,
+        return HTTPRequest(
+            method: .get,
             url: WebAPIURL("rtm.start"),
-            parameters: params,
-            headers: nil,
-            jsonBody: nil
+            parameters: params
         )
     }
     public func handleResponse(json: JSON, slackModels: SlackModels) throws -> SuccessParameters {

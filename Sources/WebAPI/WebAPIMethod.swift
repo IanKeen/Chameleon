@@ -19,7 +19,7 @@ public typealias SlackModels = (users: [User], channels: [Channel], groups: [Gro
 public protocol WebAPIMethod {
     associatedtype SuccessParameters
     
-    var networkRequest: NetworkRequest { get }
+    var networkRequest: HTTPRequest { get }
     var requiresAuthentication: Bool { get }
     
     func handleResponse(json: JSON, slackModels: SlackModels) throws -> SuccessParameters
