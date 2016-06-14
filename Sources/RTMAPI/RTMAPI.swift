@@ -23,7 +23,7 @@ public final class RTMAPI {
     public typealias SlackModelClosure = () -> (users: [User], channels: [Channel], groups: [Group], ims: [IM])
     
     //MARK: - Private Properties
-    private let websocket: WebSocketProtocol
+    private let websocket: WebSocketService
     private var pingPongInterval: NSTimeInterval = 3.0
     private var pingPongTimer: Strand?
     
@@ -37,7 +37,7 @@ public final class RTMAPI {
     public var slackModels: SlackModelClosure?
     
     //MARK: - Lifecycle
-    public init(websocket: WebSocketProtocol) {
+    public init(websocket: WebSocketService) {
         self.websocket = websocket
         self.bindToSocketEvents()
     }
@@ -90,7 +90,7 @@ extension RTMAPI {
         
         do {
             let data = try Jay().dataFromJson(packet)
-            self.websocket.send(data: try data.string())
+            self.websocket.send(string: try data.string())
             
         } catch let error { self.onError?(error: error) }
     }

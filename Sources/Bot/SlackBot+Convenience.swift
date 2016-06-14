@@ -12,11 +12,11 @@ import RTMAPI
 
 extension SlackBot {
     public convenience init(config: SlackBotConfig, apis: [SlackAPI]) {
-        let network = NetworkProvider()
+        let http = HTTPProvider()
         let websocket = WebSocketProvider()
         let storage = MemoryStorage()
         
-        let webAPI = WebAPI(token: config.token, network: network)
+        let webAPI = WebAPI(token: config.token, http: http)
         let rtmAPI = RTMAPI(websocket: websocket)
         
         self.init(

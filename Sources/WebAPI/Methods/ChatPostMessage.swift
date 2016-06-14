@@ -28,7 +28,7 @@ public struct ChatPostMessage: WebAPIMethod {
         self.attachments = attachments
     }
     
-    public var networkRequest: NetworkRequest {
+    public var networkRequest: HTTPRequest {
         let encodedText = self.text
         
         let requiredParams = [
@@ -37,12 +37,10 @@ public struct ChatPostMessage: WebAPIMethod {
         ]
         let params = requiredParams + options.optionsData() + self.customParameters
         
-        return NetworkRequest(
-            method: .GET,
+        return HTTPRequest(
+            method: .get,
             url: WebAPIURL("chat.postMessage"),
-            parameters: params,
-            headers: nil,
-            jsonBody: nil
+            parameters: params
         )
     }
     public func handleResponse(json: JSON, slackModels: SlackModels) throws -> SuccessParameters {

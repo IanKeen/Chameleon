@@ -12,13 +12,15 @@ import Services
 import Common
 import Jay
 
-public func WebAPIURL(_ pathSegments: String...) -> NSURL? {
-    let urlString = pathSegments.reduce("https://slack.com/api") { "\($0)/\($1)" }
-    return NSURL(string: urlString)
+public func WebAPIURL(_ pathSegments: String...) -> NSURL {
+    let urlString = "https://slack.com/api/" + pathSegments.joined(separator: "/")
+    guard let url = NSURL(string: urlString) else { fatalError("Invalid URL: \(urlString)") }
+    return url
 }
 
 public enum WebAPIError: ErrorProtocol {
     case Error(code: String)
+    case InvalidURL(url: String)
 }
 
 public final class WebAPI {
@@ -26,16 +28,16 @@ public final class WebAPI {
     public typealias SlackModelClosure = () -> (users: [User], channels: [Channel], groups: [Group], ims: [IM])
     
     //MARK: - Private
-    private let network: NetworkProtocol
+    private let http: HTTPService
     private let token: String
     
     //MARK: - Public
     public var slackModels: SlackModelClosure?
     
     //MARK: - Lifecycle
-    public init(token: String, network: NetworkProtocol) {
+    public init(token: String, http: HTTPService) {
         self.token = token
-        self.network = network
+        self.http = http
     }
     
     //MARK: - Public Functions
@@ -43,7 +45,7 @@ public final class WebAPI {
         guard let slackModels = self.slackModels else { fatalError("Please set `slackModels`") }
         
         let request = self.requestForMethod(method: method)
-        let json = try self.network.makeRequest(request: request)
+        let json = try self.http.perform(request: request)
         
         try self.checkForError(json)
         
@@ -51,15 +53,15 @@ public final class WebAPI {
     }
     
     //MARK: - Private Helpers
-    private func requestForMethod<Method: WebAPIMethod>(method: Method) -> NetworkRequest {
+    private func requestForMethod<Method: WebAPIMethod>(method: Method) -> HTTPRequest {
         guard method.requiresAuthentication else { return method.networkRequest }
         
-        return NetworkRequest(
+        return HTTPRequest(
             method: method.networkRequest.method,
             url: method.networkRequest.url,
             parameters: method.networkRequest.parameters + ["token": self.token],
             headers: method.networkRequest.headers,
-            jsonBody: method.networkRequest.jsonBody
+            body: method.networkRequest.body
         )
     }
     private func checkForError(_ json: JSON) throws {
