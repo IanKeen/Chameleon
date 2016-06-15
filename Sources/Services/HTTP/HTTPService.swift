@@ -13,16 +13,14 @@ public protocol HTTPService: class {
     /**
      Performs a _synchronous_ http request
      
-     - parameter request: A `HTTPRequest` to execute
+     - parameter with: A `HTTPRequest` to execute
      - throws: A `HTTPServiceError` with failure details
      - returns: A `JSON` response
      */
-    func perform(request: HTTPRequest) throws -> JSON
+    func perform(with: HTTPRequest) throws -> JSON
 }
 
-/**
- Describes a range of errors that can occur when attempting to use the service
- */
+/// Describes a range of errors that can occur when attempting to use the service
 public enum HTTPServiceError: ErrorProtocol, Equatable {
     /// The provided URL was invalid
     case invalidURL

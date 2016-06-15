@@ -14,14 +14,14 @@ public enum SlackModelError: ErrorProtocol {
 }
 
 public struct SlackModelBuilder {
-    private let data: JSON
+    private let json: JSON
     private let users: [User]
     private let channels: [Channel]
     private let groups: [Group]
     private let ims: [IM]
     
-    public init(data: JSON, users: [User], channels: [Channel], groups: [Group], ims: [IM]) {
-        self.data = data
+    public init(json: JSON, users: [User], channels: [Channel], groups: [Group], ims: [IM]) {
+        self.json = json
         self.users = users
         self.channels = channels
         self.groups = groups
@@ -32,7 +32,7 @@ public struct SlackModelBuilder {
 //MARK: - Simple Types
 extension SlackModelBuilder {
     public func property<T>(_ keyPath: String) throws -> T {
-        return try self.data.keyPathValue(keyPath)
+        return try self.json.keyPathValue(keyPath)
     }
     public func optionalProperty<T>(_ keyPath: String) -> T? {
         return try? self.property(keyPath)
@@ -42,14 +42,14 @@ extension SlackModelBuilder {
 //MARK: - Defaultable Types
 extension SlackModelBuilder {
     public func property<T: DefaultValueType>(_ keyPath: String) -> T {
-        return (try? self.data.keyPathValue(keyPath)) ?? T.defaultValue
+        return (try? self.json.keyPathValue(keyPath)) ?? T.defaultValue
     }
 }
 
 //MARK: - RawRepresentable Types 
 extension SlackModelBuilder {
     public func property<T: RawRepresentable>(_ keyPath: String) throws -> T {
-        let value: T.RawValue? = try self.data.keyPathValue(keyPath)
+        let value: T.RawValue? = try self.json.keyPathValue(keyPath)
         
         guard
             let result = value,
@@ -61,7 +61,7 @@ extension SlackModelBuilder {
         return enumValue
     }
     public func optionalProperty<T: RawRepresentable>(keyPath: String) throws -> T? {
-        let value: T.RawValue? = try? self.data.keyPathValue(keyPath)
+        let value: T.RawValue? = try? self.json.keyPathValue(keyPath)
         guard value != nil else { return nil }
         
         return try self.property(keyPath) as T
@@ -72,7 +72,7 @@ extension SlackModelBuilder {
 extension SlackModelBuilder {
     public func property<T: SlackModelType>(_ keyPath: String) throws -> T {
         let builder = SlackModelBuilder(
-            data: try self.data.keyPathValue(keyPath),
+            json: try self.json.keyPathValue(keyPath),
             users: self.users,
             channels: self.channels,
             groups: self.groups,
@@ -81,18 +81,18 @@ extension SlackModelBuilder {
         return try T.make(builder: builder)
     }
     public func optionalProperty<T: SlackModelType>(_ keyPath: String) throws -> T? {
-        let value: [String: Any]? = try? self.data.keyPathValue(keyPath)
+        let value: [String: Any]? = try? self.json.keyPathValue(keyPath)
         guard value != nil else { return nil }
         
         return try self.property(keyPath) as T
     }
     
     public func collection<T: SlackModelType>(_ keyPath: String) throws -> [T] {
-        let value: [JSON] = try self.data.keyPathValue(keyPath)
+        let value: [JSON] = try self.json.keyPathValue(keyPath)
         
         return try value.map { data in
             let builder = SlackModelBuilder(
-                data: data,
+                json: data,
                 users: self.users,
                 channels: self.channels,
                 groups: self.groups,
@@ -102,7 +102,7 @@ extension SlackModelBuilder {
         }
     }
     public func optionalCollection<T: SlackModelType>(_ keyPath: String) throws -> [T]? {
-        let value: [[String: Any]]? = try? self.data.keyPathValue(keyPath)
+        let value: [[String: Any]]? = try? self.json.keyPathValue(keyPath)
         guard value != nil else { return nil }
         
         return try self.collection(keyPath) as [T]

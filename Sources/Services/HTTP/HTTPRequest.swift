@@ -36,9 +36,3 @@ public extension HTTPRequest {
         case delete
     }
 }
-
-public extension HTTPRequest {
-    public enum Error: ErrorProtocol {
-        case invalidURL(url: String)
-    }
-}

@@ -61,9 +61,7 @@ public protocol WebSocketService: class {
     func send(string: String)
 }
 
-/**
- Describes a range of errors that can occur when attempting to use the service
- */
+/// Describes a range of errors that can occur when attempting to use the service
 public enum WebSocketServiceError: ErrorProtocol {
     /// The provided URL was invalid
     case invalidURL(url: String)

@@ -8,16 +8,17 @@
 
 import Foundation
 import Common
+import WebAPI
 
 public struct SlackBotConfig {
     public let token: String
-    public var authenticationParameters: [String: String] = [:]
+    public var startOptions: [RTMStart.Option] = []
     public var reconnectionAttempts: Int = 10
     public var pingPongInterval: NSTimeInterval = 5.0
     
-    public init(token: String, authenticationParameters: [String: String]?, reconnectionAttempts: Int?, pingPongInterval: NSTimeInterval?) {
+    public init(token: String, startOptions: [RTMStart.Option]?, reconnectionAttempts: Int?, pingPongInterval: NSTimeInterval?) {
         self.token = token
-        if let authenticationParameters = authenticationParameters { self.authenticationParameters = authenticationParameters }
+        if let startOptions = startOptions { self.startOptions = startOptions }
         if let reconnectionAttempts = reconnectionAttempts { self.reconnectionAttempts = reconnectionAttempts }
         if let pingPongInterval = pingPongInterval { self.pingPongInterval = pingPongInterval }
     }
@@ -55,7 +56,7 @@ extension SlackBotConfig {
         
         self = SlackBotConfig(
             token: token,
-            authenticationParameters: nil,
+            startOptions: nil,
             reconnectionAttempts: Int(dict["reconnectionAttempts"] ?? ""),
             pingPongInterval: NSTimeInterval(dict["pingPongInterval"] ?? "")
         )

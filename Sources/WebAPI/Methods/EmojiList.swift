@@ -10,18 +10,26 @@ import Models
 import Services
 import Jay
 
+/// Handler for the `emoji.list` endpoint
 public struct EmojiList: WebAPIMethod {
     public typealias SuccessParameters = ([CustomEmoji])
     
+    //MARK: - Lifecycle
+    /**
+     Create a new `EmojiList` instance
+     
+     - returns: A new instance
+     */
     public init() { }
     
+    //MARK: - Public
     public var networkRequest: HTTPRequest {
         return HTTPRequest(
             method: .get,
             url: WebAPIURL("emoji.list")
         )
     }
-    public func handleResponse(json: JSON, slackModels: SlackModels) throws -> SuccessParameters {
+    public func handle(json: JSON, slackModels: SlackModels) throws -> SuccessParameters {
         guard var emoji = json["emoji"]?.dictionary else { return [] }
         
         return emoji.flatMap { key, value -> CustomEmoji? in
