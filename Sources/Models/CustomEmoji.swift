@@ -15,9 +15,3 @@ public struct CustomEmoji {
         self.imageUrl = imageUrl
     }
 }
-
-extension CustomEmoji: SlackEmoji {
-    public var emojiSymbol: String {
-        return ":\(self.name):"
-    }
-}
