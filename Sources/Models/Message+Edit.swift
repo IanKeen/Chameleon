@@ -12,13 +12,3 @@ public extension Message {
         public let timestamp: String
     }
 }
-
-extension Message.Edit: SlackModelType {
-    public static func make(builder: SlackModelBuilder) throws -> Message.Edit {
-        return try tryMake(Message.Edit(
-            user:       try builder.slackModel("user"),
-            timestamp:  try builder.property("ts")
-            )
-        )
-    }
-}

@@ -9,11 +9,6 @@
 public protocol SlackEmoji {
     var emojiSymbol: String { get }
 }
-extension Emoji: SlackEmoji {
-    public var emojiSymbol: String {
-        return ":\(self.rawValue):"
-    }
-}
 
 //From: https://github.com/iamcal/emoji-data
 public enum Emoji: String {

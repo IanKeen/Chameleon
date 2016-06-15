@@ -13,14 +13,3 @@ public extension Message {
         public let users: [User]
     }
 }
-
-extension Message.Reaction: SlackModelType {
-    public static func make(builder: SlackModelBuilder) throws -> Message.Reaction {
-        return try tryMake(Message.Reaction(
-            name:   try builder.property("name"),
-            count:  try builder.property("count"),
-            users:  try builder.slackModels("users")
-            )
-        )
-    }
-}
