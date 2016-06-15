@@ -1,6 +1,6 @@
 //
 //  HTTPService.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 26/09/2015.
 //  Copyright © 2015 Mustard. All rights reserved.
@@ -23,7 +23,7 @@ public protocol HTTPService: class {
 /// Describes a range of errors that can occur when attempting to use the service
 public enum HTTPServiceError: ErrorProtocol, Equatable {
     /// The provided URL was invalid
-    case invalidURL
+    case invalidURL(url: String)
     
     /// Something was wrong with the request data
     case clientError(code: Int, data: JSON?)
@@ -34,7 +34,7 @@ public enum HTTPServiceError: ErrorProtocol, Equatable {
     /// The response was invalid or the data was unexpected
     case invalidResponse(data: Any)
     
-    /// Something went wrong with an internal dependency
+    /// Something went wrong with an dependency
     case internalError(error: ErrorProtocol)
 }
 

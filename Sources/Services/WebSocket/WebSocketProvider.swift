@@ -1,6 +1,6 @@
 //
 //  WebSocketProvider.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 3/06/2016.
 //  Copyright © 2016 Mustard. All rights reserved.

@@ -1,6 +1,6 @@
 //
 //  SlackBot.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 19/05/2016.
 //  Copyright © 2016 Mustard. All rights reserved.
@@ -37,16 +37,16 @@ public class SlackBot {
         }
     }
     
-    //MARK: - Internal Properties
-    internal let webAPI: WebAPI
-    internal let rtmAPI: RTMAPI
-    internal private(set) var botUser: BotUser?
-    internal private(set) var team: Team?
-    internal private(set) var users: [User] = []
-    internal private(set) var channels: [Channel] = []
-    internal private(set) var groups: [Group] = []
-    internal private(set) var ims: [IM] = []
-    //internal private(set) var mpims: [MPIM] = []
+    //MARK: - Properties
+    let webAPI: WebAPI
+    let rtmAPI: RTMAPI
+    private(set) var botUser: BotUser?
+    private(set) var team: Team?
+    private(set) var users: [User] = []
+    private(set) var channels: [Channel] = []
+    private(set) var groups: [Group] = []
+    private(set) var ims: [IM] = []
+    //private(set) var mpims: [MPIM] = []
     
     //MARK: - Public Properties
     public private(set) var storage: Storage
@@ -189,7 +189,7 @@ extension SlackBot {
         guard self.state.ready else { return }
         self.apis.forEach { $0.event(slackBot: self, event: event, webApi: self.webAPI) }
     }
-    internal func notify(error: ErrorProtocol) {
+    func notify(error: ErrorProtocol) {
         guard self.state.ready else { return }
         self.apis.forEach { $0.error(slackBot: self, error: error) }
     }
@@ -257,7 +257,7 @@ extension SlackBot {
 
 //MARK: - Model Helpers
 extension SlackBot {
-    internal typealias SlackModelClosure = WebAPI.SlackModelClosure
+    typealias SlackModelClosure = WebAPI.SlackModelClosure
     
     private func slackModels() -> SlackModelClosure {
         return {

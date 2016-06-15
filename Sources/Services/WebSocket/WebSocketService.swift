@@ -1,6 +1,6 @@
 //
 //  WebSocketService.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 10/05/2016.
 //  Copyright © 2016 Mustard. All rights reserved.
@@ -11,19 +11,19 @@ import Jay
 
 /// An abstraction representing an object capable of synchronous web sockets
 public protocol WebSocketService: class {
-    /// Closure that is fired when a connection is opened
+    /// Closure that is called when a connection is opened
     var onConnect: (() -> Void)? { get set }
     
-    /// Closure that is fired when a connection is closed with an error when applicable
+    /// Closure that is called when a connection is closed with an error when applicable
     var onDisconnect: ((ErrorProtocol?) -> Void)? { get set }
     
-    /// Closure that is fired when receiving text data
+    /// Closure that is called when receiving text data
     var onText: ((String) -> Void)? { get set }
     
-    /// Closure that is fired when receiving byte data
+    /// Closure that is called when receiving byte data
     var onData: ((NSData) -> Void)? { get set }
     
-    /// Closure that is fired when an error occurs
+    /// Closure that is called when an error occurs
     var onError: ((ErrorProtocol) -> Void)? { get set }
     
     /**
@@ -66,6 +66,6 @@ public enum WebSocketServiceError: ErrorProtocol {
     /// The provided URL was invalid
     case invalidURL(url: String)
     
-    /// Something went wrong with an internal dependency
+    /// Something went wrong with an dependency
     case internalError(error: ErrorProtocol)
 }

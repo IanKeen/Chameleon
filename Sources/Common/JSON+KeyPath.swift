@@ -1,6 +1,6 @@
 //
 //  JSON+KeyPath.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 8/06/2016.
 //

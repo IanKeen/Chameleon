@@ -1,6 +1,6 @@
 //
 //  EmojiList.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 6/06/2016.
 //

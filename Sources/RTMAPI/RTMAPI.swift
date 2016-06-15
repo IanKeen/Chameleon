@@ -1,6 +1,6 @@
 //
 //  RTMAPI.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 19/05/2016.
 //  Copyright © 2016 Mustard. All rights reserved.
@@ -13,11 +13,7 @@ import Common
 import Strand
 import Jay
 
-public enum RTMAPIError: ErrorProtocol {
-    case InvalidResponse(String)
-    case UnknownError(String?)
-}
-
+/// Provides access to the Slack realtime messaging api
 public final class RTMAPI {
     //MARK: - Typealiases
     public typealias SlackModelClosure = () -> (users: [User], channels: [Channel], groups: [Group], ims: [IM])
@@ -28,26 +24,54 @@ public final class RTMAPI {
     private var pingPongTimer: Strand?
     
     //MARK: - Public Events
+    /// Closure that is called when a websocket connection is made
     public var onConnected: (() -> Void)?
+    
+    /// Closure that is called when a websocket connection is closed with an error when applicable
     public var onDisconnected: ((error: ErrorProtocol?) -> Void)?
+    
+    /// Closure that is called when an error occurs
     public var onError: ((error: ErrorProtocol) -> Void)?
+    
+    /// Closure that is fired when a realtime messaging event occurs
     public var onEvent: ((event: RTMAPIEvent) -> Void)?
     
     //MARK: - Public Properties
+    /// A closure that needs to be set before the rtmapi can correctly serialise and build responses.
     public var slackModels: SlackModelClosure?
     
     //MARK: - Lifecycle
+    /**
+     Create a new `RTMAPI` instance.
+     
+     - parameter websocket: A `WebSocketService` that will be used for the websocket connection
+     - returns: New `RTMAPI` instance.
+     */
     public init(websocket: WebSocketService) {
         self.websocket = websocket
         self.bindToSocketEvents()
     }
     
     //MARK: - Public
+    /**
+     Attempt a connection to a slack websocket url.
+     
+     - parameter url:              The url to attempt a connection to
+     - parameter pingPongInterval: The number of seconds between sending each ping
+     - throws: A `WebSocketServiceError` with failure details
+     */
     public func connect(url: String, pingPongInterval: NSTimeInterval) throws {
         self.pingPongInterval = pingPongInterval
         try self.websocket.connect(url: url)
     }
-    public func disconnect(error: ErrorProtocol? = nil) {
+    
+    /**
+     Disconnect the websocket.
+     */
+    public func disconnect() {
+        self.disconnect(error: nil)
+    }
+    private func disconnect(error: ErrorProtocol? = nil) {
         self.websocket.disconnect()
         self.onDisconnected?(error: error)
     }
@@ -117,8 +141,8 @@ extension RTMAPI {
         do {
             let json = try Jay().typesafeJsonFromData(Array(text.utf8))
             
-            let eventBuilder = try RTMAPIEvent.builder(json: json)
-            let event = try eventBuilder.make(json: json, builderFactory: self.builder)
+            let eventBuilder = try RTMAPIEvent.makeEventBuilder(withJson: json)
+            let event = try eventBuilder.make(withJson: json, builderFactory: self.makeBuilder)
             
             if case .hello = event { self.startPingPong() }
             
@@ -139,16 +163,25 @@ extension RTMAPI {
 
 //MARK: - Helpers
 extension RTMAPI {
-    private func builder(data: JSON) -> SlackModelBuilder {
+    private func makeBuilder(withJson json: JSON) -> SlackModelBuilder {
         guard let slackModels = self.slackModels else { fatalError("Please set `slackModels`") }
         
         let models = slackModels()
         return SlackModelBuilder(
-            json: data,
+            json: json,
             users: models.users,
             channels: models.channels,
             groups: models.groups,
             ims: models.ims
         )
+    }
+}
+
+//MARK: - Errors
+extension RTMAPI {
+    /// Describes a range of errors that can occur when attempting to use the the realtime messaging api
+    public enum Error: ErrorProtocol {
+        /// The response was invalid or the data was unexpected
+        case invalidResponse(json: JSON)
     }
 }
