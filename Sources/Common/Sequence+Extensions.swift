@@ -1,6 +1,6 @@
 //
 //  Sequence+Extensions.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 10/06/2016.
 //

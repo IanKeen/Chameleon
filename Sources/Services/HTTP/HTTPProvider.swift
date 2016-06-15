@@ -1,6 +1,6 @@
 //
 //  HTTPProvider.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 31/01/2016.
 //  Copyright © 2016 HitchPlanet. All rights reserved.
@@ -21,7 +21,8 @@ final public class HTTPProvider: HTTPService {
             // (╯°□°）╯︵ ┻━┻
             //On Heroku scheme was coming through as Optional<String> even though the API says String
             let urlScheme: String? = request.url.scheme
-            guard let scheme = urlScheme, let host = request.url.host else { throw HTTPServiceError.invalidURL }
+            guard let scheme = urlScheme, let host = request.url.host
+                else { throw HTTPServiceError.invalidURL(url: request.url.absoluteString) }
             
             let response: Response
             

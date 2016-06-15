@@ -1,6 +1,6 @@
 //
 //  SlackBot+Convenience.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 7/06/2016.
 //

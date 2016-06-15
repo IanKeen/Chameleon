@@ -1,6 +1,6 @@
 //
 //  RTMStart.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 19/05/2016.
 //  Copyright © 2016 Mustard. All rights reserved.
@@ -51,7 +51,7 @@ public struct RTMStart: WebAPIMethod {
         )
     }
     public func handle(json: JSON, slackModels: SlackModels) throws -> SuccessParameters {
-        guard let socketUrl = json["url"]?.string else { throw WebAPI.Error.invalidResponse(data: json) }
+        guard let socketUrl = json["url"]?.string else { throw WebAPI.Error.invalidResponse(json: json) }
         
         _ = try Strand {
             guard
@@ -61,7 +61,7 @@ public struct RTMStart: WebAPIMethod {
                 let channelJson = json["channels"]?.array,
                 let groupJson = json["groups"]?.array,
                 let imJson = json["ims"]?.array
-                else { return self.dataReady(serializedData: { throw WebAPI.Error.invalidResponse(data: json) }) }
+                else { return self.dataReady(serializedData: { throw WebAPI.Error.invalidResponse(json: json) }) }
             
             do {
                 print("Deserializing \(userJson.count) Users")

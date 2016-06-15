@@ -1,6 +1,6 @@
 //
 //  MemoryStorage.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 24/05/2016.
 //  Copyright © 2016 Mustard. All rights reserved.

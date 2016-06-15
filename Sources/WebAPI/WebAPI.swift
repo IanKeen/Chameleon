@@ -1,6 +1,6 @@
 //
 //  WebAPI.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 19/05/2016.
 //  Copyright © 2016 Mustard. All rights reserved.
@@ -41,7 +41,7 @@ public final class WebAPI {
     
     //MARK: - Lifecycle
     /**
-     Create a new `WebAPI` instance.s
+     Create a new `WebAPI` instance.
      
      - parameter token: The token to use in authenticated webapi requests
      - parameter http:  The `HTTPService` to use when making requests
@@ -72,8 +72,10 @@ public final class WebAPI {
         
         return try method.handle(json: json, slackModels: slackModels())
     }
-    
-    //MARK: - Private Helpers
+}
+
+//MARK: - Helpers
+extension WebAPI {
     private func request<Method: WebAPIMethod>(for method: Method) -> HTTPRequest {
         guard method.requiresAuthentication else { return method.networkRequest }
         
@@ -94,6 +96,7 @@ public final class WebAPI {
     }
 }
 
+//MARK: - Errors
 extension WebAPI {
     /// Describes a range of errors that can occur when attempting to use the the webapi
     public enum Error: ErrorProtocol {
@@ -101,6 +104,6 @@ extension WebAPI {
         case apiError(reason: String)
         
         /// The response was invalid or the data was unexpected
-        case invalidResponse(data: Any)
+        case invalidResponse(json: JSON)
     }
 }

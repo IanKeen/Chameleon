@@ -1,6 +1,6 @@
 //
 //  MessageAdaptor.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 21/05/2016.
 //  Copyright © 2016 Mustard. All rights reserved.
@@ -73,7 +73,7 @@ public struct MessageAdaptor {
     }
     
     //MARK: - Lifecycle
-    internal init(message: Message, slackModels: SlackBot.SlackModelClosure) {
+    init(message: Message, slackModels: SlackBot.SlackModelClosure) {
         self.message = message
         self.slackModels = slackModels
     }
@@ -84,7 +84,7 @@ extension MessageAdaptor {
         public let link: String
         public let displayText: String
         
-        internal init?(link: String) {
+        init?(link: String) {
             let components = link.components(separatedBy: "|")
             
             guard
@@ -98,7 +98,7 @@ extension MessageAdaptor {
 }
 
 extension Message {
-    internal func toAdaptor(slackModels: SlackBot.SlackModelClosure) -> MessageAdaptor {
+    func toAdaptor(slackModels: SlackBot.SlackModelClosure) -> MessageAdaptor {
         return MessageAdaptor(message: self, slackModels: slackModels)
     }
 }

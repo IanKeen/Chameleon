@@ -1,6 +1,6 @@
 //
 //  Dictionary+Extensions.swift
-//  Slack
+// Chameleon
 //
 //  Created by Ian Keen on 11/05/2016.
 //  Copyright © 2016 Mustard. All rights reserved.
