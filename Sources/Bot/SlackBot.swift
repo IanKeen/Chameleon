@@ -73,13 +73,8 @@ public class SlackBot {
         case .Connecting(let attempt): self.state = .Connecting(attempt: attempt + 1)
         }
         
-        let requiredParams: [String: String] = [
-            "no_unreads": "true"
-        ]
-        let params = requiredParams + self.config.authenticationParameters
-        
         do {
-            let rtmStart = RTMStart(authenticationParameters: params) { [weak self] serializedData in
+            let rtmStart = RTMStart(options: self.config.startOptions) { [weak self] serializedData in
                 guard let `self` = self else { return }
                 
                 do {

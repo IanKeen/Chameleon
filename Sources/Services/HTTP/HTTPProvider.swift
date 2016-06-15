@@ -16,7 +16,7 @@ final public class HTTPProvider: HTTPService {
     //MARK: - Public
     public init() { }
     
-    public func perform(request: HTTPRequest) throws -> JSON {
+    public func perform(with request: HTTPRequest) throws -> JSON {
         do {
             // (╯°□°）╯︵ ┻━┻
             //On Heroku scheme was coming through as Optional<String> even though the API says String

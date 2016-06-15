@@ -11,21 +11,38 @@ import Services
 import Jay
 import Strand
 
+/// Handler for the `rtm.start` endpoint
 public struct RTMStart: WebAPIMethod {
     public typealias RTMStartData = (botUser: BotUser, team: Team, users: [User], channels: [Channel], groups: [Group], ims: [IM])
-    
-    let authenticationParameters: [String: String]
-    let dataReady: (serializedData: () throws -> RTMStartData) -> Void
-
     public typealias SuccessParameters = (String)
     
-    public init(authenticationParameters: [String: String], dataReady: (serializedData: () throws -> RTMStartData) -> Void) {
-        self.authenticationParameters = authenticationParameters
+    //MARK: - Private Properties
+    private let options: [Option]
+    private let dataReady: (serializedData: () throws -> RTMStartData) -> Void
+    
+    //MARK: - Lifecycle
+    /**
+     Create a new `RTMStart` instance
+     
+     NOTE: The `RTMStart` method is performed on another thread. 
+     
+     When signing in all the data for users, channels, groups and IMs needs to be parsed to achieve a typed experience. 
+     On larger teams this could cause the websocket link to timeout before this processing is done. 
+     By moving this work to another thread we can continue connecting and then complete the start up once the work here is done.
+     
+     - parameter options:   `RTMStart.Option`s to use
+     - parameter dataReady: The closure to call upon success; throws on failure
+     
+     - returns: A new instance
+     */
+    public init(options: [Option] = [], dataReady: (serializedData: () throws -> RTMStartData) -> Void) {
+        self.options = options
         self.dataReady = dataReady
     }
     
+    //MARK: - Public
     public var networkRequest: HTTPRequest {
-        let params = self.authenticationParameters
+        let params = self.options.toParameters()
         
         return HTTPRequest(
             method: .get,
@@ -33,8 +50,8 @@ public struct RTMStart: WebAPIMethod {
             parameters: params
         )
     }
-    public func handleResponse(json: JSON, slackModels: SlackModels) throws -> SuccessParameters {
-        guard let socketUrl = json["url"]?.string else { throw WebAPIMethodError.UnexpectedResponse }
+    public func handle(json: JSON, slackModels: SlackModels) throws -> SuccessParameters {
+        guard let socketUrl = json["url"]?.string else { throw WebAPI.Error.invalidResponse(data: json) }
         
         _ = try Strand {
             guard
@@ -44,24 +61,24 @@ public struct RTMStart: WebAPIMethod {
                 let channelJson = json["channels"]?.array,
                 let groupJson = json["groups"]?.array,
                 let imJson = json["ims"]?.array
-                else { return self.dataReady(serializedData: { throw WebAPIMethodError.UnexpectedResponse }) }
+                else { return self.dataReady(serializedData: { throw WebAPI.Error.invalidResponse(data: json) }) }
             
             do {
                 print("Deserializing \(userJson.count) Users")
-                let users = try userJson.map { try User.make(builder: self.modelBuilder(data: $0)) }
+                let users = try userJson.map { try User.make(builder: makeSlackModelBuilder(json: $0)) }
                 
                 print("Deserializing \(channelJson.count) Channels")
-                let channels = try channelJson.map { try Channel.make(builder: self.modelBuilder(data: $0, users: users)) }
+                let channels = try channelJson.map { try Channel.make(builder: makeSlackModelBuilder(json: $0, users: users)) }
                 
                 print("Deserializing \(groupJson.count) Groups")
-                let groups = try groupJson.map { try Group.make(builder: self.modelBuilder(data: $0, users: users)) }
+                let groups = try groupJson.map { try Group.make(builder: makeSlackModelBuilder(json: $0, users: users)) }
                 
                 print("Deserializing \(imJson.count) IMs")
-                let ims = try imJson.map { try IM.make(builder: self.modelBuilder(data: $0, users: users)) }
+                let ims = try imJson.map { try IM.make(builder: makeSlackModelBuilder(json: $0, users: users)) }
                 
                 print("Deserializing Bot User and Team")
-                let botUser = try BotUser.make(builder: self.modelBuilder(data: selfJson))
-                let team = try Team.make(builder: self.modelBuilder(data: teamJson))
+                let botUser = try BotUser.make(builder: makeSlackModelBuilder(json: selfJson))
+                let team = try Team.make(builder: makeSlackModelBuilder(json: teamJson))
                 
                 self.dataReady(serializedData: { return
                     (botUser: botUser,
@@ -77,20 +94,5 @@ public struct RTMStart: WebAPIMethod {
             }
         }
         return socketUrl
-    }
-    
-    private func modelBuilder(
-        data: JSON,
-        users: [User] = [],
-        channels: [Channel] = [],
-        groups: [Group] = [],
-        ims: [IM] = []) -> SlackModelBuilder {
-        return SlackModelBuilder(
-            data: data,
-            users: users,
-            channels: channels,
-            groups: groups,
-            ims: ims
-        )
     }
 }

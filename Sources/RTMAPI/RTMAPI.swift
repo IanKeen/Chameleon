@@ -144,7 +144,7 @@ extension RTMAPI {
         
         let models = slackModels()
         return SlackModelBuilder(
-            data: data,
+            json: data,
             users: models.users,
             channels: models.channels,
             groups: models.groups,

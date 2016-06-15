@@ -28,9 +28,8 @@ public extension SlackBot {
             target: target,
             text: text,
             options: [
-                .LinkNames(true)
+                .linkNames(true)
             ] + options,
-            customParameters: nil,
             attachments: attachments
         )
         
