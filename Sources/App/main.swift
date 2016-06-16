@@ -16,7 +16,18 @@ let config = try SlackBotConfig()
 
 let bot = SlackBot(
     config: config,
-    apis:   [HelloBot()]
+    apis:   [
+                HelloBot(),
+                KarmaBot(options: KarmaBot.Options(
+                    targets: ["*"],
+                    addText: "++",
+                    addReaction: "+1",
+                    removeText: "--",
+                    removeReaction: "-1",
+                    textDistanceThreshold: 4
+                    )
+        )
+    ]
 )
 
 bot.start()
