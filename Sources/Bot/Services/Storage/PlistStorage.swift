@@ -8,10 +8,12 @@
 
 import Foundation
 
+// Provides Plist based storage of key/value pairs (OSX only)
 public final class PlistStorage: Storage {
     //MARK: - Public
     public init() { }
     
+    //MARK: - Storage
     public func set<T: StorableType>(type: T.Type, in: StorageNamespace, key: String, value: T) throws {
         var dataset = self.dataset()
         var data = dataset[`in`.namespace] ?? [:]
@@ -44,6 +46,7 @@ public final class PlistStorage: Storage {
     }
 }
 
+//MARK: - Helper
 extension StorableType {
     var anyObject: AnyObject? {
         return self as? AnyObject
