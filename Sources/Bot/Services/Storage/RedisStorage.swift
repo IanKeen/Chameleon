@@ -74,6 +74,7 @@ extension Bool: RedisStorable, RedisRetrievable {
     }
 }
 
+//TOOD
 // I think these are wrong... need to test!!
 extension Sequence where Iterator.Element: RedisStorable {
     var redisStoreCommand: String { return "LPUSH" }
