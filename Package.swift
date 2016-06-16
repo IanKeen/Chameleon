@@ -5,6 +5,7 @@ let package = Package(
     dependencies: [
         .Package(url: "https://github.com/Zewo/WebSocketClient.git", majorVersion: 0, minor: 1),
         .Package(url: "https://github.com/IanKeen/Jay.git", majorVersion: 0, minor: 0),
+        .Package(url: "https://github.com/czechboy0/Redbird.git", majorVersion: 0, minor: 7),
         .Package(url: "https://github.com/ketzusaka/Strand.git", majorVersion: 1, minor: 3),
     ],
     exclude: [
