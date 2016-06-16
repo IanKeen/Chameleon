@@ -9,6 +9,11 @@ Chameleon provides frameworks for:
 - [x] Real time messaging API
 - [x] Bot: Uses Web/RTM and provides an API for custom services (i.e. karma)
 
+Persistence
+- [x] Redis
+- [x] In memory
+- [x] Plist (OSX only - good for testing)
+
 Using Chameleon you are able to interact with these an a type-safe manner.
 
 ## Preparing to use Chameleon
@@ -56,7 +61,6 @@ git push heroku master
 This is a work in progress so expect improvements as well as breaking changes!
 
 Chameleon *is* functional however there is still a lot to do before it is *complete*
-* Currently the 'persistence layer' is _memory_ :(
 * The Web and Real time messaging APIs can do _a lot_ - 
 I have built support for the core/most common features but they are incomplete. 
 I will add more over time until they are complete.
