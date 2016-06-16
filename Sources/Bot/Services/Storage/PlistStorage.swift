@@ -8,6 +8,8 @@
 
 import Foundation
 
+#if os(Linux)
+#else
 // Provides Plist based storage of key/value pairs (OSX only)
 public final class PlistStorage: Storage {
     //MARK: - Public
@@ -52,3 +54,4 @@ extension StorableType {
         return self as? AnyObject
     }
 }
+#endif
