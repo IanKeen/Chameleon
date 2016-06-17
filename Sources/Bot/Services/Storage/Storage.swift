@@ -24,6 +24,9 @@ public enum StorageNamespace {
 
 /// Describes a range of errors that can occur when using storage
 public enum StorageError: ErrorProtocol {
+    /// The connection url supplied is invalid
+    case invalidURL(url: String)
+    
     /// The value being stored is invalid
     case invalidValue(value: Any)
     

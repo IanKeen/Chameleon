@@ -11,11 +11,13 @@ import Services
 import WebAPI
 import RTMAPI
 import Bot
+import Environment
 
-let config = try SlackBotConfig()
+let config = try SlackBotConfig.makeConfig(from: Environment())
 
 let bot = SlackBot(
     config: config,
+    storage: try RedisStorage(url: config.storageUrl!),
     apis:   [
                 HelloBot(),
                 KarmaBot(options: KarmaBot.Options(
