@@ -7,6 +7,7 @@
 //
 
 import Redbird
+import Foundation
 
 /// Provides Redis based storage of key/value pairs
 public final class RedisStorage: Storage {
@@ -14,7 +15,18 @@ public final class RedisStorage: Storage {
     private let client: Redbird
     
     //MARK: - Public
-    public init(address: String, port: UInt16, password: String?) throws {
+    public convenience init(url urlString: String) throws {
+        guard let url = NSURL(string: urlString) else { throw StorageError.invalidURL(url: urlString) }
+        
+        guard
+            let host = url.host,
+            let port = url.port?.uint16Value,
+            let password = url.password
+            else { throw StorageError.invalidURL(url: urlString) }
+        
+        try self.init(address: host, port: port, password: password)
+    }
+    public required init(address: String, port: UInt16, password: String?) throws {
         let config = RedbirdConfig(address: address, port: port, password: password)
         self.client = try Redbird(config: config)
     }
