@@ -126,9 +126,9 @@ extension SlackBotConfig {
         return try SlackBotConfig(
             token: environment.getVar(Variables.Token),
             startOptions: nil,
-            reconnectionAttempts: Int(environment.getVar(Variables.ReconnectionAttempts.lowercased()) ?? ""),
-            pingPongInterval: NSTimeInterval(environment.getVar(Variables.PingPongInterval.lowercased()) ?? ""),
-            storageUrl: environment.getVar(Variables.StorageURL.lowercased())
+            reconnectionAttempts: Int(environment.getVar(Variables.ReconnectionAttempts) ?? ""),
+            pingPongInterval: NSTimeInterval(environment.getVar(Variables.PingPongInterval) ?? ""),
+            storageUrl: environment.getVar(Variables.StorageURL)
         )
     }
 }
