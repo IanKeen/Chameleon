@@ -1,6 +1,6 @@
 //
 //  WebSocketProvider.swift
-// Chameleon
+//  Chameleon
 //
 //  Created by Ian Keen on 3/06/2016.
 //  Copyright © 2016 Mustard. All rights reserved.
@@ -12,6 +12,7 @@ import Jay
 
 extension CloseCode: ErrorProtocol { }
 
+/// Standard implementation of a WebSocketService
 final public class WebSocketProvider: WebSocketService {
     //MARK: - Private Properties
     private var socket: WebSocket? {

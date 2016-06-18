@@ -1,18 +1,15 @@
 //
 //  Emoji.swift
-// Chameleon
+//  Chameleon
 //
 //  Created by Ian Keen on 6/06/2016.
 //
 //
 
+/// An abstraction for an object that can represent an emoji 
 public protocol SlackEmoji {
+    /// The string slack uses to identify this emoji
     var emojiSymbol: String { get }
-}
-extension Emoji: SlackEmoji {
-    public var emojiSymbol: String {
-        return ":\(self.rawValue):"
-    }
 }
 
 //From: https://github.com/iamcal/emoji-data

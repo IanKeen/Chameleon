@@ -1,6 +1,6 @@
 //
 //  WebSocketService.swift
-// Chameleon
+//  Chameleon
 //
 //  Created by Ian Keen on 10/05/2016.
 //  Copyright © 2016 Mustard. All rights reserved.
