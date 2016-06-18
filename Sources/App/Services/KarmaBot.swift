@@ -47,16 +47,13 @@ extension KarmaBot {
     }
 }
 
-final class KarmaBot: SlackBotAPI {
+final class KarmaBot: SlackRTMEventService, SlackMessageService {
     private let options: Options
     
     init(options: Options) {
         self.options = options
     }
     
-    func connected(slackBot: SlackBot, botUser: BotUser, team: Team, users: [User], channels: [Channel], groups: [Group], ims: [IM]) { }
-    func disconnected(slackBot: SlackBot, error: ErrorProtocol?) { }
-    func error(slackBot: SlackBot, error: ErrorProtocol) { }
     func event(slackBot: SlackBot, event: RTMAPIEvent, webApi: WebAPI) {
         switch event {
         case .reaction_added(let reaction, let user, let itemCreator, let target):
@@ -70,7 +67,7 @@ final class KarmaBot: SlackBotAPI {
             self.adjustKarma(of: itemCreator, action: karma, storage: slackBot.storage)
             
             slackBot.chat(
-                target: target,
+                with: target,
                 text: karma.randomMessage(user: itemCreator, storage: slackBot.storage)
             )
             
@@ -97,10 +94,7 @@ final class KarmaBot: SlackBotAPI {
         
         guard !response.isEmpty else { return }
         
-        slackBot.chat(
-            target: target,
-            text: response
-        )
+        slackBot.chat(with: target, text: response)
     }
     
     private func karma(for user: User, from message: MessageAdaptor) -> KarmaAction? {

@@ -11,12 +11,7 @@ import RTMAPI
 import WebAPI
 import Models
 
-final class HelloBot: SlackBotAPI {
-    func connected(slackBot: SlackBot, botUser: BotUser, team: Team, users: [User], channels: [Channel], groups: [Group], ims: [IM]) { }
-    func disconnected(slackBot: SlackBot, error: ErrorProtocol?) { }
-    func error(slackBot: SlackBot, error: ErrorProtocol) { }
-    func event(slackBot: SlackBot, event: RTMAPIEvent, webApi: WebAPI) { }
-
+final class HelloBot: SlackMessageService {
     func message(slackBot: SlackBot, message: MessageAdaptor, previous: MessageAdaptor?) {
         let greetings = ["hello", "hi", "hey"]
         guard
@@ -24,7 +19,7 @@ final class HelloBot: SlackBotAPI {
             else { return }
         
         if (message.text.hasPrefix(options: greetings) && message.mentioned_users.contains(slackBot.me)) {
-            slackBot.chat(target: target, text: "hey, <@\(sender.id)>")
+            slackBot.chat(with: target, text: "hey, <@\(sender.id)>")
         }
     }
 }

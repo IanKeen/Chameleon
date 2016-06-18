@@ -18,9 +18,9 @@ let config = try SlackBotConfig.makeConfig(from: Environment())
 let bot = SlackBot(
     config: config,
     storage: try RedisStorage(url: config.storageUrl!),
-    apis:   [
-                HelloBot(),
-                KarmaBot(options: KarmaBot.Options(
+    services: [
+                  HelloBot(),
+                  KarmaBot(options: KarmaBot.Options(
                     targets: ["*"],
                     addText: "++",
                     addReaction: "+1",

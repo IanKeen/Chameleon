@@ -11,11 +11,12 @@ import WebAPI
 import RTMAPI
 import Common
 
+/// An extensible Slack bot user than can provide custom functionality
 public class SlackBot {
     //MARK: - Private Properties
     private let config: SlackBotConfig
-    private let apis: [SlackAPI]
-    private var state: State = .Disconnected(force: false, error: nil) {
+    private let services: [SlackService]
+    private var state: State = .Disconnected(reconnect: true, error: nil) {
         didSet {
             print("STATE: \(self.state)")
             
@@ -52,12 +53,23 @@ public class SlackBot {
     public private(set) var storage: Storage
     
     //MARK: - Lifecycle
-    public init(config: SlackBotConfig, storage: Storage, webAPI: WebAPI, rtmAPI: RTMAPI, apis: [SlackAPI]) {
+    /**
+     Creates a new `SlackBot` instance
+     
+     - parameter config:   The `SlackBotConfig` with the configuration for this instance
+     - parameter storage:  The `Storage` implementation used for simple key/value storage
+     - parameter webAPI:   The `WebAPI` used for interaction with the Slack WebAPI
+     - parameter rtmAPI:   The `RTMAPI` used for interaction with the Slack Real-time messaging api
+     - parameter services: A sequence of `SlackService`s that provide this bots functionality
+     
+     - returns: A new `SlackBot` instance
+     */
+    public init(config: SlackBotConfig, storage: Storage, webAPI: WebAPI, rtmAPI: RTMAPI, services: [SlackService]) {
         self.config = config
         self.storage = storage
         self.webAPI = webAPI
         self.rtmAPI = rtmAPI
-        self.apis = apis
+        self.services = services
         
         self.webAPI.slackModels = self.slackModels()
         self.rtmAPI.slackModels = self.slackModels()
@@ -66,6 +78,7 @@ public class SlackBot {
     }
     
     //MARK: - Public Functions
+    /// Start the bot
     public func start() {
         switch self.state {
         case .Connected: return
@@ -100,19 +113,59 @@ public class SlackBot {
             self.handleConnectionError(error)
         }
     }
-    public func stop(force: Bool = false) {
-        if (force) { self.state = .Disconnected(force: true, error: nil) }
+    
+    /**
+     Stops the bot
+     
+     - parameter reconnect: When true, the bot will attempt to reconnected after stopping
+     */
+    public func stop(reconnect: Bool = true) {
+        if (!reconnect) { self.state = .Disconnected(reconnect: false, error: nil) }
         self.rtmAPI.disconnect()
     }
 }
 
 //MARK: - State
 extension SlackBot {
+    /// Defines the states the bot will move through during connection
     private enum State {
-        case Disconnected(force: Bool, error: ErrorProtocol?)
+        /**
+         *  The bot is disconnected
+         *
+         *  @param Bool           Whether a reconnection should be attempted.
+         *                        Reconnection attempts are caused by a call to `stop(reconnect: true)`
+         *                        or when we haven't exceeded the maximum number of retry attempts yet
+         *
+         *  @param ErrorProtocol? Exists when the disconnection was the result of an error
+         */
+        case Disconnected(reconnect: Bool, error: ErrorProtocol?)
+        
+        /**
+         *  The bot is attempting to connect
+         *
+         *  @param Int The attempt number
+         */
         case Connecting(attempt: Int)
+        
+        /**
+         *  The bot is connected.
+         *  NOTE: There are two things that need to happen for the bot to be considered 'ready'
+         *
+         *  1. We need to receive the `.hello` event from the `RTMAPI`
+         *  2. The `RTMStart` WebAPI method has to deserialise the Slack teams models
+         *
+         *  Because `RTMStart` is performed asynchronously the order of 1 & 2 are not guaranteed
+         *  so we use a nested `OptionSet` to keep track of each event.
+         *
+         *  @param ConnectedState The nested `OptionSet` with the current `ConnectedState`
+         */
         case Connected(state: ConnectedState)
         
+        /**
+            Defines whether all requirements for the bot to be considered ready have completed
+         
+            - seealso: For more information on the requirements see: `State.Connected(state:)`
+         */
         var ready: Bool {
             switch self {
             case .Connected(let state):
@@ -123,6 +176,12 @@ extension SlackBot {
             }
         }
         
+        /**
+         Updates the nested `ConnectedState` for the `State.Connected` parent state
+         
+         - parameter new: The `ConnectedState` that has been completed
+         - returns: An updated `State` value
+         */
         func connectedWith(state new: ConnectedState) -> State {
             var current = self
             switch self {
@@ -149,16 +208,16 @@ extension SlackBot {
     //
     private func handleConnectionError(_ error: ErrorProtocol?) {
         switch self.state {
-        case .Disconnected:
-            return
+        case .Disconnected(let reconnect, _):
+            if (!reconnect) { return }
             
         case .Connected:
-            self.state = .Disconnected(force: false, error: nil)
+            self.state = .Disconnected(reconnect: true, error: nil)
             
         case .Connecting(let attempt):
             if (attempt >= self.config.reconnectionAttempts) {
                 self.notifyDisconnected(error: error)
-                self.state = .Disconnected(force: true, error: error)
+                self.state = .Disconnected(reconnect: false, error: error)
                 return
             }
         }
@@ -167,11 +226,13 @@ extension SlackBot {
     }
 }
 
-//MARK: - API Propagation
+//MARK: - Service Propagation
 extension SlackBot {
     private func notifyConnected(botUser: BotUser, team: Team, users: [User], channels: [Channel], groups: [Group], ims: [IM]) {
-        self.apis.forEach { api in
-            api.connected(
+        let services = self.services.flatMap { $0 as? SlackConnectionService }
+        
+        for service in services {
+            service.connected(
                 slackBot: self,
                 botUser: botUser,
                 team: team,
@@ -183,36 +244,42 @@ extension SlackBot {
         }
     }
     private func notifyDisconnected(error: ErrorProtocol?) {
-        self.apis.forEach { $0.disconnected(slackBot: self, error: error) }
+        let services = self.services.flatMap { $0 as? SlackDisconnectionService }
+        
+        for service in services {
+            service.disconnected(slackBot: self, error: error)
+        }
     }
     private func notify(event: RTMAPIEvent) {
         guard self.state.ready else { return }
-        self.apis.forEach { $0.event(slackBot: self, event: event, webApi: self.webAPI) }
+        
+        let services = self.services.flatMap { $0 as? SlackRTMEventService }
+        
+        for service in services {
+            service.event(slackBot: self, event: event, webApi: self.webAPI)
+            
+            //Depending on the number of specialized `SlackService`s
+            //I may adopt a similar pattern to the RTMEvent "builders"
+            //so this doesn't become a massive switch
+            switch (service, event) {
+            case (let service as SlackMessageService, .message(let message, let previous)):
+                service.message(
+                    slackBot: self,
+                    message: message.toAdaptor(slackModels: self.slackModels()),
+                    previous: previous?.toAdaptor(slackModels: self.slackModels())
+                )
+                
+            default: break
+            }
+        }
     }
     func notify(error: ErrorProtocol) {
         guard self.state.ready else { return }
-        self.apis.forEach { $0.error(slackBot: self, error: error) }
-    }
-    
-    //Depending on the complexity of the `SlackBotAPI` api
-    //I may adopt a similar pattern to the RTMEvent "builders"
-    //so this doesn't become a massive switch
-    private func notifyBotAPIs(event: RTMAPIEvent) {
-        guard self.state.ready else { return }
         
-        self.apis.forEach { api in
-            if let api = api as? SlackBotAPI {
-                switch event {
-                case .message(let message, let previous):
-                    api.message(
-                        slackBot: self,
-                        message: message.toAdaptor(slackModels: self.slackModels()),
-                        previous: previous?.toAdaptor(slackModels: self.slackModels())
-                    )
-                    
-                default: break
-                }
-            }
+        let services = self.services.flatMap { $0 as? SlackErrorService }
+        
+        for service in services {
+            service.error(slackBot: self, error: error)
         }
     }
 }
@@ -220,7 +287,7 @@ extension SlackBot {
 //MARK: - RTM
 extension SlackBot {
     private func bindToRTM() {
-        self.rtmAPI.onConnected = { /* */ }
+        self.rtmAPI.onConnected = { /* not used at this time as the 'real' connected event is linked to .hello and data */ }
         self.rtmAPI.onDisconnected = { [weak self] error in
             self?.handleConnectionError(error)
         }
@@ -232,13 +299,15 @@ extension SlackBot {
             
             self.handle(event: event)
             self.notify(event: event)
-            self.notifyBotAPIs(event: event)
         }
     }
 }
 
 //MARK: - Bot Event Handler
 extension SlackBot {
+    // TODO: turn this into an actual `SlackService`
+    
+    /// Handles internal/bot specific `RTMAPIEvent`s
     private func handle(event: RTMAPIEvent) {
         switch event {
         case .hello:
@@ -259,6 +328,7 @@ extension SlackBot {
 extension SlackBot {
     typealias SlackModelClosure = WebAPI.SlackModelClosure
     
+    /// Returns a closure that can be used to get an up-to-date set of Slack model data
     private func slackModels() -> SlackModelClosure {
         return {
             return (
