@@ -11,7 +11,16 @@ import WebAPI
 import RTMAPI
 
 extension SlackBot {
-    public convenience init(config: SlackBotConfig, storage: Storage = MemoryStorage(), apis: [SlackAPI]) {
+    /**
+     Provides a convenience `init` for a `SlackBot` instance prodiving the default `WebAPI` and `RTMAPI` instances.
+     
+     - parameter config:   The `SlackBotConfig` to use for this `SlackBot` instance
+     - parameter storage:  The `Storage` to use, `MemoryStorage` will be used if nothing is provided
+     - parameter services: The sequence of `SlackService`s to use
+     
+     - returns: A new `SlackBot` instance
+     */
+    public convenience init(config: SlackBotConfig, storage: Storage = MemoryStorage(), services: [SlackService]) {
         let http = HTTPProvider()
         let websocket = WebSocketProvider()
         let storage = storage
@@ -24,7 +33,7 @@ extension SlackBot {
             storage: storage,
             webAPI: webAPI,
             rtmAPI: rtmAPI,
-            apis: apis
+            services: services
         )
     }
 }

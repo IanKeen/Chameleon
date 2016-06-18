@@ -8,15 +8,20 @@
 
 import Models
 
+/// A wrapper around a `Message` model to provide additional functionality
 public struct MessageAdaptor {
     //MARK: - Private
     private let slackModels: SlackBot.SlackModelClosure
     
     //MARK: - Public Raw Properties
+    /// The underlying `Message` this `MessageAdaptor` uses
     public let message: Message
     
     //MARK: - Public Derived Properties
+    /// `String` representing the text of the `Message`
     public var text: String { return self.message.text ?? "" }
+    
+    /// The `User` representing the sender of this `Message`
     public var sender: User? {
         return
             self.message.user ??
@@ -24,9 +29,13 @@ public struct MessageAdaptor {
             self.message.inviter ??
             self.message.bot
     }
+    
+    /// The `Target` for this `Message`
     public var target: Target? {
         return self.message.channel?.value
     }
+    
+    /// A sequence of mentioned `User`s in the `Message`
     public var mentioned_users: [User] {
         let users = slackModels().users + slackModels().users.botUsers()
         
@@ -35,6 +44,8 @@ public struct MessageAdaptor {
                 users.filter { $0.id == link.link }
             }
     }
+    
+    /// A sequence of mentioned `Channel`s in the `Message`
     public var mentioned_channels: [Channel] {
         let channels = slackModels().channels
         
@@ -43,16 +54,31 @@ public struct MessageAdaptor {
                 channels.filter { $0.id == link.link }
         }
     }
+    
+    /// A sequence of mentioned `Link`s in the `Message` that are not `Channel`s or `User`s
     public var mentioned_links: [Link] {
         return self.mentionedLinks() {
             !$0.link.hasPrefix("@") && !$0.link.hasPrefix("#")
         }
     }
+    
+    //MARK: - Lifecycle
+    init(message: Message, slackModels: SlackBot.SlackModelClosure) {
+        self.message = message
+        self.slackModels = slackModels
+    }
+}
+
+//MARK: - Link Extraction
+extension MessageAdaptor {
     private func mentionedLinks(prefix: String = "", filter: ((Link) -> Bool) = { _ in true }) -> [Link] {
         guard self.text.characters.contains("<") && self.text.characters.contains(">") else { return [] }
         
         //NOTE: so far I've just been avoid RegEx for the sake of it...
         //      however if I turn to the dark side the expression used should be <(.*?)>
+        //
+        //TODO
+        //UPDATE: The more I look at the code below the more I dislike it :P - pony up and change to regex...
         //
         //From Slack: https://api.slack.com/docs/formatting
         //1. Detect all sequences matching <(.*?)>
@@ -71,15 +97,11 @@ public struct MessageAdaptor {
             .flatMap { Link(link: $0) }
             .filter { filter($0) }
     }
-    
-    //MARK: - Lifecycle
-    init(message: Message, slackModels: SlackBot.SlackModelClosure) {
-        self.message = message
-        self.slackModels = slackModels
-    }
 }
 
+//MARK: - Message.Link
 extension MessageAdaptor {
+    /// Represents a link extracted from a `Message`
     public struct Link {
         public let link: String
         public let displayText: String
@@ -97,6 +119,7 @@ extension MessageAdaptor {
     }
 }
 
+//MARK: - Convenience: Message to MessageAdaptor
 extension Message {
     func toAdaptor(slackModels: SlackBot.SlackModelClosure) -> MessageAdaptor {
         return MessageAdaptor(message: self, slackModels: slackModels)
