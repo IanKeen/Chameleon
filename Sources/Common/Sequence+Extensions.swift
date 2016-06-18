@@ -1,6 +1,6 @@
 //
 //  Sequence+Extensions.swift
-// Chameleon
+//  Chameleon
 //
 //  Created by Ian Keen on 10/06/2016.
 //

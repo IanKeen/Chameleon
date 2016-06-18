@@ -1,6 +1,6 @@
 //
 //  HTTPProvider.swift
-// Chameleon
+//  Chameleon
 //
 //  Created by Ian Keen on 31/01/2016.
 //  Copyright © 2016 HitchPlanet. All rights reserved.
@@ -11,7 +11,7 @@ import HTTPSClient
 import String
 import Jay
 
-/// Standard implementation of the HTTPService
+/// Standard implementation of a HTTPService
 final public class HTTPProvider: HTTPService {
     //MARK: - Public
     public init() { }

@@ -1,6 +1,6 @@
 //
 //  SlackModelBuilder.swift
-// Chameleon
+//  Chameleon
 //
 //  Created by Ian Keen on 20/05/2016.
 //  Copyright © 2016 Mustard. All rights reserved.
@@ -8,11 +8,23 @@
 
 import Jay
 
+/// Describes a range of errors that can occur when attempting to build a model
 public enum SlackModelError: ErrorProtocol {
-    case TypeMismatch(keyPath: String, expected: String, got: String)
-    case SlackModelLookup(keyPath: String)
+    /// The requested type did not match the type of the found value
+    case typeMismatch(keyPath: String, expected: String, got: String)
+    
+    /// The keypath used to lookup a value did not exist
+    case slackModelLookup(keyPath: String)
 }
 
+/**
+ *  Builds Slack models from `JSON` and completes object graphs from ids
+ *
+ *  Nested values can be looked up using keypaths such as "profile.bot_id"
+ *
+ *  Array lookups such as "profile.images[1]" are not currently supported
+ *  (However they are not currently required for the Slack models)
+ */
 public struct SlackModelBuilder {
     private let json: JSON
     private let users: [User]
@@ -20,6 +32,16 @@ public struct SlackModelBuilder {
     private let groups: [Group]
     private let ims: [IM]
     
+    /**
+     Creates a new instance from the provided `JSON` using the supplied models to complete the objects graph via ids
+     
+     - parameter json:     The `JSON` used to build models
+     - parameter users:    A sequence of `User`s used to find and populate any users in the graph via their id
+     - parameter channels: A sequence of `Channel`s used to find and populate any channels in the graph via their id
+     - parameter groups:   A sequence of `Group`s used to find and populate any groups in the graph via their id
+     - parameter ims:      A sequence of `IM`s used to find and populate any ims in the graph via their id
+     - returns: A new `SlackModelBuilder` instance
+     */
     public init(json: JSON, users: [User], channels: [Channel], groups: [Group], ims: [IM]) {
         self.json = json
         self.users = users
@@ -31,9 +53,23 @@ public struct SlackModelBuilder {
 
 //MARK: - Simple Types
 extension SlackModelBuilder {
+    /**
+     Retrieve a required value from the `JSON` using the supplied keypath
+     
+     - parameter keyPath: The keypath used to find the value
+     - throws: A `JSON.Error` with failure details
+     - returns: The value at the keypath
+     */
     public func property<T>(_ keyPath: String) throws -> T {
         return try self.json.keyPathValue(keyPath)
     }
+    
+    /**
+     Retrieve an optional value from the `JSON` using the supplied keypath
+     
+     - parameter keyPath: The keypath used to find the value
+     - returns: The value at keypath if found and it is of type `T`, otherwise nil
+     */
     public func optionalProperty<T>(_ keyPath: String) -> T? {
         return try? self.property(keyPath)
     }
@@ -41,6 +77,12 @@ extension SlackModelBuilder {
 
 //MARK: - Defaultable Types
 extension SlackModelBuilder {
+    /**
+     Retrieve a value from the `JSON` using the supplied keypath or a default value
+     
+     - parameter keyPath: The keypath used to find the value
+     - returns: The value at keypath if found and it is of type `T`, otherwise the default value
+     */
     public func property<T: DefaultValueType>(_ keyPath: String) -> T {
         return (try? self.json.keyPathValue(keyPath)) ?? T.defaultValue
     }
@@ -48,6 +90,13 @@ extension SlackModelBuilder {
 
 //MARK: - RawRepresentable Types 
 extension SlackModelBuilder {
+    /**
+     Retrieve a required `RawRepresentable` value from the `JSON` using the supplied keypath
+     
+     - parameter keyPath: The keypath used to find the value
+     - throws: A `JSON.Error` or `SlackModelError` with failure details
+     - returns: The value at the keypath
+     */
     public func property<T: RawRepresentable>(_ keyPath: String) throws -> T {
         let value: T.RawValue? = try self.json.keyPathValue(keyPath)
         
@@ -55,11 +104,19 @@ extension SlackModelBuilder {
             let result = value,
             let enumValue = T(rawValue: result)
             else {
-                throw SlackModelError.TypeMismatch(keyPath: keyPath, expected: String(T), got: String(value.dynamicType))
+                throw SlackModelError.typeMismatch(keyPath: keyPath, expected: String(T), got: String(value.dynamicType))
         }
         
         return enumValue
     }
+    
+    /**
+     Retrieve an optional `RawRepresentable` value from the `JSON` using the supplied keypath
+     
+     - parameter keyPath: The keypath used to find the value
+     - throws: A `JSON.Error` or `SlackModelError` with failure details
+     - returns: The value at keypath if found and it is of type `T`, otherwise nil
+     */
     public func optionalProperty<T: RawRepresentable>(keyPath: String) throws -> T? {
         let value: T.RawValue? = try? self.json.keyPathValue(keyPath)
         guard value != nil else { return nil }
@@ -70,6 +127,13 @@ extension SlackModelBuilder {
 
 //MARK: - SlackModelType Types
 extension SlackModelBuilder {
+    /**
+     Create a required `SlackModelType` from the `JSON` using the supplied keypath
+     
+     - parameter keyPath: The keypath to the `JSON` used to create the `SlackModelType`
+     - throws: A `JSON.Error`, `SlackModelError` or `SlackModelTypeError` with failure details
+     - returns: A new `SlackModelType` object
+     */
     public func property<T: SlackModelType>(_ keyPath: String) throws -> T {
         let builder = SlackModelBuilder(
             json: try self.json.keyPathValue(keyPath),
@@ -80,6 +144,17 @@ extension SlackModelBuilder {
         )
         return try T.make(builder: builder)
     }
+    
+    /**
+     Create an optional `SlackModelType` from the `JSON` using the supplied keypath
+     
+     If a `JSON` object is found at the keypath a regular throwable attempt is made to build
+     the `SlackModelType` otherwise it returns nil
+     
+     - parameter keyPath: The keypath to the `JSON` used to create the `SlackModelType`
+     - throws: A `JSON.Error`, `SlackModelError` or `SlackModelTypeError` with failure details
+     - returns: A new `SlackModelType` object of type `T`, or nil
+     */
     public func optionalProperty<T: SlackModelType>(_ keyPath: String) throws -> T? {
         let value: [String: Any]? = try? self.json.keyPathValue(keyPath)
         guard value != nil else { return nil }
@@ -87,6 +162,13 @@ extension SlackModelBuilder {
         return try self.property(keyPath) as T
     }
     
+    /**
+     Create a collection of required `SlackModelType`s from the `JSON` using the supplied keypath
+     
+     - parameter keyPath: The keypath to the `JSON` array used to create the `SlackModelType`s
+     - throws: A `JSON.Error`, `SlackModelError` or `SlackModelTypeError` with failure details
+     - returns: A new sequence of `SlackModelType`s object
+     */
     public func collection<T: SlackModelType>(_ keyPath: String) throws -> [T] {
         let value: [JSON] = try self.json.keyPathValue(keyPath)
         
@@ -101,6 +183,17 @@ extension SlackModelBuilder {
             return try T.make(builder: builder)
         }
     }
+    
+    /**
+     Create an optional collection of `SlackModelType`s from the `JSON` using the supplied keypath
+     
+     If a `JSON` array is found at the keypath a regular throwable attempt is made to build
+     the `SlackModelType` sequence otherwise it returns nil
+     
+     - parameter keyPath: The keypath to the `JSON` array used to create the `SlackModelType`s
+     - throws: A `JSON.Error`, `SlackModelError` or `SlackModelTypeError` with failure details
+     - returns: A new sequence of `SlackModelType`s objects of type `T`, or nil
+     */
     public func optionalCollection<T: SlackModelType>(_ keyPath: String) throws -> [T]? {
         let value: [[String: Any]]? = try? self.json.keyPathValue(keyPath)
         guard value != nil else { return nil }
@@ -111,23 +204,48 @@ extension SlackModelBuilder {
 
 //MARK: - Pre-loaded Models
 extension SlackModelBuilder {
+    /**
+     Retrieve the id of a required Slack model and return a matching complete model from the supplied objects
+     
+     - parameter keyPath: The keypath used to find the id
+     - throws: A `JSON.Error` or `SlackModelError` with failure details
+     - returns: The Slack model of type `T` with the retrieved id
+     */
     public func slackModel<T: SlackModelTypeIdentifiable>(_ keyPath: String) throws -> T {
         let itemId: String = try self.property(keyPath)
         
         guard let item = self.identifiables().filter({ $0.id == itemId }).flatMap({ $0 as? T }).first
-            else { throw SlackModelError.SlackModelLookup(keyPath: keyPath) }
+            else { throw SlackModelError.slackModelLookup(keyPath: keyPath) }
         
         return item
     }
+    
+    /**
+     Retrieve the ids of a sequence of required Slack models and return matching complete models from the supplied objects
+     
+     - parameter keyPath: The keypath to the `JSON` array used to find the ids
+     - throws: A `JSON.Error` or `SlackModelError` with failure details
+     - returns: The Slack models of type `T` with the retrieved ids
+     */
     public func slackModels<T: SlackModelTypeIdentifiable>(_ keyPath: String) throws -> [T] {
         let itemIds: [String] = try self.property(keyPath)
         
         let items = self.identifiables().filter({ itemIds.contains($0.id) }).flatMap({ $0 as? T })
-        guard items.count == itemIds.count else { throw SlackModelError.SlackModelLookup(keyPath: keyPath) }
+        guard items.count == itemIds.count else { throw SlackModelError.slackModelLookup(keyPath: keyPath) }
         
         return items
     }
     
+    /**
+     Retrieve the id of an optional Slack model and return a matching complete model from the supplied objects
+     
+     If an id is found at the keypath a regular throwable attempt is made to retrieve a Slack model
+     otherwise it returns nil
+     
+     - parameter keyPath: The keypath used to find the id
+     - throws: A `JSON.Error` or `SlackModelError` with failure details
+     - returns: The Slack model of type `T` with the retrieved id, or nil
+     */
     public func optionalSlackModel<T: SlackModelTypeIdentifiable>(_ keyPath: String) throws -> T? {
         let itemId: String? = try? self.property(keyPath)
         guard
@@ -137,6 +255,17 @@ extension SlackModelBuilder {
         
         return try self.slackModel(keyPath) as T
     }
+    
+    /**
+     Retrieve the ids of an optional sequence of Slack models and return a matching complete models from the supplied objects
+     
+     If ids are found at the keypath a regular throwable attempt is made to retrieve the Slack models
+     otherwise it returns nil
+     
+     - parameter keyPath: The keypath used to find the ids
+     - throws: A `JSON.Error` or `SlackModelError` with failure details
+     - returns: A sequence of Slack models of type `T` with the retrieved ids, or nil
+     */
     public func optionalSlackModels<T: SlackModelTypeIdentifiable>(_ keyPath: String) throws -> [T]? {
         let itemIds: [String]? = try? self.property(keyPath)
         guard itemIds != nil else { return nil }
@@ -147,23 +276,48 @@ extension SlackModelBuilder {
 
 //MARK: - Targets
 extension SlackModelBuilder {
+    /**
+     Retrieve the id of a required Slack `Target` and return a matching complete model from the supplied objects
+     
+     - parameter keyPath: The keypath used to find the id
+     - throws: A `JSON.Error` or `SlackModelError` with failure details
+     - returns: The `Target` with the retrieved id
+     */
     public func slackModel(_ keyPath: String) throws -> Target {
         let itemId: String = try self.property(keyPath)
         
         guard let item = self.targets().filter({ $0.id == itemId }).first
-            else { throw SlackModelError.SlackModelLookup(keyPath: keyPath) }
+            else { throw SlackModelError.slackModelLookup(keyPath: keyPath) }
         
         return item
     }
+    
+    /**
+     Retrieve the ids of a sequence of required Slack `Target`s and return matching complete models from the supplied objects
+     
+     - parameter keyPath: The keypath to the `JSON` array used to find the ids
+     - throws: A `JSON.Error` or `SlackModelError` with failure details
+     - returns: The sequence of `Target`s with the retrieved ids
+     */
     public func slackModels(_ keyPath: String) throws -> [Target] {
         let itemIds: [String] = try self.property(keyPath)
         
         let items = self.targets().filter({ itemIds.contains($0.id) })
-        guard items.count == itemIds.count else { throw SlackModelError.SlackModelLookup(keyPath: keyPath) }
+        guard items.count == itemIds.count else { throw SlackModelError.slackModelLookup(keyPath: keyPath) }
         
         return items
     }
     
+    /**
+     Retrieve the id of an optional Slack `Target` and return a matching complete model from the supplied objects
+     
+     If an id is found at the keypath a regular throwable attempt is made to retrieve the `Target`
+     otherwise it returns nil
+     
+     - parameter keyPath: The keypath used to find the id
+     - throws: A `JSON.Error` or `SlackModelError` with failure details
+     - returns: The `Target` with the retrieved id, or nil
+     */
     public func optionalSlackModel(_ keyPath: String) throws -> Target? {
         let itemId: String? = try? self.property(keyPath)
         guard
@@ -173,6 +327,17 @@ extension SlackModelBuilder {
         
         return try self.slackModel(keyPath)
     }
+    
+    /**
+     Retrieve the ids of a sequence of optional Slack `Target`s and return matching complete models from the supplied objects
+     
+     If the ids are found at the keypath a regular throwable attempt is made to retrieve the `Target`s
+     otherwise it returns nil
+     
+     - parameter keyPath: The keypath to the `JSON` array used to find the ids
+     - throws: A `JSON.Error` or `SlackModelError` with failure details
+     - returns: The sequence of `Target`s with the retrieved ids, or nil
+     */
     public func optionalSlackModels(_ keyPath: String) throws -> [Target]? {
         let itemIds: [String]? = try? self.property(keyPath)
         guard itemIds != nil else { return nil }
