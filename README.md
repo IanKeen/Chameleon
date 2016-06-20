@@ -72,7 +72,7 @@ I will add more over time until they are complete.
 * Once the project reaches a v1 release the individual frameworks will be broken out. 
 They all live here for now for ease of development, however, separation should be considered when contributing.
 
-## FAQ
+## Troubleshooting
 ### OpenSSL Errors on OSX
 If you are unable to build/run locally due to an `openssl` error, you may need to run the following in terminal:
 
