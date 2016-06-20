@@ -11,7 +11,7 @@ import WebAPI
 
 public extension SlackBot {
     /// Provides access to the `SlackBot`s `User` model
-    var me: User {
+    public var me: User {
         guard
             let botUser = self.botUser,
             let me = self.users.filter({ $0.id == botUser.id || $0.bot_id == botUser.id }).first
@@ -21,7 +21,7 @@ public extension SlackBot {
     }
     
     /**
-     Find out if a provided `User` is the `SlackBot`s `User` model
+     Find out if the provided `User` is the `SlackBot`s `User` model
      
      - parameter user: The `User` to test
      - returns: `true` if the provided `User`s represents this bot, otherwise `false`
@@ -29,6 +29,21 @@ public extension SlackBot {
     public func isMe(user: User) -> Bool {
         let users = self.users + self.users.botUsers()
         return users.botUsers().contains { $0 == user }
+    }
+    
+    /// Provides access to the current Slack teams admins
+    public var admins: [User] {
+        return self.users.filter { $0.is_admin }
+    }
+    
+    /**
+     Find out if the provided `User` is an admin in the current Slack team
+     
+     - parameter user: The `User` to test
+     - returns: `true` if the provided `User` is an admin, otherwise `false`
+     */
+    public func isAdmin(user: User) -> Bool {
+        return self.admins.contains(user)
     }
     
     /**
