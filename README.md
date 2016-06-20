@@ -16,7 +16,6 @@ It consists of several frameworks, the core of which are:
 ## Features
 * [x] **Extensible**: `SlackService`'s can be added to provide any behaviour you need.
 * [x] **Typed**: You always get to work with _full_ typed Slack model data.
-* [x] **Modular**: The inner workings 
 
 # Installation
 ## Preparation
