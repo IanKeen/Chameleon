@@ -75,6 +75,9 @@ public struct SlackBotConfig {
         self.pingPongInterval = pingPongInterval ?? self.pingPongInterval
         self.storageUrl = storageUrl ?? self.storageUrl
     }
+    public init(token: String) throws {
+        try self.init(token: token, startOptions: nil, reconnectionAttempts: nil, pingPongInterval: nil, storageUrl: nil)
+    }
 }
 
 //MARK: - Command line parameters
