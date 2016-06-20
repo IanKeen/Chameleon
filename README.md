@@ -1,24 +1,29 @@
 # Chameleon
-A set of Frameworks for interacting with Slack APIs and building bots in Swift on OSX and Heroku
+Chameleon is a Slack bot built with Swift.
 
+![Version](https://img.shields.io/badge/Version-0.7.1-brightgreen.svg) 
 ![Swift](https://camo.githubusercontent.com/0727f3687a1e263cac101c5387df41048641339c/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f53776966742d332e302d6f72616e67652e7376673f7374796c653d666c6174)
+![Platforms](https://img.shields.io/badge/Platforms-osx%20%7C%20linux-lightgrey.svg)
+
+## What is Chameleon?
+It consists of several frameworks, the core of which are:
+
+* **Models**: Exposes Slack model data. Slack's APIs only provide object ids in their responses, however the model layer is able to convert those into _full_ model objects. 
+* **WebAPI**: Allows interaction with Slack's Web API.
+* **RTMAPI**: Allows interaction with Slack's Real-time messaging API.
+* **Bot**: Provides an extensible Slack bot user.
 
 ## Features
-Chameleon provides frameworks for:
-- [x] Web API
-- [x] Real time messaging API
-- [x] Bot: Uses Web/RTM and provides an API for custom services (i.e. karma)
+* [x] **Extensible**: `SlackService`'s can be added to provide any behaviour you need.
+* [x] **Typed**: You always get to work with _full_ typed Slack model data.
+* [x] **Modular**: The inner workings 
 
-Persistence
-- [x] Redis
-- [x] In memory
-- [x] Plist (OSX only - good for testing)
+# Installation
+## Preparation
+Whether you want to run Chameleon on OSX or Linux be sure to read through the following first:
 
-Using Chameleon you are able to interact with these an a type-safe manner.
-
-## Preparing to use Chameleon
 ### Swift 3
-You need Swift 3 installed to use or contribute to Chameleon, I recommend using [swiftenv](https://github.com/kylef/swiftenv).
+You need Swift 3 installed to contribute to or use Chameleon on OSX, I recommend using [swiftenv](https://github.com/kylef/swiftenv).
 
 ```
 swiftenv install DEVELOPMENT-SNAPSHOT-2016-05-09-a
@@ -29,7 +34,7 @@ This will install the snapshot and set it as the default installation of Swift 3
 
 ### Slack
 You will need to [configure](https://my.slack.com/services/new/bot) a new bot user for your team. 
-Copy the token, you will need it.
+Copy the token, you will need it later.
 
 ### Heroku
 If you plan to run a bot on Heroku you will need a [Heroku](https://www.heroku.com/) account (free is fine!) 
@@ -40,7 +45,7 @@ and also have the [Heroku Toolbelt](https://toolbelt.heroku.com/) installed.
 * Open a terminal window and go to the directory containing `Package.swift`
 * Type `swift build`
 * Type `.build/debug/app --token="<your-bot-token>"`
-* Go into a default channel in your slack and say "hey @yourBot" - it should respond.
+* Go into a default channel in your slack and say `hi @yourBot` - it should respond.
 
 ## Deploy to Heroku
 * Download the latest Chameleon source and extract it
@@ -55,17 +60,28 @@ git commit -am 'depoy to heroku'
 git push heroku master
 ```
 * Once that has completed type: `heroku ps:scale worker=1`
-* Go into a default channel in your slack and say "hey @yourBot" - it should respond.
+* Go into a default channel in your slack and say `hi @yourBot` - it should respond.
 
 ## ⚠️ Work in Progress
 This is a work in progress so expect improvements as well as breaking changes!
 
 Chameleon *is* functional however there is still a lot to do before it is *complete*
+
 * The Web and Real time messaging APIs can do _a lot_ - 
 I have built support for the core/most common features but they are incomplete. 
 I will add more over time until they are complete.
-* Once stable and the API is 'firmer' the individual frameworks will be broken out. 
+* Once the project reaches a v1 release the individual frameworks will be broken out. 
 They all live here for now for ease of development, however, separation should be considered when contributing.
+
+## FAQ
+### OpenSSL Errors on OSX
+If you are unable to build/run locally due to an `openssl` error, you may need to run the following in terminal:
+
+```
+brew install openssl
+brew link openssl
+```
+
 
 #Acknowledgement
 This was my first dive into 'Server Side Swift'; 
