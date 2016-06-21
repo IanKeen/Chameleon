@@ -253,10 +253,10 @@ extension SlackBot {
     private func notify(event: RTMAPIEvent) {
         guard self.state.ready else { return }
         
-        let services = self.services.flatMap { $0 as? SlackRTMEventService }
-        
-        for service in services {
-            service.event(slackBot: self, event: event, webApi: self.webAPI)
+        for service in self.services {
+            if let service = service as? SlackRTMEventService {
+                service.event(slackBot: self, event: event, webApi: self.webAPI)
+            }
             
             //Depending on the number of specialized `SlackService`s
             //I may adopt a similar pattern to the RTMEvent "builders"
