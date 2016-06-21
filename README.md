@@ -50,8 +50,9 @@ and also have the [Heroku Toolbelt](https://toolbelt.heroku.com/) installed.
 * Download the latest Chameleon source and extract it
 * Open a terminal window and go to the directory containing `Package.swift`
 * Using the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-command) login and create a new app.
+* In the Heroku dashboard add a config variable named `TOKEN` with your slack token
 * Set the buildpack `heroku buildpacks:set https://github.com/oarrabi/heroku-buildpack-swift`
-* Create a file called `Procfile` and add the text: `worker: App --token="<your-bot-token>"`
+* Create a file called `Procfile` and add the text: `worker: App`
 * Deploy to Heroku by typing:
 ```
 git add .
