@@ -18,6 +18,8 @@ It consists of several frameworks, the core of which are:
 * [x] **Typed**: You always get to work with _full_ typed Slack model data.
 
 # Installation
+A more in-depth set of instructions for Heroku can be found [here](https://medium.com/@IanKeen/getting-started-with-chameleon-the-swift-slack-bot-dc527e942c0e).
+
 ## Preparation
 Whether you want to run Chameleon on OSX or Linux be sure to read through the following first:
 
