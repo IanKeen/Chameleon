@@ -22,18 +22,7 @@ import Bot
 
 let bot = SlackBot(
     config: config,
-    services: [
-                  HelloBot(),
-                  KarmaBot(options: KarmaBot.Options(
-                    targets: ["*"],
-                    addText: "++",
-                    addReaction: "+1",
-                    removeText: "--",
-                    removeReaction: "-1",
-                    textDistanceThreshold: 4
-                    )
-        )
-    ]
+    services: [HelloBot()]
 )
 
 bot.start()
