@@ -135,8 +135,10 @@ extension SlackModelBuilder {
      - returns: A new `SlackModelType` object
      */
     public func property<T: SlackModelType>(_ keyPath: String) throws -> T {
+        let json: [String: JSON] = try self.json.keyPathValue(keyPath)
+        
         let builder = SlackModelBuilder(
-            json: try self.json.keyPathValue(keyPath),
+            json: JSON.object(json),
             users: self.users,
             channels: self.channels,
             groups: self.groups,

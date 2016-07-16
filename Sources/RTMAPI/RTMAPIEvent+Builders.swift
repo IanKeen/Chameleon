@@ -85,6 +85,7 @@ extension RTMAPIEvent {
             ReactionAddedBuilder.eventType: ReactionAddedBuilder.self,
             ReactionRemovedBuilder.eventType: ReactionRemovedBuilder.self,
             UserChangeBuilder.eventType: UserChangeBuilder.self,
+            ChannelCreatedBuilder.eventType: ChannelCreatedBuilder.self,
         ]
         
         guard

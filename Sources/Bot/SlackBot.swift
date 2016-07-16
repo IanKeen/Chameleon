@@ -319,6 +319,9 @@ extension SlackBot {
             }
             self.users.append(user)
             
+        case .channel_created(let channel):
+            self.channels.append(channel)
+            
         default: break
         }
     }

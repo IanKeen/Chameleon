@@ -25,7 +25,7 @@ public enum RTMAPIEvent {
     case message(message: Message, previous: Message?)
     case user_typing(user: User, target: Target)
     case channel_marked
-    case channel_created
+    case channel_created(channel: Channel)
     case channel_joined
     case channel_left
     case channel_deleted
