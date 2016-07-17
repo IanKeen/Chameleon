@@ -31,7 +31,7 @@ public enum RTMAPIEvent {
     case channel_deleted(channel: Channel)
     case channel_rename(channel: Channel, oldName: String)
     case channel_archive(channel: Channel, user: User)
-    case channel_unarchive
+    case channel_unarchive(channel: Channel, user: User)
     case channel_history_changed
     case dnd_updated
     case dnd_updated_user
