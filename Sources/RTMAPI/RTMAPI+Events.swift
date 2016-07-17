@@ -35,10 +35,10 @@ public enum RTMAPIEvent {
     case channel_history_changed
     case dnd_updated(user: User, status: DNDStatus)
     case dnd_updated_user(user: User, status: DNDStatus)
-    case im_created
-    case im_open
-    case im_close
-    case im_marked
+    case im_created(user: User, im: IM)
+    case im_open(user: User, im: IM)
+    case im_close(user: User, im: IM)
+    case im_marked(im: IM, timestamp: Double)
     case im_history_changed
     case group_joined
     case group_left

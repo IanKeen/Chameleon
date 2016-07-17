@@ -95,6 +95,10 @@ extension RTMAPIEvent {
             ChannelUnarchiveBuilder.eventType: ChannelUnarchiveBuilder.self,
             DNDUpdatedBuilder.eventType: DNDUpdatedBuilder.self,
             DNDUpdatedUserBuilder.eventType: DNDUpdatedUserBuilder.self,
+            IMCreatedBuilder.eventType: IMCreatedBuilder.self,
+            IMOpenBuilder.eventType: IMOpenBuilder.self,
+            IMCloseBuilder.eventType: IMCloseBuilder.self,
+            IMMarkedBuilder.eventType: IMMarkedBuilder.self,
         ]
         
         guard

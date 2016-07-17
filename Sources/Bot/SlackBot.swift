@@ -274,6 +274,7 @@ extension SlackBot {
         }
     }
     func notify(error: ErrorProtocol) {
+        print("ERROR: \(error)")
         guard self.state.ready else { return }
         
         let services = self.services.flatMap { $0 as? SlackErrorService }
@@ -327,6 +328,12 @@ extension SlackBot {
                 self.channels.remove(at: index)
             }
             self.channels.append(channel)
+            
+        case .im_created(_, let im):
+            if let index = self.ims.index(of: im) {
+                self.ims.remove(at: index)
+            }
+            self.ims.append(im)
             
         default: break
         }
