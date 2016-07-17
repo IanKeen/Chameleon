@@ -98,7 +98,7 @@ extension SlackBotConfig {
                 let value = pair[safe: 1]
                 else { throw Error.invalidParameter(parameter: argument) }
             
-            guard supportedArguments.contains("--\(key)=") else { throw Error.unsupportedParameter(parameter: argument) }
+            //guard supportedArguments.contains("--\(key)=") else { throw Error.unsupportedParameter(parameter: argument) }
             
             return (key: key.lowercased(), value: value)
         }
