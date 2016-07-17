@@ -322,6 +322,12 @@ extension SlackBot {
         case .channel_created(let channel):
             self.channels.append(channel)
             
+        case .channel_rename(let channel, _):
+            if let index = self.channels.index(of: channel) {
+                self.channels.remove(at: index)
+            }
+            self.channels.append(channel)
+            
         default: break
         }
     }

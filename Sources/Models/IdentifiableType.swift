@@ -15,6 +15,7 @@ public protocol IdentifiableType: Equatable {
 extension User: IdentifiableType { }
 extension BotUser: IdentifiableType { }
 extension Team: IdentifiableType { }
+extension Channel: IdentifiableType { }
 extension IM: IdentifiableType { }
 
 public func ==<T: IdentifiableType>(lhs: T, rhs: T) -> Bool {
