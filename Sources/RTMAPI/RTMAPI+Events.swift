@@ -33,8 +33,8 @@ public enum RTMAPIEvent {
     case channel_archive(channel: Channel, user: User)
     case channel_unarchive(channel: Channel, user: User)
     case channel_history_changed
-    case dnd_updated
-    case dnd_updated_user
+    case dnd_updated(user: User, status: DNDStatus)
+    case dnd_updated_user(user: User, status: DNDStatus)
     case im_created
     case im_open
     case im_close

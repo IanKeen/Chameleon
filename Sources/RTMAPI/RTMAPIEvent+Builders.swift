@@ -93,6 +93,8 @@ extension RTMAPIEvent {
             ChannelRenameBuilder.eventType: ChannelRenameBuilder.self,
             ChannelArchiveBuilder.eventType: ChannelArchiveBuilder.self,
             ChannelUnarchiveBuilder.eventType: ChannelUnarchiveBuilder.self,
+            DNDUpdatedBuilder.eventType: DNDUpdatedBuilder.self,
+            DNDUpdatedUserBuilder.eventType: DNDUpdatedUserBuilder.self,
         ]
         
         guard
