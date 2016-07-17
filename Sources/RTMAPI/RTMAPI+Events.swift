@@ -28,7 +28,7 @@ public enum RTMAPIEvent {
     case channel_created(channel: Channel)
     case channel_joined(channel: Channel)
     case channel_left(channel: Channel)
-    case channel_deleted
+    case channel_deleted(channel: Channel)
     case channel_rename
     case channel_archive
     case channel_unarchive

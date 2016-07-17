@@ -89,6 +89,7 @@ extension RTMAPIEvent {
             ChannelCreatedBuilder.eventType: ChannelCreatedBuilder.self,
             ChannelJoinedBuilder.eventType: ChannelJoinedBuilder.self,
             ChannelLeftBuilder.eventType: ChannelLeftBuilder.self,
+            ChannelDeletedBuilder.eventType: ChannelDeletedBuilder.self,
         ]
         
         guard
