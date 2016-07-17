@@ -335,6 +335,12 @@ extension SlackBot {
             }
             self.ims.append(im)
             
+        case .group_joined(let group):
+            if let index = self.groups.index(of: group) {
+                self.groups.remove(at: index)
+            }
+            self.groups.append(group)
+            
         default: break
         }
     }

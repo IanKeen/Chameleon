@@ -99,6 +99,14 @@ extension RTMAPIEvent {
             IMOpenBuilder.eventType: IMOpenBuilder.self,
             IMCloseBuilder.eventType: IMCloseBuilder.self,
             IMMarkedBuilder.eventType: IMMarkedBuilder.self,
+            GroupJoinedBuilder.eventType: GroupJoinedBuilder.self,
+            GroupLeftBuilder.eventType: GroupLeftBuilder.self,
+            GroupOpenBuilder.eventType: GroupOpenBuilder.self,
+            GroupCloseBuilder.eventType: GroupCloseBuilder.self,
+            GroupArchiveBuilder.eventType: GroupArchiveBuilder.self,
+            GroupUnarchiveBuilder.eventType: GroupUnarchiveBuilder.self,
+            GroupRenameBuilder.eventType: GroupRenameBuilder.self,
+            GroupMarkedBuilder.eventType: GroupMarkedBuilder.self,
         ]
         
         guard
