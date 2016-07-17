@@ -85,14 +85,18 @@ extension RTMAPIEvent {
             ReactionAddedBuilder.eventType: ReactionAddedBuilder.self,
             ReactionRemovedBuilder.eventType: ReactionRemovedBuilder.self,
             UserChangeBuilder.eventType: UserChangeBuilder.self,
+            ChannelMarkedBuilder.eventType: ChannelMarkedBuilder.self,
             ChannelCreatedBuilder.eventType: ChannelCreatedBuilder.self,
+            ChannelJoinedBuilder.eventType: ChannelJoinedBuilder.self,
         ]
         
         guard
             let type = json["type"]?.string,
             let builder = builders[type]
             else {
+                print("Missing Builder: \(json["type"]?.string ?? "")\n")
                 print(json) //TODO remove once all builders are built
+                print("\n")
                 throw RTMAPIEventBuilderError.noAvailableBuilder(type: json["type"]?.string ?? "no type provided")
         }
         
