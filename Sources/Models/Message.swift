@@ -30,7 +30,7 @@ public struct Message {
     public let name: String?
     
     public let members: [User]?
-    public let file: [String: Any]? //File?
+    public let file: File?
     public let upload: Bool
     public let comment: AnyObject?
     

@@ -49,7 +49,7 @@ public enum RTMAPIEvent {
     case group_rename(group: Group, oldName: String)
     case group_marked(group: Group, timestamp: Double)
     case group_history_changed
-    case file_created
+    case file_created(file: File)
     case file_shared
     case file_unshared
     case file_public

@@ -107,6 +107,7 @@ extension RTMAPIEvent {
             GroupUnarchiveBuilder.eventType: GroupUnarchiveBuilder.self,
             GroupRenameBuilder.eventType: GroupRenameBuilder.self,
             GroupMarkedBuilder.eventType: GroupMarkedBuilder.self,
+            FileCreatedBuilder.eventType: FileCreatedBuilder.self,
         ]
         
         guard

@@ -31,6 +31,23 @@ public extension JSON {
         return try self.keyPathValue(keyPath, keyPathComponents: keyPathComponents, json: self)
     }
     
+    /**
+     Determine if a provided keyPath exists within the given `JSON`
+    
+     - parameter keyPath: The keyPath to test
+     - returns: If the keyPath exists `true`, otherwise `false`
+     */
+    public func keyPathExists(_ keyPath: String) -> Bool {
+        let keyPathComponents = keyPath.components(separatedBy: ".")
+        
+        var json = self
+        for keyPath in keyPathComponents {
+            guard let next = json[keyPath] else { return false }
+            json = next
+        }
+        return true
+    }
+    
     //MARK: - Private
     private func keyPathValue<T>(_ keyPath: String, keyPathComponents: [String], json: JSON) throws -> T {
         guard let dict = json.dictionary
