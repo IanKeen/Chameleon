@@ -13,16 +13,8 @@ import Common
 //MARK: - Protocol
 /// An abstraction representing an object capable of building a realtime messaging api event
 protocol RTMAPIEventBuilder {
-    /// The name of the event `type` this object builds
+    /// The name of the event `type`s this object builds
     static var eventTypes: [String] { get }
-    
-    /**
-     Defines if this object is capable of creating a `RTMAPIEvent` from the provided `JSON`
-     
-     - parameter json: The `JSON` to handle
-     - returns: If the object can build a `RTMAPIEvent` `true`, otherwise `false`
-     */
-    static func canMake(fromJson json: JSON) -> Bool
     
     /**
      Creates a `RTMAPIEvent` from the provided `JSON`
@@ -35,8 +27,26 @@ protocol RTMAPIEventBuilder {
     static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent
 }
 
+/// A simple protocol that can be used in builders to handle multiple events in a type-safe way
+protocol RTMAPIEventBuilderEventType: RawRepresentable {
+    static var all: [Self] { get }
+}
+extension RTMAPIEventBuilderEventType where RawValue == String {
+    static func eventType(fromJson json: JSON) -> Self? {
+        guard let event = json["type"].string else { return nil }
+        return Self(rawValue: event)
+    }
+}
+
+
 //MARK: - Default Implementation
 extension RTMAPIEventBuilder {
+    /**
+     Defines if this object is capable of creating a `RTMAPIEvent` from the provided `JSON`
+     
+     - parameter json: The `JSON` to handle
+     - returns: If the object can build a `RTMAPIEvent` `true`, otherwise `false`
+     */
     static func canMake(fromJson json: JSON) -> Bool {
         guard let event = json["type"].string else { return false }
         return (self.eventTypes.contains(event))
@@ -78,13 +88,6 @@ extension RTMAPIEvent {
     //if/else clauses depending on the `type` of event
     //
     
-    //TODO: there is a lot of repeted code in the builders (mostly between builders of the same type i.e. 'file')
-    //      consider a new mechanism allowing a builder to support multiple events but keep the lookup fast
-    //
-    //      builders could return a [String] of supported event types
-    //      and this dict could be generated into a flattened representation
-    //      still providing an O(1) lookup (make this dict a 1 time generated structure)
-    
     private static var builders: [String: RTMAPIEventBuilder.Type] = {
         
         let builders: [RTMAPIEventBuilder.Type] = [
@@ -95,41 +98,15 @@ extension RTMAPIEvent {
             HelloBuilder.self,
             UserTypingBuilder.self,
             MessageBuilder.self,
-            ReactionAddedBuilder.self,
-            ReactionRemovedBuilder.self,
+            ReactionBuilder.self,
             UserChangeBuilder.self,
-            ChannelMarkedBuilder.self,
-            ChannelCreatedBuilder.self,
-            ChannelJoinedBuilder.self,
-            ChannelLeftBuilder.self,
-            ChannelDeletedBuilder.self,
+            ChannelBuilder.self,
             ChannelRenameBuilder.self,
-            ChannelArchiveBuilder.self,
-            ChannelUnarchiveBuilder.self,
-            DNDUpdatedBuilder.self,
-            DNDUpdatedUserBuilder.self,
-            IMCreatedBuilder.self,
-            IMOpenBuilder.self,
-            IMCloseBuilder.self,
-            IMMarkedBuilder.self,
-            GroupJoinedBuilder.self,
-            GroupLeftBuilder.self,
-            GroupOpenBuilder.self,
-            GroupCloseBuilder.self,
-            GroupArchiveBuilder.self,
-            GroupUnarchiveBuilder.self,
+            DNDBuilder.self,
+            IMBuilder.self,
+            GroupBuilder.self,
             GroupRenameBuilder.self,
-            GroupMarkedBuilder.self,
-            FileCreatedBuilder.self,
-            FileSharedBuilder.self,
-            FileUnsharedBuilder.self,
-            FilePublicBuilder.self,
-            FilePrivateBuilder.self,
-            FileChangeBuilder.self,
-            FileDeletedBuilder.self,
-            FileCommentAddedBuilder.self,
-            FileCommentEditedBuilder.self,
-            FileCommentDeletedBuilder.self,
+            FileBuilder.self,
             ]
         
         let entries = builders.flatMap { builder -> [[String: RTMAPIEventBuilder.Type]] in
