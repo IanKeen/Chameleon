@@ -52,9 +52,9 @@ public struct File {
     let public_url_shared: Bool
     let display_as_bot: Bool
 
-    let channels: [Channel]
-    let groups: [Group]
-    let ims: [IM]
+    let channels: [Channel]?
+    let groups: [Group]?
+    let ims: [IM]?
     
     let initial_comment: AnyObject? //TODO
     let num_stars: Int?
