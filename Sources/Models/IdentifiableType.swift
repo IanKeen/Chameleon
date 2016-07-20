@@ -10,42 +10,14 @@
 public protocol IdentifiableType: Equatable {
     /// The unique id for this object
     var id: String { get }
-
-    func asUser() -> User?
-    func asBotUser() -> BotUser?
-    func asTeam() -> Team?
-    func asChannel() -> Channel?
-    func asGroup() -> Group?
-    func asIM() -> IM?
 }
 
-extension IdentifiableType {
-    public func asUser() -> User? { return nil }
-    public func asBotUser() -> BotUser? { return nil }
-    public func asTeam() -> Team? { return nil }
-    public func asChannel() -> Channel? { return nil }
-    public func asGroup() -> Group? { return nil }
-    public func asIM() -> IM? { return nil }
-}
-
-extension User: IdentifiableType {
-    public func asUser() -> User? { return self }
-}
-extension BotUser: IdentifiableType {
-    public func asBotUser() -> BotUser? { return self }
-}
-extension Team: IdentifiableType {
-    public func asTeam() -> Team? { return self }
-}
-extension Channel: IdentifiableType {
-    public func asChannel() -> Channel? { return self }
-}
-extension Group: IdentifiableType {
-    public func asGroup() -> Group? { return self }
-}
-extension IM: IdentifiableType {
-    public func asIM() -> IM? { return self }
-}
+extension User: IdentifiableType { }
+extension BotUser: IdentifiableType { }
+extension Team: IdentifiableType { }
+extension Channel: IdentifiableType { }
+extension Group: IdentifiableType { }
+extension IM: IdentifiableType { }
 
 public func ==<T: IdentifiableType>(lhs: T, rhs: T) -> Bool {
     return lhs.id == rhs.id
