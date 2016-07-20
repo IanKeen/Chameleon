@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 //TODO: have a conversation regarding these cases - i.e. `user_typing` vs userTyping
 //      the former is a 1:1 match for the api, it arguably easier to read
@@ -35,21 +35,21 @@ public enum RTMAPIEvent {
     case channel_history_changed
     case dnd_updated(user: User, status: DNDStatus)
     case dnd_updated_user(user: User, status: DNDStatus)
-    case im_created
-    case im_open
-    case im_close
-    case im_marked
+    case im_created(user: User, im: IM)
+    case im_open(user: User, im: IM)
+    case im_close(user: User, im: IM)
+    case im_marked(im: IM, timestamp: Double)
     case im_history_changed
-    case group_joined
-    case group_left
-    case group_open
-    case group_close
-    case group_archive
-    case group_unarchive
-    case group_rename
-    case group_marked
+    case group_joined(group: Group)
+    case group_left(group: Group)
+    case group_open(user: User, group: Group)
+    case group_close(user: User, group: Group)
+    case group_archive(group: Group)
+    case group_unarchive(group: Group)
+    case group_rename(group: Group, oldName: String)
+    case group_marked(group: Group, timestamp: Double)
     case group_history_changed
-    case file_created
+    case file_created(file: File)
     case file_shared
     case file_unshared
     case file_public

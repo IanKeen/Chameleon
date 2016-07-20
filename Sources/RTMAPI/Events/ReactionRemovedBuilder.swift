@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `reaction_removed` event
 struct ReactionRemovedBuilder: RTMAPIEventBuilder {

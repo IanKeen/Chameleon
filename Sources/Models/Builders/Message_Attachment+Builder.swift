@@ -7,7 +7,7 @@
 //
 
 extension Message.Attachment: SlackModelType {
-    public static func make(builder: SlackModelBuilder) throws -> Message.Attachment {
+    public static func make(with builder: SlackModelBuilder) throws -> Message.Attachment {
         return try tryMake(Message.Attachment(
             fallback:       try builder.property("fallback"),
             color:          builder.optionalProperty("color"),
@@ -28,7 +28,7 @@ extension Message.Attachment: SlackModelType {
 }
 
 extension Message.Attachment.Field: SlackModelType {
-    public static func make(builder: SlackModelBuilder) throws -> Message.Attachment.Field {
+    public static func make(with builder: SlackModelBuilder) throws -> Message.Attachment.Field {
         return try tryMake(Message.Attachment.Field(
             title: try builder.property("title"),
             value: try builder.property("value"),

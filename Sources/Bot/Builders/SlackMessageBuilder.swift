@@ -41,7 +41,7 @@ public final class SlackMessage {
      
      - returns: The updated `SlackMessage` instance
      */
-    public func text(_ value: String, formatting: Formatting = .None, trailingSpace: Bool = true) -> SlackMessage {
+    public func text(_ value: String, formatting: Formatting = .none, trailingSpace: Bool = true) -> SlackMessage {
         let encodedText = value
             .replacingOccurrences(of: "<", with: "&lt;")
             .replacingOccurrences(of: ">", with: "&gt;")
@@ -84,8 +84,8 @@ public final class SlackMessage {
      
      - returns: The updated `SlackMessage` instance
      */
-    public func url(_ value: NSURL, trailingSpace: Bool = true) -> SlackMessage {
-        self.messageSegments += [self.value(value.absoluteString, trailingSpace: trailingSpace)]
+    public func url(_ value: URL, trailingSpace: Bool = true) -> SlackMessage {
+        self.messageSegments += [self.value(value.absoluteString!, trailingSpace: trailingSpace)]
         return self
     }
     
@@ -152,31 +152,31 @@ extension SlackMessage {
     /// Represents the available Slack commands
     public enum Command {
         /// Mention @channel
-        case Channel
+        case channel
         
         /// Mention @group
-        case Group
+        case group
         
         /// Mention @here
-        case Here
+        case here
         
         /// Mention @everyone
-        case Everyone
+        case everyone
         
         /// Mention a specific user group
-        case UserGroup(id: String, name: String) //TODO: replace these params with a `UserGroup` object
+        case userGroup(id: String, name: String) //TODO: replace these params with a `UserGroup` object
         
         /// Custom mention
-        case Custom(name: String)
+        case custom(name: String)
         
         private var command: String {
             switch self {
-            case .Channel: return "!channel"
-            case .Group: return "!group"
-            case .Here: return "!here"
-            case .Everyone: return "!everyone"
-            case .UserGroup(let id, let name): return "!subteam^\(id)|\(name)"
-            case .Custom(let name): return "!\(name)"
+            case .channel: return "!channel"
+            case .group: return "!group"
+            case .here: return "!here"
+            case .everyone: return "!everyone"
+            case .userGroup(let id, let name): return "!subteam^\(id)|\(name)"
+            case .custom(let name): return "!\(name)"
             }
         }
     }
@@ -187,31 +187,31 @@ extension SlackMessage {
     /// Represents the available message formatting for text
     public enum Formatting {
         /// Leave the text 'as-is'
-        case None
+        case none
         
         /// Place the text in a pre block
-        case Pre
+        case pre
         
         /// Use inline code formatting
-        case Code
+        case code
         
         /// Use italics
-        case Italic
+        case italic
         
         /// Use bold
-        case Bold
+        case bold
         
         /// Use strikethrough
-        case Strike
+        case strike
         
         private func formattedText(_ value: String) -> String {
             switch self {
-            case .None: return value
-            case .Pre: return "```\(value)```"
-            case .Code: return "`\(value)`"
-            case .Italic: return "_\(value)_"
-            case .Bold: return "*\(value)*"
-            case .Strike: return "~\(value)~"
+            case .none: return value
+            case .pre: return "```\(value)```"
+            case .code: return "`\(value)`"
+            case .italic: return "_\(value)_"
+            case .bold: return "*\(value)*"
+            case .strike: return "~\(value)~"
             }
         }
     }

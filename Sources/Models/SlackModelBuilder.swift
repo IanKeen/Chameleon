@@ -6,15 +6,24 @@
 //  Copyright © 2016 Mustard. All rights reserved.
 //
 
-import Jay
+import Vapor
 
 /// Describes a range of errors that can occur when attempting to build a model
-public enum SlackModelError: ErrorProtocol {
+public enum SlackModelError: ErrorProtocol, CustomStringConvertible {
     /// The requested type did not match the type of the found value
     case typeMismatch(keyPath: String, expected: String, got: String)
     
     /// The keypath used to lookup a value did not exist
     case slackModelLookup(keyPath: String)
+    
+    public var description: String {
+        switch self {
+        case .slackModelLookup(let keyPath):
+            return "Unabled to lookup a SlackModel at the keyPath provided: \(keyPath)"
+        case .typeMismatch(let keyPath, let expected, let got):
+            return "Type mismatch on keyPath: \(keyPath) - Expected: \(expected), got: \(got)"
+        }
+    }
 }
 
 /**
@@ -88,7 +97,7 @@ extension SlackModelBuilder {
     }
 }
 
-//MARK: - RawRepresentable Types 
+//MARK: - RawRepresentable Types
 extension SlackModelBuilder {
     /**
      Retrieve a required `RawRepresentable` value from the `JSON` using the supplied keypath
@@ -104,7 +113,7 @@ extension SlackModelBuilder {
             let result = value,
             let enumValue = T(rawValue: result)
             else {
-                throw SlackModelError.typeMismatch(keyPath: keyPath, expected: String(T), got: String(value.dynamicType))
+                throw SlackModelError.typeMismatch(keyPath: keyPath, expected: String(T.self), got: String(value.dynamicType))
         }
         
         return enumValue
@@ -117,10 +126,8 @@ extension SlackModelBuilder {
      - throws: A `JSON.Error` or `SlackModelError` with failure details
      - returns: The value at keypath if found and it is of type `T`, otherwise nil
      */
-    public func optionalProperty<T: RawRepresentable>(keyPath: String) throws -> T? {
-        let value: T.RawValue? = try? self.json.keyPathValue(keyPath)
-        guard value != nil else { return nil }
-        
+    public func optionalProperty<T: RawRepresentable>(_ keyPath: String) throws -> T? {
+        if (!self.json.keyPathExists(keyPath)) { return nil }
         return try self.property(keyPath) as T
     }
 }
@@ -144,7 +151,7 @@ extension SlackModelBuilder {
             groups: self.groups,
             ims: self.ims
         )
-        return try T.make(builder: builder)
+        return try T.make(with: builder)
     }
     
     /**
@@ -158,9 +165,7 @@ extension SlackModelBuilder {
      - returns: A new `SlackModelType` object of type `T`, or nil
      */
     public func optionalProperty<T: SlackModelType>(_ keyPath: String) throws -> T? {
-        let value: [String: Any]? = try? self.json.keyPathValue(keyPath)
-        guard value != nil else { return nil }
-        
+        if (!self.json.keyPathExists(keyPath)) { return nil }
         return try self.property(keyPath) as T
     }
     
@@ -182,7 +187,7 @@ extension SlackModelBuilder {
                 groups: self.groups,
                 ims: self.ims
             )
-            return try T.make(builder: builder)
+            return try T.make(with: builder)
         }
     }
     
@@ -197,9 +202,7 @@ extension SlackModelBuilder {
      - returns: A new sequence of `SlackModelType`s objects of type `T`, or nil
      */
     public func optionalCollection<T: SlackModelType>(_ keyPath: String) throws -> [T]? {
-        let value: [[String: Any]]? = try? self.json.keyPathValue(keyPath)
-        guard value != nil else { return nil }
-        
+        if (!self.json.keyPathExists(keyPath)) { return nil }
         return try self.collection(keyPath) as [T]
     }
 }
@@ -230,7 +233,8 @@ extension SlackModelBuilder {
      - returns: The Slack models of type `T` with the retrieved ids
      */
     public func slackModels<T: SlackModelTypeIdentifiable>(_ keyPath: String) throws -> [T] {
-        let itemIds: [String] = try self.property(keyPath)
+        let array: [JSON] = try self.property(keyPath)
+        let itemIds = array.flatMap { $0.string }
         
         let items = self.identifiables().filter({ itemIds.contains($0.id) }).flatMap({ $0 as? T })
         guard items.count == itemIds.count else { throw SlackModelError.slackModelLookup(keyPath: keyPath) }
@@ -269,9 +273,7 @@ extension SlackModelBuilder {
      - returns: A sequence of Slack models of type `T` with the retrieved ids, or nil
      */
     public func optionalSlackModels<T: SlackModelTypeIdentifiable>(_ keyPath: String) throws -> [T]? {
-        let itemIds: [String]? = try? self.property(keyPath)
-        guard itemIds != nil else { return nil }
-        
+        if (!self.json.keyPathExists(keyPath)) { return nil }
         return try self.slackModels(keyPath) as [T]
     }
 }
@@ -302,7 +304,8 @@ extension SlackModelBuilder {
      - returns: The sequence of `Target`s with the retrieved ids
      */
     public func slackModels(_ keyPath: String) throws -> [Target] {
-        let itemIds: [String] = try self.property(keyPath)
+        let array: [JSON] = try self.property(keyPath)
+        let itemIds = array.flatMap { $0.string }
         
         let items = self.targets().filter({ itemIds.contains($0.id) })
         guard items.count == itemIds.count else { throw SlackModelError.slackModelLookup(keyPath: keyPath) }
@@ -341,9 +344,7 @@ extension SlackModelBuilder {
      - returns: The sequence of `Target`s with the retrieved ids, or nil
      */
     public func optionalSlackModels(_ keyPath: String) throws -> [Target]? {
-        let itemIds: [String]? = try? self.property(keyPath)
-        guard itemIds != nil else { return nil }
-        
+        if (!self.json.keyPathExists(keyPath)) { return nil }
         return try self.slackModels(keyPath)
     }
 }
@@ -365,4 +366,10 @@ extension SlackModelBuilder {
     private func targets() -> [Target] {
         return self.identifiables().flatMap { $0 as? Target }
     }
+}
+
+//TODO:
+//MARK: remove when dependencies are cleared up
+private extension JSON {
+    var string: String? { return (self as Polymorphic).string }
 }

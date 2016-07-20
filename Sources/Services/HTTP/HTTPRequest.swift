@@ -7,22 +7,21 @@
 //
 
 import Foundation
-import Jay
 
 /// Represents a HTTP Request
 public struct HTTPRequest {
     public let method: Method
-    public let url: NSURL
+    public let url: URL
+    public let port: Int
     public let parameters: [String: String]?
     public let headers: [String: String]?
-    public let body: JSON?
     
-    public init(method: Method, url: NSURL, parameters: [String: String]? = nil, headers: [String: String]? = nil, body: JSON? = nil) {
+    public init(method: Method, url: URL, port: Int = 443, parameters: [String: String]? = nil, headers: [String: String]? = nil) {
         self.method = method
         self.url = url
+        self.port = port
         self.parameters = parameters
         self.headers = headers
-        self.body = body
     }
 }
 

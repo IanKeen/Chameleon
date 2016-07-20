@@ -9,21 +9,21 @@
 /// Defines a namespace to group different settings
 public enum StorageNamespace {
     /// A namespace designed to store data that can be shared among services
-    case Shared
+    case shared
     
     /// A custom namespace to keep service specific data separate
-    case In(String)
+    case `in`(String)
     
     var namespace: String {
         switch self {
-        case .Shared: return "shared"
-        case .In(let value): return value
+        case .shared: return "shared"
+        case .in(let value): return value
         }
     }
 }
 
 /// Describes a range of errors that can occur when using storage
-public enum StorageError: ErrorProtocol {
+public enum StorageError: ErrorProtocol, CustomStringConvertible {
     /// The connection url supplied is invalid
     case invalidURL(url: String)
     
@@ -35,6 +35,20 @@ public enum StorageError: ErrorProtocol {
     
     /// Something went wrong with an dependency
     case internalError(error: ErrorProtocol)
+    
+    public var description: String {
+        switch self {
+        case .invalidURL(let url):
+            return "The url provided was invalid: \(url)"
+        case .invalidValue(let value):
+            return "The value supplied was invalid: \(value)"
+        case .unsupportedType(let value):
+            return "The type of value supplied was unsupported: \(String(value.self))"
+        case .internalError(let error):
+            let nestedDescription = (error as? CustomStringConvertible)?.description ?? String(error)
+            return "Internal Error: \(nestedDescription)"
+        }
+    }
 }
 
 /// An abstraction representing an object capable of key/value storage
@@ -48,7 +62,7 @@ public protocol Storage: class {
      - parameter value: The value being stored
      - throws: A `StorageError` with failure details
      */
-    func set<T: StorableType>(type: T.Type, in: StorageNamespace, key: String, value: T) throws
+    func set<T: StorableType>(_ type: T.Type, in: StorageNamespace, key: String, value: T) throws
     
     /**
      Retrieves a value by its key under a namespace
@@ -58,7 +72,7 @@ public protocol Storage: class {
      - parameter key:  A unique key used to store the value
      - returns: returns the value if a value was found with the provided key under the namespace and the type matches `type`, otherwise nil
      */
-    func get<T: StorableType>(type: T.Type, in: StorageNamespace, key: String) -> T?
+    func get<T: StorableType>(_ type: T.Type, in: StorageNamespace, key: String) -> T?
 }
 
 extension Storage {
@@ -71,7 +85,7 @@ extension Storage {
      - throws: A `StorageError` with failure details
      */
     public func set<T: StorableType>(_ in: StorageNamespace, key: String, value: T) throws {
-        try self.set(type: T.self, in: `in`, key: key, value: value)
+        try self.set(T.self, in: `in`, key: key, value: value)
     }
     
     /**
@@ -82,7 +96,7 @@ extension Storage {
      - returns: returns the value if a value was found with the provided key under the namespace and the type matches `T`, otherwise nil
      */
     public func get<T: StorableType>(_ in: StorageNamespace, key: String) -> T? {
-        return self.get(type: T.self, in: `in`, key: key)
+        return self.get(T.self, in: `in`, key: key)
     }
     
     /**
@@ -94,8 +108,8 @@ extension Storage {
      - parameter or:   The value to return if one does not exist or something goes wrong
      - returns: returns the value if a value was found with the provided key under the namespace and the type matches `type`, otherwise `or`
      */
-    public func get<T: StorableType>(type: T.Type = T.self, in: StorageNamespace, key: String, or: T) -> T {
-        return self.get(type: type, in: `in`, key: key) ?? or
+    public func get<T: StorableType>(_ type: T.Type = T.self, in: StorageNamespace, key: String, or: T) -> T {
+        return self.get(type, in: `in`, key: key) ?? or
     }
     
     /**
@@ -107,7 +121,7 @@ extension Storage {
      - returns: returns the value if a value was found with the provided key under the namespace and the type matches `T`, otherwise `or`
      */
     public func get<T: StorableType>(_ in: StorageNamespace, key: String, or: T) -> T {
-        return self.get(type: T.self, in: `in`, key: key, or: or)
+        return self.get(T.self, in: `in`, key: key, or: or)
     }
 }
 

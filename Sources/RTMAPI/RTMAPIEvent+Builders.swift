@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 //MARK: - Protocol
 /// An abstraction representing an object capable of building a realtime messaging api event
@@ -37,22 +37,33 @@ protocol RTMAPIEventBuilder {
 //MARK: - Default Implementation
 extension RTMAPIEventBuilder {
     static func canMake(fromJson json: JSON) -> Bool {
-        guard let event = json["type"]?.string else { return false }
+        guard let event = json["type"].string else { return false }
         return (event == self.eventType)
     }
 }
 
 //MARK: - Errors
 /// Describes a range of errors that can occur when attempting to build models from `JSON`
-enum RTMAPIEventBuilderError: ErrorProtocol {
+public enum RTMAPIEventBuilderError: ErrorProtocol, CustomStringConvertible {
     /// No builder for the provided type exists
     case noAvailableBuilder(type: String)
     
     /// The builder in not capable of handling the provided `JSON`
-    case invalidBuilder(builder: RTMAPIEventBuilder.Type)
+    case invalidBuilder(builder: Any.Type)
     
     /// The response was invalid or the data was unexpected
     case invalidResponse(json: JSON)
+    
+    public var description: String {
+        switch self {
+        case .invalidBuilder(let builder):
+            return "The chosen builder: '\(String(builder.self))' cannot handled to provided data"
+        case .invalidResponse(let json):
+            return "The response was invalid:\n\(json.jsonValueDescription)"
+        case .noAvailableBuilder(let type):
+            return "There is no builder available for the event-type: \(type)"
+        }
+    }
 }
 
 //MARK: - Helpers
@@ -95,16 +106,29 @@ extension RTMAPIEvent {
             ChannelUnarchiveBuilder.eventType: ChannelUnarchiveBuilder.self,
             DNDUpdatedBuilder.eventType: DNDUpdatedBuilder.self,
             DNDUpdatedUserBuilder.eventType: DNDUpdatedUserBuilder.self,
+            IMCreatedBuilder.eventType: IMCreatedBuilder.self,
+            IMOpenBuilder.eventType: IMOpenBuilder.self,
+            IMCloseBuilder.eventType: IMCloseBuilder.self,
+            IMMarkedBuilder.eventType: IMMarkedBuilder.self,
+            GroupJoinedBuilder.eventType: GroupJoinedBuilder.self,
+            GroupLeftBuilder.eventType: GroupLeftBuilder.self,
+            GroupOpenBuilder.eventType: GroupOpenBuilder.self,
+            GroupCloseBuilder.eventType: GroupCloseBuilder.self,
+            GroupArchiveBuilder.eventType: GroupArchiveBuilder.self,
+            GroupUnarchiveBuilder.eventType: GroupUnarchiveBuilder.self,
+            GroupRenameBuilder.eventType: GroupRenameBuilder.self,
+            GroupMarkedBuilder.eventType: GroupMarkedBuilder.self,
+            FileCreatedBuilder.eventType: FileCreatedBuilder.self,
         ]
         
         guard
-            let type = json["type"]?.string,
+            let type = json["type"].string,
             let builder = builders[type]
             else {
-                print("Missing Builder: \(json["type"]?.string ?? "")\n")
+                print("Missing Builder: \(json["type"].string ?? "")\n")
                 print(json) //TODO remove once all builders are built
                 print("\n")
-                throw RTMAPIEventBuilderError.noAvailableBuilder(type: json["type"]?.string ?? "no type provided")
+                throw RTMAPIEventBuilderError.noAvailableBuilder(type: json["type"].string ?? "no type provided")
         }
         
         return builder

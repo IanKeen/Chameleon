@@ -8,7 +8,7 @@
 
 import Models
 import Services
-import Jay
+import Vapor
 
 /// Handler for the `emoji.list` endpoint
 public struct EmojiList: WebAPIMethod {
@@ -32,13 +32,20 @@ public struct EmojiList: WebAPIMethod {
     public func handle(json: JSON, slackModels: SlackModels) throws -> SuccessParameters {
         guard var emoji = json["emoji"]?.dictionary else { return [] }
         
-        return emoji.flatMap { key, value -> CustomEmoji? in
+        return emoji.flatMap { (key: String, value: JSON) -> CustomEmoji? in
             guard
-                let alias = value.string?.components(separatedBy: "alias:").last
+                let string = value.string,
+                let alias = string.components(separatedBy: "alias:").last
                 else { return nil }
             
             let imageUrl = emoji[alias]?.string ?? value.string ?? ""
             return CustomEmoji(name: key, imageUrl: imageUrl)
         }
     }
+}
+
+//TODO:
+//MARK: remove when dependencies are cleared up
+private extension JSON {
+    var string: String? { return (self as Polymorphic).string }
 }

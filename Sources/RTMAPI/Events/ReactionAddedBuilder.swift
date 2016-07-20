@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `reaction_added` event
 struct ReactionAddedBuilder: RTMAPIEventBuilder {

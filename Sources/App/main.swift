@@ -17,7 +17,7 @@ import Bot
     let config = try SlackBotConfig.makeConfig(from: Environment())
 #else
     import Foundation
-    let config = try SlackBotConfig.makeConfig(from: NSProcessInfo.processInfo())
+    let config = try SlackBotConfig.makeConfig(from: ProcessInfo.processInfo)
 #endif
 
 let bot = SlackBot(

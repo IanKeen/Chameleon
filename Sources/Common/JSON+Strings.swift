@@ -6,7 +6,7 @@
 //
 //
 
-import Jay
+import Vapor
 
 extension JSON {
     /// Provides a string representation of the type

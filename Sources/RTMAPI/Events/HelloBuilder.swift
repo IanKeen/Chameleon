@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `hello` event
 struct HelloBuilder: RTMAPIEventBuilder {

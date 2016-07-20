@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `user_change` event
 struct UserChangeBuilder: RTMAPIEventBuilder {

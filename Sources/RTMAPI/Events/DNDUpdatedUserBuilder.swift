@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `dnd_updated_user` event
 struct DNDUpdatedUserBuilder: RTMAPIEventBuilder {

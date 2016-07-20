@@ -26,7 +26,7 @@ func +(builder: SlackMessage, value: User) -> SlackMessage {
 func +(builder: SlackMessage, value: Channel) -> SlackMessage {
     return builder.channel(value)
 }
-func +(builder: SlackMessage, value: NSURL) -> SlackMessage {
+func +(builder: SlackMessage, value: URL) -> SlackMessage {
     return builder.url(value)
 }
 func +(builder: SlackMessage, value: SlackMessage.Command) -> SlackMessage {

@@ -8,7 +8,7 @@
 
 import Models
 import Services
-import Jay
+import Vapor
 
 /// Represents the core slack types
 public typealias SlackModels = (users: [User], channels: [Channel], groups: [Group], ims: [IM])

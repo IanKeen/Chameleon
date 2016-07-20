@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `channel_joined` event
 struct ChannelJoinedBuilder: RTMAPIEventBuilder {

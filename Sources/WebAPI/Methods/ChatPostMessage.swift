@@ -9,7 +9,7 @@
 import Models
 import Services
 import Common
-import Jay
+import Vapor
 
 /// Handler for the `chat.postMessage` endpoint
 public struct ChatPostMessage: WebAPIMethod {

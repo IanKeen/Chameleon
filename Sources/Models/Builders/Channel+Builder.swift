@@ -7,7 +7,7 @@
 //
 
 extension Channel: SlackModelType {
-    public static func make(builder: SlackModelBuilder) throws -> Channel {
+    public static func make(with builder: SlackModelBuilder) throws -> Channel {
         return try tryMake(Channel(
             id:                     try builder.property("id"),
             name:                   try builder.property("name"),
@@ -21,7 +21,7 @@ extension Channel: SlackModelType {
             topic:                  try builder.optionalProperty("topic"),
             purpose:                try builder.optionalProperty("purpose"),
             last_read:              builder.optionalProperty("last_read"),
-            latest:                 try builder.optionalProperty("latest"),
+            latest:                 try? builder.property("latest"),
             unread_count:           builder.optionalProperty("unread_count"),
             unread_count_display:   builder.optionalProperty("unread_count_display")
             )

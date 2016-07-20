@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `reconnect_url` event
 struct ReconnectURLBuilder: RTMAPIEventBuilder {
@@ -16,6 +16,6 @@ struct ReconnectURLBuilder: RTMAPIEventBuilder {
     static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
         
-        return .reconnect_url(url: json["url"]?.string ?? "")
+        return .reconnect_url(url: json["url"].string ?? "")
     }
 }

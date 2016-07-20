@@ -16,11 +16,11 @@ public final class RedisStorage: Storage {
     
     //MARK: - Public
     public convenience init(url urlString: String) throws {
-        guard let url = NSURL(string: urlString) else { throw StorageError.invalidURL(url: urlString) }
+        guard let url = URL(string: urlString) else { throw StorageError.invalidURL(url: urlString) }
         
         guard
             let host = url.host,
-            let port = url.port?.uint16Value,
+            let port = (url as NSURL).port?.uint16Value,
             let password = url.password
             else { throw StorageError.invalidURL(url: urlString) }
         
@@ -32,7 +32,7 @@ public final class RedisStorage: Storage {
     }
     
     //MARK: - Storage
-    public func set<T: StorableType>(type: T.Type, in: StorageNamespace, key: String, value: T) throws {
+    public func set<T: StorableType>(_ type: T.Type, in: StorageNamespace, key: String, value: T) throws {
         guard let value = value as? RedisStorable else { throw StorageError.unsupportedType(value: T.self) }
         let key = "\(`in`.namespace):\(key)"
         do {
@@ -41,7 +41,7 @@ public final class RedisStorage: Storage {
         }
         catch let error { throw StorageError.internalError(error: error) }
     }
-    public func get<T: StorableType>(type: T.Type, in: StorageNamespace, key: String) -> T? {
+    public func get<T: StorableType>(_ type: T.Type, in: StorageNamespace, key: String) -> T? {
         guard let type = type as? RedisRetrievable.Type else { print("Unsupported data type: \(T.self)"); return nil }
         let key = "\(`in`.namespace):\(key)"
         do {

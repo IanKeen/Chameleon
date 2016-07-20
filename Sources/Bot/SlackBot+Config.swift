@@ -57,16 +57,16 @@ public struct SlackBotConfig {
     public var startOptions: [RTMStart.Option] = []
     
     /// How many times to retry connecting before giving up
-    public var reconnectionAttempts: Int = 10
+    public var reconnectionAttempts: Int = 3
     
     /// How often to send a PING to slack once conencted to keep the connection alive
-    public var pingPongInterval: NSTimeInterval = 5.0
+    public var pingPongInterval: TimeInterval = 5.0
     
     /// Optional: The url that can be used by the `Storage` object
     public var storageUrl: String? = nil
     
     //MARK: - Lifecycle
-    public init(token: String?, startOptions: [RTMStart.Option]?, reconnectionAttempts: Int?, pingPongInterval: NSTimeInterval?, storageUrl: String?) throws {
+    public init(token: String?, startOptions: [RTMStart.Option]?, reconnectionAttempts: Int?, pingPongInterval: TimeInterval?, storageUrl: String?) throws {
         guard let token = token else { throw Error.missingRequiredParameter(parameter: "token") }
         
         self.token = token
@@ -89,10 +89,11 @@ extension SlackBotConfig {
      - throws: A `SlackBotConfig.Error` with failure details
      - returns: A new `SlackBotConfig` instance
      */
-    public static func makeConfig(from process: NSProcessInfo) throws -> SlackBotConfig {
+    public static func makeConfig(from process: ProcessInfo) throws -> SlackBotConfig {
         let supportedArguments = Variables.allVariables.map { "--\($0.snakeToLowerCamel)=" }
         let arguments = try process.arguments.dropFirst().flatMap { argument -> (key: String, value: String) in
             let pair = argument.components(separatedBy: "=")
+            
             guard
                 let key = pair[safe: 0]?.components(separatedBy: "--").last,
                 let value = pair[safe: 1]
@@ -110,7 +111,7 @@ extension SlackBotConfig {
             token: dict[Variables.Token.lowercased()],
             startOptions: nil,
             reconnectionAttempts: Int(dict[Variables.ReconnectionAttempts.lowercased()] ?? ""),
-            pingPongInterval: NSTimeInterval(dict[Variables.PingPongInterval.lowercased()] ?? ""),
+            pingPongInterval: TimeInterval(dict[Variables.PingPongInterval.lowercased()] ?? ""),
             storageUrl: dict[Variables.StorageURL.lowercased()]
         )
     }
@@ -130,7 +131,7 @@ extension SlackBotConfig {
             token: environment.getVar(Variables.Token),
             startOptions: nil,
             reconnectionAttempts: Int(environment.getVar(Variables.ReconnectionAttempts) ?? ""),
-            pingPongInterval: NSTimeInterval(environment.getVar(Variables.PingPongInterval) ?? ""),
+            pingPongInterval: TimeInterval(environment.getVar(Variables.PingPongInterval) ?? ""),
             storageUrl: environment.getVar(Variables.StorageURL)
         )
     }

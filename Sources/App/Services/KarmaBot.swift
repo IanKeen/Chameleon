@@ -13,23 +13,23 @@ import WebAPI
 import RTMAPI
 
 enum KarmaAction {
-    case Add
-    case Remove
+    case add
+    case remove
     
     var operation: (Int, Int) -> Int {
         switch self {
-        case .Add: return (+)
-        case .Remove: return (-)
+        case .add: return (+)
+        case .remove: return (-)
         }
     }
     
     func randomMessage(user: User, storage: Storage) -> String {
-        let count: Int = storage.get(.In("Karma"), key: user.id, or: 0)
+        let count: Int = storage.get(.in("Karma"), key: user.id, or: 0)
         let total = "Total: \(count)"
         
         switch self {
-        case .Add: return "\(user.name) you rock! - \(total)"
-        case .Remove: return "Boooo \(user.name)! - \(total)"
+        case .add: return "\(user.name) you rock! - \(total)"
+        case .remove: return "Boooo \(user.name)! - \(total)"
         }
     }
 }
@@ -108,24 +108,24 @@ final class KarmaBot: SlackRTMEventService, SlackMessageService {
         if
             let add = self.options.addText,
             let possibleAdd = message.text.range(of: add)?.lowerBound
-            where message.text.distance(from: userIndex, to: possibleAdd) <= self.options.textDistanceThreshold { return .Add }
+            where message.text.distance(from: userIndex, to: possibleAdd) <= self.options.textDistanceThreshold { return .add }
         
         else if
             let remove = self.options.removeText,
             let possibleRemove = message.text.range(of: remove)?.lowerBound
-            where message.text.distance(from: userIndex, to: possibleRemove) <= self.options.textDistanceThreshold { return .Remove }
+            where message.text.distance(from: userIndex, to: possibleRemove) <= self.options.textDistanceThreshold { return .remove }
         
         return nil
     }
     private func karma(for user: User, fromReaction reaction: String) -> KarmaAction? {
-        if let add = self.options.addReaction where reaction.hasPrefix(add) { return .Add }
-        else if let remove = self.options.removeReaction where reaction.hasPrefix(remove) { return .Remove }
+        if let add = self.options.addReaction where reaction.hasPrefix(add) { return .add }
+        else if let remove = self.options.removeReaction where reaction.hasPrefix(remove) { return .remove }
         return nil
     }
     private func adjustKarma(of user: User, action: KarmaAction, storage: Storage) {
         do {
-            let count: Int = storage.get(.In("Karma"), key: user.id, or: 0)
-            try storage.set(.In("Karma"), key: user.id, value: action.operation(count, 1))
+            let count: Int = storage.get(.in("Karma"), key: user.id, or: 0)
+            try storage.set(.in("Karma"), key: user.id, value: action.operation(count, 1))
             
         } catch let error {
             print("Unable to update Karma: \(error)")

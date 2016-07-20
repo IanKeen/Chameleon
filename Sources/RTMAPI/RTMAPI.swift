@@ -11,7 +11,7 @@ import Models
 import Services
 import Common
 import Strand
-import Jay
+import Vapor
 
 /// Provides access to the Slack realtime messaging api
 public final class RTMAPI {
@@ -20,7 +20,7 @@ public final class RTMAPI {
     
     //MARK: - Private Properties
     private let websocket: WebSocketService
-    private var pingPongInterval: NSTimeInterval = 3.0
+    private var pingPongInterval: TimeInterval = 3.0
     private var pingPongTimer: Strand?
     
     //MARK: - Public Events
@@ -60,9 +60,9 @@ public final class RTMAPI {
      - parameter pingPongInterval: The number of seconds between sending each ping
      - throws: A `WebSocketServiceError` with failure details
      */
-    public func connect(url: String, pingPongInterval: NSTimeInterval) throws {
+    public func connect(to url: String, pingPongInterval: TimeInterval) throws {
         self.pingPongInterval = pingPongInterval
-        try self.websocket.connect(url: url)
+        try self.websocket.connect(to: url)
     }
     
     /**
@@ -106,17 +106,19 @@ extension RTMAPI {
         //could potentially be used later for checking 
         //latency as suggested in the docs
         
-        let packet: [String: Any] = [
-            "id": Int.random(min: 1, max: 999999),
-            "type": "ping",
-            "timestamp": NSDate().timeIntervalSince1970
+        let packet: [String: JSON] = [
+            "id": JSON.number(.integer(Int.random(min: 1, max: 999999))),
+            "type": JSON.string("ping"),
+            "timestamp": JSON.number(.integer(Int(Date().timeIntervalSince1970)))
         ]
         
         do {
-            let data = try Jay().dataFromJson(packet)
-            self.websocket.send(string: try data.string())
+            let data = try JSON.serialize(JSON.object(packet))
+            self.websocket.send(try data.string())
             
-        } catch let error { self.onError?(error: error) }
+        } catch let error {
+            self.onError?(error: error)
+        }
     }
 }
 
@@ -139,7 +141,8 @@ extension RTMAPI {
     }
     private func websocketOn(text: String) {
         do {
-            let json = try Jay().typesafeJsonFromData(Array(text.utf8))
+            let data = Array(text.utf8)
+            let json = try JSON.parse(data)
             
             let eventBuilder = try RTMAPIEvent.makeEventBuilder(withJson: json)
             let event = try eventBuilder.make(withJson: json, builderFactory: self.makeBuilder)
@@ -152,7 +155,7 @@ extension RTMAPI {
             self.onError?(error: error)
         }
     }
-    private func websocketOn(data: NSData) {
+    private func websocketOn(data: Bytes) {
         print("DATA: \(data)") //TODO: unused at this point
     }
     private func websocketOn(error: ErrorProtocol) {
@@ -180,8 +183,15 @@ extension RTMAPI {
 //MARK: - Errors
 extension RTMAPI {
     /// Describes a range of errors that can occur when attempting to use the the realtime messaging api
-    public enum Error: ErrorProtocol {
+    public enum Error: ErrorProtocol, CustomStringConvertible {
         /// The response was invalid or the data was unexpected
         case invalidResponse(json: JSON)
+        
+        public var description: String {
+            switch self {
+            case .invalidResponse(let json):
+                return "The response was invalid:\n\(json.jsonValueDescription)"
+            }
+        }
     }
 }

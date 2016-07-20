@@ -7,7 +7,7 @@
 //
 
 extension Message.Edit: SlackModelType {
-    public static func make(builder: SlackModelBuilder) throws -> Message.Edit {
+    public static func make(with builder: SlackModelBuilder) throws -> Message.Edit {
         return try tryMake(Message.Edit(
             user:       try builder.slackModel("user"),
             timestamp:  try builder.property("ts")

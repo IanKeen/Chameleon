@@ -26,7 +26,7 @@ public extension SlackBot {
      - parameter user: The `User` to test
      - returns: `true` if the provided `User`s represents this bot, otherwise `false`
      */
-    public func isMe(user: User) -> Bool {
+    public func isMe(_ user: User) -> Bool {
         let users = self.users + self.users.botUsers()
         return users.botUsers().contains { $0 == user }
     }
@@ -42,7 +42,7 @@ public extension SlackBot {
      - parameter user: The `User` to test
      - returns: `true` if the provided `User` is an admin, otherwise `false`
      */
-    public func isAdmin(user: User) -> Bool {
+    public func isAdmin(_ user: User) -> Bool {
         return self.admins.contains(user)
     }
     
@@ -64,7 +64,7 @@ public extension SlackBot {
             attachments: attachments
         )
         
-        do { try self.webAPI.execute(method: chat) }
+        do { try self.webAPI.execute(chat) }
         catch let error { self.notify(error: error) }
     }
     
@@ -73,8 +73,8 @@ public extension SlackBot {
      
      - parameter message: The `SlackMessage` representing the message to send
      */
-    public func chat(message: SlackMessage) {
-        do { try self.webAPI.execute(method: message.apiMethod()) }
+    public func chat(_ message: SlackMessage) {
+        do { try self.webAPI.execute(message.apiMethod()) }
         catch let error { self.notify(error: error) }
     }
 }
