@@ -145,7 +145,11 @@ extension RTMAPI {
             let json = try JSON.parse(data)
             
             let eventBuilder = try RTMAPIEvent.makeEventBuilder(withJson: json)
-            let event = try eventBuilder.make(withJson: json, builderFactory: self.makeBuilder)
+            let event = try tryMake(
+                eventBuilder,
+                try eventBuilder.make(withJson: json, builderFactory: self.makeBuilder)
+            )
+            //let event = try eventBuilder.make(withJson: json, builderFactory: self.makeBuilder)
             
             if case .hello = event { self.startPingPong() }
             
