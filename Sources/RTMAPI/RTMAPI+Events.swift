@@ -50,15 +50,15 @@ public enum RTMAPIEvent {
     case group_marked(group: Group, timestamp: Double)
     case group_history_changed
     case file_created(file: File)
-    case file_shared
-    case file_unshared
-    case file_public
-    case file_private
-    case file_change
-    case file_deleted
-    case file_comment_added
-    case file_comment_edited
-    case file_comment_deleted
+    case file_shared(file: File)
+    case file_unshared(file: File)
+    case file_public(file: File)
+    case file_private(fileId: String)
+    case file_change(file: File)
+    case file_deleted(fileId: String, timestamp: Double)
+    case file_comment_added(file: File, comment: Any)
+    case file_comment_edited(file: File, comment: Any)
+    case file_comment_deleted(file: File, commentId: String)
     case pin_added
     case pin_removed
     case presence_change(user: User)
