@@ -8,28 +8,28 @@
 
 public struct File {
     let id: String
-    let created: Int
+    let created: Int?
     let name: String?
-    let title: String
-    let mimetype: String
-    let filetype: String
-    let pretty_type: String
-    let user: User
-    let mode: Mode
+    let title: String?
+    let mimetype: String?
+    let filetype: String?
+    let pretty_type: String?
+    let user: User?
+    let mode: Mode?
     let editable: Bool
     let is_external: Bool
     let is_public: Bool
-    let external_type: String
-    let username: String
-    let size: Int
+    let external_type: String?
+    let username: String?
+    let size: Int?
     
     let updated: Int?
     let editor: User?
     let last_editor: User?
     let state: String?
 
-    let url_private: String
-    let url_private_download: String
+    let url_private: String?
+    let url_private_download: String?
     let thumb_64: String?
     let thumb_80: String?
     let thumb_360: String?
@@ -40,8 +40,8 @@ public struct File {
     let thumb_480_w: Int?
     let thumb_480_h: Int?
     let thumb_160: String?
-    let permalink: String
-    let permalink_public: String
+    let permalink: String?
+    let permalink_public: String?
     let edit_link: String?
     
     let preview: String?
@@ -56,13 +56,13 @@ public struct File {
     let groups: [Group]
     let ims: [IM]
     
-    let initial_comment: AnyObject?
+    let initial_comment: AnyObject? //TODO
     let num_stars: Int?
     let is_starred: Bool?
     let pinned_to: [Target]?
     
     let reactions: [Reaction]?
-    let comments_count: Int
+    let comments_count: Int?
 }
 
 public extension File {
