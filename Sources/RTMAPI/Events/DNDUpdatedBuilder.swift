@@ -11,7 +11,7 @@ import Vapor
 
 /// Handler for the `dnd_updated` event
 struct DNDUpdatedBuilder: RTMAPIEventBuilder {
-    static var eventType: String { return "dnd_updated" }
+    static var eventTypes: [String] { return ["dnd_updated"] }
     
     static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }

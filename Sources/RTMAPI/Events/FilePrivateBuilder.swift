@@ -11,7 +11,7 @@ import Vapor
 
 /// Handler for the `file_private` event
 struct FilePrivateBuilder: RTMAPIEventBuilder {
-    static var eventType: String { return "file_private" }
+    static var eventTypes: [String] { return ["file_private"] }
     
     static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }

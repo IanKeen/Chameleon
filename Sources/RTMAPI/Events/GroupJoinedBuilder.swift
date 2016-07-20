@@ -11,7 +11,7 @@ import Vapor
 
 /// Handler for the `group_joined` event
 struct GroupJoinedBuilder: RTMAPIEventBuilder {
-    static var eventType: String { return "group_joined" }
+    static var eventTypes: [String] { return ["group_joined"] }
     
     static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }

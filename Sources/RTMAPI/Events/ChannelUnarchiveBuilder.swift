@@ -11,7 +11,7 @@ import Vapor
 
 /// Handler for the `channel_unarchive` event
 struct ChannelUnarchiveBuilder: RTMAPIEventBuilder {
-    static var eventType: String { return "channel_unarchive" }
+    static var eventTypes: [String] { return ["channel_unarchive"] }
     
     static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }

@@ -8,12 +8,13 @@
 
 import Models
 import Vapor
+import Common
 
 //MARK: - Protocol
 /// An abstraction representing an object capable of building a realtime messaging api event
 protocol RTMAPIEventBuilder {
     /// The name of the event `type` this object builds
-    static var eventType: String { get }
+    static var eventTypes: [String] { get }
     
     /**
      Defines if this object is capable of creating a `RTMAPIEvent` from the provided `JSON`
@@ -38,7 +39,7 @@ protocol RTMAPIEventBuilder {
 extension RTMAPIEventBuilder {
     static func canMake(fromJson json: JSON) -> Bool {
         guard let event = json["type"].string else { return false }
-        return (event == self.eventType)
+        return (self.eventTypes.contains(event))
     }
 }
 
@@ -68,6 +69,82 @@ public enum RTMAPIEventBuilderError: ErrorProtocol, CustomStringConvertible {
 
 //MARK: - Helpers
 extension RTMAPIEvent {
+    
+    //Add builders here:
+    //
+    //The idea here is to break out the 'building' of all the slack events
+    //in an attempt to manage their creation a little easier
+    //rather than a single `init(json:)` on `RTMAPIEvent` with a ton of
+    //if/else clauses depending on the `type` of event
+    //
+    
+    //TODO: there is a lot of repeted code in the builders (mostly between builders of the same type i.e. 'file')
+    //      consider a new mechanism allowing a builder to support multiple events but keep the lookup fast
+    //
+    //      builders could return a [String] of supported event types
+    //      and this dict could be generated into a flattened representation
+    //      still providing an O(1) lookup (make this dict a 1 time generated structure)
+    
+    private static var builders: [String: RTMAPIEventBuilder.Type] = {
+        
+        let builders: [RTMAPIEventBuilder.Type] = [
+            ErrorBuilder.self,
+            PingPongBuilder.self,
+            ReconnectURLBuilder.self,
+            PresenceChangeBuilder.self,
+            HelloBuilder.self,
+            UserTypingBuilder.self,
+            MessageBuilder.self,
+            ReactionAddedBuilder.self,
+            ReactionRemovedBuilder.self,
+            UserChangeBuilder.self,
+            ChannelMarkedBuilder.self,
+            ChannelCreatedBuilder.self,
+            ChannelJoinedBuilder.self,
+            ChannelLeftBuilder.self,
+            ChannelDeletedBuilder.self,
+            ChannelRenameBuilder.self,
+            ChannelArchiveBuilder.self,
+            ChannelUnarchiveBuilder.self,
+            DNDUpdatedBuilder.self,
+            DNDUpdatedUserBuilder.self,
+            IMCreatedBuilder.self,
+            IMOpenBuilder.self,
+            IMCloseBuilder.self,
+            IMMarkedBuilder.self,
+            GroupJoinedBuilder.self,
+            GroupLeftBuilder.self,
+            GroupOpenBuilder.self,
+            GroupCloseBuilder.self,
+            GroupArchiveBuilder.self,
+            GroupUnarchiveBuilder.self,
+            GroupRenameBuilder.self,
+            GroupMarkedBuilder.self,
+            FileCreatedBuilder.self,
+            FileSharedBuilder.self,
+            FileUnsharedBuilder.self,
+            FilePublicBuilder.self,
+            FilePrivateBuilder.self,
+            FileChangeBuilder.self,
+            FileDeletedBuilder.self,
+            FileCommentAddedBuilder.self,
+            FileCommentEditedBuilder.self,
+            FileCommentDeletedBuilder.self,
+            ]
+        
+        let entries = builders.flatMap { builder -> [[String: RTMAPIEventBuilder.Type]] in
+            return builder.eventTypes.flatMap { eventType in
+                return [eventType: builder]
+            }
+        }
+        
+        var result = [String: RTMAPIEventBuilder.Type]()
+        for entry in entries {
+            result = result + entry
+        }
+        return result
+    }()
+    
     /**
      Finds a `RTMAPIEventBuilder` that can be used to create a `RTMAPIEvent` from the provided `JSON`
      
@@ -76,70 +153,9 @@ extension RTMAPIEvent {
      - returns: A `RTMAPIEventBuilder` to build the event
      */
     static func makeEventBuilder(withJson json: JSON) throws -> RTMAPIEventBuilder.Type {
-        
-        //Add builders here:
-        //
-        //The idea here is to break out the 'building' of all the slack events
-        //in an attempt to manage their creation a little easier
-        //rather than a single `init(json:)` on `RTMAPIEvent` with a ton of 
-        //if/else clauses depending on the `type` of event
-        //
-        
-        //TODO: there is a lot of repeted code in the builders (mostly between builders of the same type i.e. 'file')
-        //      consider a new mechanism allowing a builder to support multiple events but keep the lookup fast
-        //      
-        //      builders could return a [String] of supported event types
-        //      and this dict could be generated into a flattened representation
-        //      still providing an O(1) lookup (make this dict a 1 time generated structure)
-        
-        let builders: [String: RTMAPIEventBuilder.Type] = [
-            ErrorBuilder.eventType: ErrorBuilder.self,
-            PingPongBuilder.eventType: PingPongBuilder.self,
-            ReconnectURLBuilder.eventType: ReconnectURLBuilder.self,
-            PresenceChangeBuilder.eventType: PresenceChangeBuilder.self,
-            HelloBuilder.eventType: HelloBuilder.self,
-            UserTypingBuilder.eventType: UserTypingBuilder.self,
-            MessageBuilder.eventType: MessageBuilder.self,
-            ReactionAddedBuilder.eventType: ReactionAddedBuilder.self,
-            ReactionRemovedBuilder.eventType: ReactionRemovedBuilder.self,
-            UserChangeBuilder.eventType: UserChangeBuilder.self,
-            ChannelMarkedBuilder.eventType: ChannelMarkedBuilder.self,
-            ChannelCreatedBuilder.eventType: ChannelCreatedBuilder.self,
-            ChannelJoinedBuilder.eventType: ChannelJoinedBuilder.self,
-            ChannelLeftBuilder.eventType: ChannelLeftBuilder.self,
-            ChannelDeletedBuilder.eventType: ChannelDeletedBuilder.self,
-            ChannelRenameBuilder.eventType: ChannelRenameBuilder.self,
-            ChannelArchiveBuilder.eventType: ChannelArchiveBuilder.self,
-            ChannelUnarchiveBuilder.eventType: ChannelUnarchiveBuilder.self,
-            DNDUpdatedBuilder.eventType: DNDUpdatedBuilder.self,
-            DNDUpdatedUserBuilder.eventType: DNDUpdatedUserBuilder.self,
-            IMCreatedBuilder.eventType: IMCreatedBuilder.self,
-            IMOpenBuilder.eventType: IMOpenBuilder.self,
-            IMCloseBuilder.eventType: IMCloseBuilder.self,
-            IMMarkedBuilder.eventType: IMMarkedBuilder.self,
-            GroupJoinedBuilder.eventType: GroupJoinedBuilder.self,
-            GroupLeftBuilder.eventType: GroupLeftBuilder.self,
-            GroupOpenBuilder.eventType: GroupOpenBuilder.self,
-            GroupCloseBuilder.eventType: GroupCloseBuilder.self,
-            GroupArchiveBuilder.eventType: GroupArchiveBuilder.self,
-            GroupUnarchiveBuilder.eventType: GroupUnarchiveBuilder.self,
-            GroupRenameBuilder.eventType: GroupRenameBuilder.self,
-            GroupMarkedBuilder.eventType: GroupMarkedBuilder.self,
-            FileCreatedBuilder.eventType: FileCreatedBuilder.self,
-            FileSharedBuilder.eventType: FileSharedBuilder.self,
-            FileUnsharedBuilder.eventType: FileUnsharedBuilder.self,
-            FilePublicBuilder.eventType: FilePublicBuilder.self,
-            FilePrivateBuilder.eventType: FilePrivateBuilder.self,
-            FileChangeBuilder.eventType: FileChangeBuilder.self,
-            FileDeletedBuilder.eventType: FileDeletedBuilder.self,
-            FileCommentAddedBuilder.eventType: FileCommentAddedBuilder.self,
-            FileCommentEditedBuilder.eventType: FileCommentEditedBuilder.self,
-            FileCommentDeletedBuilder.eventType: FileCommentDeletedBuilder.self,
-        ]
-        
         guard
             let type = json["type"].string,
-            let builder = builders[type]
+            let builder = self.builders[type]
             else {
                 print("Missing Builder: \(json["type"].string ?? "")\n")
                 print(json) //TODO remove once all builders are built

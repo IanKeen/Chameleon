@@ -11,7 +11,7 @@ import Vapor
 
 /// Handler for the `channel_created` event
 struct ChannelCreatedBuilder: RTMAPIEventBuilder {
-    static var eventType: String { return "channel_created" }
+    static var eventTypes: [String] { return ["channel_created"] }
     
     static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
