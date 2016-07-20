@@ -85,6 +85,13 @@ extension RTMAPIEvent {
         //if/else clauses depending on the `type` of event
         //
         
+        //TODO: there is a lot of repeted code in the builders (mostly between builders of the same type i.e. 'file')
+        //      consider a new mechanism allowing a builder to support multiple events but keep the lookup fast
+        //      
+        //      builders could return a [String] of supported event types
+        //      and this dict could be generated into a flattened representation
+        //      still providing an O(1) lookup (make this dict a 1 time generated structure)
+        
         let builders: [String: RTMAPIEventBuilder.Type] = [
             ErrorBuilder.eventType: ErrorBuilder.self,
             PingPongBuilder.eventType: PingPongBuilder.self,
@@ -119,6 +126,15 @@ extension RTMAPIEvent {
             GroupRenameBuilder.eventType: GroupRenameBuilder.self,
             GroupMarkedBuilder.eventType: GroupMarkedBuilder.self,
             FileCreatedBuilder.eventType: FileCreatedBuilder.self,
+            FileSharedBuilder.eventType: FileSharedBuilder.self,
+            FileUnsharedBuilder.eventType: FileUnsharedBuilder.self,
+            FilePublicBuilder.eventType: FilePublicBuilder.self,
+            FilePrivateBuilder.eventType: FilePrivateBuilder.self,
+            FileChangeBuilder.eventType: FileChangeBuilder.self,
+            FileDeletedBuilder.eventType: FileDeletedBuilder.self,
+            FileCommentAddedBuilder.eventType: FileCommentAddedBuilder.self,
+            FileCommentEditedBuilder.eventType: FileCommentEditedBuilder.self,
+            FileCommentDeletedBuilder.eventType: FileCommentDeletedBuilder.self,
         ]
         
         guard
