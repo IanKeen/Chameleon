@@ -16,7 +16,7 @@ public final class PlistStorage: Storage {
     public init() { }
     
     //MARK: - Storage
-    public func set<T: StorableType>(type: T.Type, in: StorageNamespace, key: String, value: T) throws {
+    public func set<T: StorableType>(_ type: T.Type, in: StorageNamespace, key: String, value: T) throws {
         var dataset = self.dataset()
         var data = dataset[`in`.namespace] ?? [:]
         
@@ -26,7 +26,7 @@ public final class PlistStorage: Storage {
         
         self.saveDataset(dataset)
     }
-    public func get<T : StorableType>(type: T.Type, in: StorageNamespace, key: String) -> T? {
+    public func get<T : StorableType>(_ type: T.Type, in: StorageNamespace, key: String) -> T? {
         var dataset = self.dataset()
         var data = dataset[`in`.namespace] ?? [:]
         return data[key] as? T

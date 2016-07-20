@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Jay
+import Vapor
 
 public extension JSON {
     /**
@@ -42,7 +42,7 @@ public extension JSON {
         
         var json = self
         for keyPath in keyPathComponents {
-            guard let next = json[keyPath] else { return false }
+            guard let next: JSON = json[keyPath] else { return false }
             json = next
         }
         return true
@@ -51,7 +51,7 @@ public extension JSON {
     //MARK: - Private
     private func keyPathValue<T>(_ keyPath: String, keyPathComponents: [String], json: JSON) throws -> T {
         guard let dict = json.dictionary
-            else { throw Error.typeMismatch(keyPath: keyPath, expected: String([String: JSON]), got: json.jsonTypeDescription) }
+            else { throw Error.typeMismatch(keyPath: keyPath, expected: String([String: JSON].self), got: json.jsonTypeDescription) }
         
         guard
             let key = keyPathComponents.first
@@ -66,7 +66,7 @@ public extension JSON {
             
         } else if let jsonValue = value.dictionary {
             if (isLast) {
-                throw Error.typeMismatch(keyPath: keyPath, expected: String(T), got: String(jsonValue.dynamicType))
+                throw Error.typeMismatch(keyPath: keyPath, expected: String(T.self), got: String(jsonValue.dynamicType))
             }
             let nestedKeyPathComponents = Array(keyPathComponents.dropFirst())
             return try self.keyPathValue(
@@ -76,7 +76,7 @@ public extension JSON {
             )
             
         } else {
-            throw Error.typeMismatch(keyPath: keyPath, expected: String(T), got: String(value.jsonTypeDescription))
+            throw Error.typeMismatch(keyPath: keyPath, expected: String(T.self), got: String(value.jsonTypeDescription))
         }
     }
     private func tryGet<T>(type: T.Type) -> T? {
@@ -128,11 +128,20 @@ extension JSON {
     /**
      Describes a range of errors that can occur when attempting to access JSON via a keypath
      */
-    public enum Error: ErrorProtocol {
+    public enum Error: ErrorProtocol, CustomStringConvertible {
         /// The provided keypath was not found
         case invalidKeyPath(keyPath: String)
         
         /// A value was found but the type requested was not the type that was found
         case typeMismatch(keyPath: String, expected: String, got: String)
+        
+        public var description: String {
+            switch self {
+            case .invalidKeyPath(let keyPath):
+                return "Invalid keyPath provided: \(keyPath)"
+            case .typeMismatch(let keyPath, let expected, let got):
+                return "Type mismatch on keyPath: \(keyPath) - Expected: \(expected), got: \(got)"
+            }
+        }
     }
 }

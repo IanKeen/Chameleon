@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 //TODO: have a conversation regarding these cases - i.e. `user_typing` vs userTyping
 //      the former is a 1:1 match for the api, it arguably easier to read

@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `channel_archive` event
 struct ChannelArchiveBuilder: RTMAPIEventBuilder {

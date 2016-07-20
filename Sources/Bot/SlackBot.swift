@@ -16,7 +16,7 @@ public class SlackBot {
     //MARK: - Private Properties
     private let config: SlackBotConfig
     private let services: [SlackService]
-    private var state: State = .Disconnected(reconnect: true, error: nil) {
+    private var state: State = .disconnected(reconnect: true, error: nil) {
         didSet {
             print("STATE: \(self.state)")
             
@@ -81,9 +81,9 @@ public class SlackBot {
     /// Start the bot
     public func start() {
         switch self.state {
-        case .Connected: return
-        case .Disconnected: self.state = .Connecting(attempt: 0)
-        case .Connecting(let attempt): self.state = .Connecting(attempt: attempt + 1)
+        case .connected: return
+        case .disconnected: self.state = .connecting(attempt: 0)
+        case .connecting(let attempt): self.state = .connecting(attempt: attempt + 1)
         }
         
         do {
@@ -106,8 +106,8 @@ public class SlackBot {
                     self.handleConnectionError(error)
                 }
             }
-            let RTMURL = try self.webAPI.execute(method: rtmStart)
-            try self.rtmAPI.connect(url: RTMURL, pingPongInterval: self.config.pingPongInterval)
+            let RTMURL = try self.webAPI.execute(rtmStart)
+            try self.rtmAPI.connect(to: RTMURL, pingPongInterval: self.config.pingPongInterval)
 
         } catch let error {
             self.handleConnectionError(error)
@@ -119,8 +119,8 @@ public class SlackBot {
      
      - parameter reconnect: When true, the bot will attempt to reconnected after stopping
      */
-    public func stop(reconnect: Bool = true) {
-        if (!reconnect) { self.state = .Disconnected(reconnect: false, error: nil) }
+    public func stop(_ reconnect: Bool = true) {
+        if (!reconnect) { self.state = .disconnected(reconnect: false, error: nil) }
         self.rtmAPI.disconnect()
     }
 }
@@ -138,14 +138,14 @@ extension SlackBot {
          *
          *  @param ErrorProtocol? Exists when the disconnection was the result of an error
          */
-        case Disconnected(reconnect: Bool, error: ErrorProtocol?)
+        case disconnected(reconnect: Bool, error: ErrorProtocol?)
         
         /**
          *  The bot is attempting to connect
          *
          *  @param Int The attempt number
          */
-        case Connecting(attempt: Int)
+        case connecting(attempt: Int)
         
         /**
          *  The bot is connected.
@@ -159,7 +159,7 @@ extension SlackBot {
          *
          *  @param ConnectedState The nested `OptionSet` with the current `ConnectedState`
          */
-        case Connected(state: ConnectedState)
+        case connected(state: ConnectedState)
         
         /**
             Defines whether all requirements for the bot to be considered ready have completed
@@ -168,7 +168,7 @@ extension SlackBot {
          */
         var ready: Bool {
             switch self {
-            case .Connected(let state):
+            case .connected(let state):
                 return state.contains(.Hello) && state.contains(.Data)
                 
             default:
@@ -185,10 +185,10 @@ extension SlackBot {
         func connectedWith(state new: ConnectedState) -> State {
             var current = self
             switch self {
-            case .Connected(let state):
-                current = .Connected(state: state.union(new))
+            case .connected(let state):
+                current = .connected(state: state.union(new))
             default:
-                current = .Connected(state: new)
+                current = .connected(state: new)
             }
             return current
         }
@@ -208,16 +208,16 @@ extension SlackBot {
     //
     private func handleConnectionError(_ error: ErrorProtocol?) {
         switch self.state {
-        case .Disconnected(let reconnect, _):
+        case .disconnected(let reconnect, _):
             if (!reconnect) { return }
             
-        case .Connected:
-            self.state = .Disconnected(reconnect: true, error: nil)
+        case .connected:
+            self.state = .disconnected(reconnect: true, error: nil)
             
-        case .Connecting(let attempt):
+        case .connecting(let attempt):
             if (attempt >= self.config.reconnectionAttempts) {
                 self.notifyDisconnected(error: error)
-                self.state = .Disconnected(reconnect: false, error: error)
+                self.state = .disconnected(reconnect: false, error: error)
                 return
             }
         }

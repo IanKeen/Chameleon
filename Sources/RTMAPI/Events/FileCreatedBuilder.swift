@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `file_created` event
 struct FileCreatedBuilder: RTMAPIEventBuilder {

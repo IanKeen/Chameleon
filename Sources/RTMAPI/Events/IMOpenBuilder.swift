@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `im_open` event
 struct IMOpenBuilder: RTMAPIEventBuilder {

@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `im_close` event
 struct IMCloseBuilder: RTMAPIEventBuilder {

@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `channel_marked` event
 struct ChannelMarkedBuilder: RTMAPIEventBuilder {

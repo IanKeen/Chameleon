@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `group_marked` event
 struct GroupMarkedBuilder: RTMAPIEventBuilder {

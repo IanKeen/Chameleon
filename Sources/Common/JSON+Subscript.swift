@@ -6,7 +6,7 @@
 //
 //
 
-import Jay
+import Vapor
 
 //Original code from: https://github.com/Zewo/JSON/blob/master/Source/JSON.swift
 //Modified to work with C7.JSON

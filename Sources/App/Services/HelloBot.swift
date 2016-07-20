@@ -17,7 +17,6 @@ final class HelloBot: SlackMessageService {
         guard
             let target = message.target, sender = message.sender
             else { return }
-        
         if (message.text.hasPrefix(options: greetings) && message.mentioned_users.contains(slackBot.me)) {
             slackBot.chat(with: target, text: "hey, <@\(sender.id)>")
         }

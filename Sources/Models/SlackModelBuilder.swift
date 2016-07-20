@@ -6,15 +6,24 @@
 //  Copyright © 2016 Mustard. All rights reserved.
 //
 
-import Jay
+import Vapor
 
 /// Describes a range of errors that can occur when attempting to build a model
-public enum SlackModelError: ErrorProtocol {
+public enum SlackModelError: ErrorProtocol, CustomStringConvertible {
     /// The requested type did not match the type of the found value
     case typeMismatch(keyPath: String, expected: String, got: String)
     
     /// The keypath used to lookup a value did not exist
     case slackModelLookup(keyPath: String)
+    
+    public var description: String {
+        switch self {
+        case .slackModelLookup(let keyPath):
+            return "Unabled to lookup a SlackModel at the keyPath provided: \(keyPath)"
+        case .typeMismatch(let keyPath, let expected, let got):
+            return "Type mismatch on keyPath: \(keyPath) - Expected: \(expected), got: \(got)"
+        }
+    }
 }
 
 /**
@@ -104,7 +113,7 @@ extension SlackModelBuilder {
             let result = value,
             let enumValue = T(rawValue: result)
             else {
-                throw SlackModelError.typeMismatch(keyPath: keyPath, expected: String(T), got: String(value.dynamicType))
+                throw SlackModelError.typeMismatch(keyPath: keyPath, expected: String(T.self), got: String(value.dynamicType))
         }
         
         return enumValue
@@ -117,7 +126,7 @@ extension SlackModelBuilder {
      - throws: A `JSON.Error` or `SlackModelError` with failure details
      - returns: The value at keypath if found and it is of type `T`, otherwise nil
      */
-    public func optionalProperty<T: RawRepresentable>(keyPath: String) throws -> T? {
+    public func optionalProperty<T: RawRepresentable>(_ keyPath: String) throws -> T? {
         if (!self.json.keyPathExists(keyPath)) { return nil }
         return try self.property(keyPath) as T
     }
@@ -142,7 +151,7 @@ extension SlackModelBuilder {
             groups: self.groups,
             ims: self.ims
         )
-        return try T.make(builder: builder)
+        return try T.make(with: builder)
     }
     
     /**
@@ -178,7 +187,7 @@ extension SlackModelBuilder {
                 groups: self.groups,
                 ims: self.ims
             )
-            return try T.make(builder: builder)
+            return try T.make(with: builder)
         }
     }
     
@@ -357,4 +366,10 @@ extension SlackModelBuilder {
     private func targets() -> [Target] {
         return self.identifiables().flatMap { $0 as? Target }
     }
+}
+
+//TODO:
+//MARK: remove when dependencies are cleared up
+private extension JSON {
+    var string: String? { return (self as Polymorphic).string }
 }

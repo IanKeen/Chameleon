@@ -7,7 +7,7 @@
 //
 
 extension File: SlackModelType {
-    public static func make(builder: SlackModelBuilder) throws -> File {
+    public static func make(with builder: SlackModelBuilder) throws -> File {
         return try tryMake(File(
             id:                     try builder.property("id"),
             created:                try builder.property("created"),

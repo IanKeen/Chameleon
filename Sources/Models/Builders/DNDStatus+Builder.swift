@@ -7,7 +7,7 @@
 //
 
 extension DNDStatus: SlackModelType {
-    public static func make(builder: SlackModelBuilder) throws -> DNDStatus {
+    public static func make(with builder: SlackModelBuilder) throws -> DNDStatus {
         return try tryMake(DNDStatus(
             dnd_enabled:        builder.property("dnd_enabled"),
             next_dnd_start_ts:  try builder.property("next_dnd_start_ts"),

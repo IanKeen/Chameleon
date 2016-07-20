@@ -7,9 +7,17 @@
 //
 
 /// Represents an encapsulation error to build a nested chain of errors that can occur when attempting to build Slack models
-public enum SlackModelTypeError<T: SlackModelType>: ErrorProtocol {
+public enum SlackModelTypeError<T: SlackModelType>: ErrorProtocol, CustomStringConvertible {
     /// A build error of type `T` and the nested error `error`
     case buildError(type: T.Type, error: ErrorProtocol)
+    
+    public var description: String {
+        switch self {
+        case .buildError(let type, let error):
+            let nestedDescription = (error as? CustomStringConvertible)?.description ?? String(error)
+            return "\(type): \(nestedDescription)"
+        }
+    }
 }
 
 /// An abstraction representing a buildable Slack model type
@@ -21,7 +29,7 @@ public protocol SlackModelType {
      - throws: A `JSON.Error`, `SlackModelError` or `SlackModelTypeError` with failure details
      - returns: A new `SlackModelType`
      */
-    static func make(builder: SlackModelBuilder) throws -> Self
+    static func make(with builder: SlackModelBuilder) throws -> Self
 }
 
 /**

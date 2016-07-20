@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Jay
+import Vapor
 
 /// An abstraction representing an object capable of synchronous web sockets
 public protocol WebSocketService: class {
@@ -21,7 +21,7 @@ public protocol WebSocketService: class {
     var onText: ((String) -> Void)? { get set }
     
     /// Closure that is called when receiving byte data
-    var onData: ((NSData) -> Void)? { get set }
+    var onData: ((Bytes) -> Void)? { get set }
     
     /// Closure that is called when an error occurs
     var onError: ((ErrorProtocol) -> Void)? { get set }
@@ -32,7 +32,7 @@ public protocol WebSocketService: class {
      - parameter url: The url to connect to
      - throws: A `WebSocketServiceError` with failure details
      */
-    func connect(url: String) throws
+    func connect(to url: String) throws
     
     /**
      Disconnect a connection
@@ -44,28 +44,43 @@ public protocol WebSocketService: class {
      
      - parameter json: `JSON` to send
      */
-    func send(json: JSON)
+    func send(_ json: JSON)
     
     /**
      Send `NSData` data
      
      - parameter data: `NSData` to send
      */
-    func send(data: NSData)
+    func send(_ data: Bytes)
     
     /**
      Send `String` data
      
      - parameter string: `String` to send
      */
-    func send(string: String)
+    func send(_ string: String)
 }
 
 /// Describes a range of errors that can occur when attempting to use the service
-public enum WebSocketServiceError: ErrorProtocol {
+public enum WebSocketServiceError: ErrorProtocol, CustomStringConvertible {
     /// The provided URL was invalid
     case invalidURL(url: String)
     
+    /// Generic socket error
+    case genericError(reason: String)
+    
     /// Something went wrong with an dependency
     case internalError(error: ErrorProtocol)
+    
+    public var description: String {
+        switch self {
+        case .invalidURL(let url):
+            return "The provided url was invalid: \(url)"
+        case .internalError(let error):
+            let nestedDescription = (error as? CustomStringConvertible)?.description ?? String(error)
+            return "Internal Error: \(nestedDescription)"
+        case .genericError(let reason):
+            return "Generic Error: \(reason)"
+        }
+    }
 }

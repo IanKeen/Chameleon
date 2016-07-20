@@ -10,7 +10,7 @@ import Foundation
 import Models
 import Services
 import Common
-import Jay
+import Vapor
 
 /**
  Builds a complete url to a webapi endpoint
@@ -20,9 +20,9 @@ import Jay
  - parameter pathSegments: `String` path segments
  - returns: A complete `NSURL`
  */
-public func WebAPIURL(_ pathSegments: String...) -> NSURL {
+public func WebAPIURL(_ pathSegments: String...) -> URL {
     let urlString = "https://slack.com/api/" + pathSegments.joined(separator: "/")
-    guard let url = NSURL(string: urlString) else { fatalError("Invalid URL: \(urlString)") }
+    guard let url = URL(string: urlString) else { fatalError("Invalid URL: \(urlString)") }
     return url
 }
 
@@ -62,7 +62,7 @@ public final class WebAPI {
      - throws: Can throw `WebAPI.Error`, `HTTPServiceError` or a custom error from the provided `WebAPIMethod`
      - returns: The values specified in the `WebAPIMethod`
      */
-    public func execute<Method: WebAPIMethod>(method: Method) throws -> Method.SuccessParameters {
+    public func execute<Method: WebAPIMethod>(_ method: Method) throws -> Method.SuccessParameters {
         guard let slackModels = self.slackModels else { fatalError("Please set `slackModels`") }
         
         let request = self.request(for: method)
@@ -84,14 +84,13 @@ extension WebAPI {
             method: method.networkRequest.method,
             url: method.networkRequest.url,
             parameters: method.networkRequest.parameters + ["token": self.token],
-            headers: method.networkRequest.headers,
-            body: method.networkRequest.body
+            headers: method.networkRequest.headers
         )
     }
     private func checkForError(in json: JSON) throws {
         guard let ok = json["ok"]?.boolean where !ok else { return }
         
-        let error = json["error"]?.string ?? "unknown_error"
+        let error = json["error"].string ?? "unknown_error"
         throw Error.apiError(reason: error)
     }
 }
@@ -99,11 +98,20 @@ extension WebAPI {
 //MARK: - Errors
 extension WebAPI {
     /// Describes a range of errors that can occur when attempting to use the the webapi
-    public enum Error: ErrorProtocol {
+    public enum Error: ErrorProtocol, CustomStringConvertible {
         /// Something went wrong during execution
         case apiError(reason: String)
         
         /// The response was invalid or the data was unexpected
         case invalidResponse(json: JSON)
+        
+        public var description: String {
+            switch self {
+            case .invalidResponse(let json):
+                return "The response was invalid:\n\(json.jsonValueDescription)"
+            case .apiError(let reason):
+                return "The API returned the error: \(reason)"
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@
 import Common
 
 extension Message: SlackModelType {
-    public static func make(builder: SlackModelBuilder) throws -> Message {
+    public static func make(with builder: SlackModelBuilder) throws -> Message {
         return try tryMake(Message(
             subtype:        builder.optionalProperty("subtype"),
             timestamp:      try builder.property("ts"),

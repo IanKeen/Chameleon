@@ -7,7 +7,7 @@
 //
 
 import Models
-import Jay
+import Vapor
 
 /// Handler for the `message` event
 struct MessageBuilder: RTMAPIEventBuilder {
@@ -17,15 +17,15 @@ struct MessageBuilder: RTMAPIEventBuilder {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
         
         //edits contain the message as a nested item :\
-        let previousMessageJson = json["message"]
+        let previousMessageJson: JSON? = json["message"]
         let messageJson = previousMessageJson ?? json
         
         let builder = builderFactory(json: messageJson)
         let previousBuilder = builderFactory(json: previousMessageJson ?? JSON.null)
         
         return .message(
-            message: try Message.make(builder: builder),
-            previous: try? Message.make(builder: previousBuilder)
+            message: try Message.make(with: builder),
+            previous: try? Message.make(with: previousBuilder)
         )
     }
 }

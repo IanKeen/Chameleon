@@ -7,29 +7,27 @@
 //
 
 import Foundation
-import WebSocketClient
-import Jay
-
-extension CloseCode: ErrorProtocol { }
+import Vapor
+import VaporTLS
 
 /// Standard implementation of a WebSocketService
 final public class WebSocketProvider: WebSocketService {
     //MARK: - Private Properties
     private var socket: WebSocket? {
+        willSet {
+            _ = try? self.socket?.close()
+        }
         didSet {
             guard let socket = self.socket else { return }
-            socket.onClose { self.onDisconnect?($0.code) }
-            socket.onText { self.onText?($0) }
-            socket.onBinary {
-                let data = NSData(bytes: $0.bytes, length: $0.bytes.count)
-                self.onData?(data)
+            socket.onClose = { _, code, reason, _ in
+                self.onDisconnect?(WebSocketServiceError.genericError(reason: reason ?? "unknown"))
             }
-        }
-    }
-    private var client: Client? {
-        willSet {
-            guard let existing = self.socket else { return }
-            _ = try? existing.close()
+            socket.onText = { _, text in
+                self.onText?(text)
+            }
+            socket.onBinary = { _, bytes in
+                self.onData?(bytes)
+            }
         }
     }
     
@@ -39,24 +37,22 @@ final public class WebSocketProvider: WebSocketService {
     public var onConnect: (() -> Void)?
     public var onDisconnect: ((ErrorProtocol?) -> Void)?
     public var onText: ((String) -> Void)?
-    public var onData: ((NSData) -> Void)?
+    public var onData: ((Bytes) -> Void)?
     public var onError: ((ErrorProtocol) -> Void)?
     
-    public func connect(url: String) throws {
+    public func connect(to url: String) throws {
         let uri: URI
         
         do { uri = try URI(url) }
         catch { throw WebSocketServiceError.invalidURL(url: url) }
         
         do {
-            self.client = try Client(uri: uri) { [weak self] socket in
+            try WebSocket.connect(to: uri, using: HTTPClient<TLSClientStream>.self) { [weak self] socket in
                 guard let `self` = self else { return }
                 
                 self.socket = socket
                 self.onConnect?()
             }
-            
-            try self.client?.connect(uri.description)
             
         } catch let error {
             throw WebSocketServiceError.internalError(error: error)
@@ -65,20 +61,20 @@ final public class WebSocketProvider: WebSocketService {
     public func disconnect() {
         _ = try? self.socket?.close()
     }
-    public func send(json: JSON) {
+    public func send(_ json: JSON) {
         do {
-            let data = try Jay(formatting: .prettified).dataFromJson(json)
+            let data = try JSON.serialize(json)
             try self.socket?.send(try data.string())
             
         } catch let error {
             self.onError?(error)
         }
     }
-    public func send(data: NSData) {
-        do { try self.socket?.send(Data(pointer: UnsafePointer<Int8>(data.bytes), length: data.length)) }
+    public func send(_ data: Bytes) {
+        do { try self.socket?.send(data) }
         catch let error { self.onError?(error) }
     }
-    public func send(string: String) {
+    public func send(_ string: String) {
         do { try self.socket?.send(string) }
         catch let error { self.onError?(error) }
     }

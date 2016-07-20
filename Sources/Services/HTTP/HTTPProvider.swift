@@ -7,9 +7,10 @@
 //
 
 import Foundation
-import HTTPSClient
+import VaporTLS
 import String
-import Jay
+import S4
+import Engine
 
 /// Standard implementation of a HTTPService
 final public class HTTPProvider: HTTPService {
@@ -18,27 +19,19 @@ final public class HTTPProvider: HTTPService {
     
     public func perform(with request: HTTPRequest) throws -> JSON {
         do {
-            // (╯°□°）╯︵ ┻━┻
-            //On Heroku scheme was coming through as Optional<String> even though the API says String
-            let urlScheme: String? = request.url.scheme
-            guard let scheme = urlScheme, let host = request.url.host
-                else { throw HTTPServiceError.invalidURL(url: request.url.absoluteString) }
+            guard let absoluteString = request.url.absoluteString
+                else { throw HTTPServiceError.invalidURL(url: request.url.absoluteString ?? "") }
             
-            let response: Response
+            let response: HTTPResponse
             
             do {
-                let uriString = "\(scheme)://\(host)"
-                let client = try HTTPSClient.Client(uri: uriString)
-                
-                let path = request.url.absoluteString.substring(from: uriString.endIndex) + request.parameterString
                 let headers = request.headers ?? [:]
-                let bodyData = request.bodyData?.data ?? []
-                
-                response = try client.send(
-                    method: request.clientMethod,
-                    uri: path,
+                let query = request.parameters ?? [:]
+                response = try HTTPClient<TLSClientStream>.request(
+                    request.clientMethod,
+                    absoluteString,
                     headers: headers.makeHeaders(),
-                    body: bodyData
+                    query: query.makeQuery()
                 )
                 
             } catch let error {
@@ -49,16 +42,16 @@ final public class HTTPProvider: HTTPService {
             //      However it fails to build with a linker error which I wasn't able to fix yet
             //      So I'm falling back to this ugly syntax :( - for now...
             //
-            if (400...499 ~= response.statusCode) {
-                throw HTTPServiceError.clientError(code: response.statusCode, data: nil)
+            if (400...499 ~= response.status.statusCode) {
+                throw HTTPServiceError.clientError(code: response.status.statusCode, data: nil)
                 
-            } else if (500...599 ~= response.statusCode) {
-                throw HTTPServiceError.serverError(code: response.statusCode)
+            } else if (500...599 ~= response.status.statusCode) {
+                throw HTTPServiceError.serverError(code: response.status.statusCode)
             }
             
             do {
-                let buffer = try response.body.becomeBuffer()
-                return try Jay().typesafeJsonFromData(buffer.bytes)
+                guard let bytes = response.body.bytes else { throw HTTPServiceError.invalidResponse(data: response.body) }
+                return try JSON.parse(bytes)
                 
             } catch let error {
                 throw HTTPServiceError.internalError(error: error)
@@ -69,49 +62,43 @@ final public class HTTPProvider: HTTPService {
 
 //MARK: - Helpers
 private extension HTTPRequest {
-    var clientMethod: S4.Method {
+    var clientMethod: Engine.Method {
         switch self.method {
-        case .get: return S4.Method.get
-        case .put: return S4.Method.put
-        case .patch: return S4.Method.patch
-        case .post: return S4.Method.post
-        case .delete: return S4.Method.delete
+        case .get: return .get
+        case .put: return .put
+        case .patch: return .patch
+        case .post: return .post
+        case .delete: return .delete
         }
-    }
-    var bodyData: NSData? {
-        guard let json = self.body else { return nil }
-        
-        do {
-            let data = try Jay(formatting: .prettified).dataFromJson(json)
-            return NSData(bytes: data, length: data.count)
-        }
-        catch { return nil }
-    }
-    var parameterString: String {
-        let pairs = self.parameters?.flatMap { key, value -> String? in
-            do {
-                let param = try value.percentEncoded(allowing: CharacterSet.uriQueryAllowed)
-                return "\(key)=\(param)"
-            }
-            catch { return nil }
-        }
-        let result = pairs?.joined(separator: "&") ?? ""
-        return (result.isEmpty ? "" : "?\(result)")
     }
 }
 
-extension NSData: DataRepresentable {
-    public var data: Data {
-        return Data(pointer: UnsafePointer<Int8>(self.bytes), length: self.length)
-    }
+private protocol StringType {
+    var string: String { get }
 }
-
-extension Dictionary where Key: CaseInsensitiveStringRepresentable, Value: HeaderRepresentable {
+extension String: StringType {
+    var string: String { return self }
+}
+extension Dictionary where Key: CaseInsensitiveStringRepresentable, Value: StringType {
     private func makeHeaders() -> Headers {
-        var headers = [CaseInsensitiveString: Header]()
+        var headers = [CaseInsensitiveString: String]()
         for (key, value) in self {
-            headers.updateValue(value.header, forKey: key.caseInsensitiveString)
+            headers.updateValue(value.string, forKey: key.caseInsensitiveString)
         }
         return Headers(headers)
     }
 }
+extension Dictionary where Key: StringType, Value: StringType {
+    private func makeQuery() -> [String: CustomStringConvertible] {
+        let charSet = CharacterSet(charactersIn: uriQueryAllowed.joined(separator: ""))
+        var query = [String: CustomStringConvertible]()
+        
+        for (key, value) in self {
+            guard let value = value.string.addingPercentEncoding(withAllowedCharacters: charSet) else { continue }
+            query.updateValue(value, forKey: key.string)
+        }
+        return query
+    }
+}
+
+private let uriQueryAllowed: [String] = ["!", "$", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "=", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "_", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "~"]
