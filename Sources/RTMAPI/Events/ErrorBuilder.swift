@@ -11,7 +11,7 @@ import Vapor
 
 /// Handler for the `error` event
 struct ErrorBuilder: RTMAPIEventBuilder {
-    static var eventType: String { return "error" }
+    static var eventTypes: [String] { return ["error"] }
     
     static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }

@@ -11,7 +11,7 @@ import Vapor
 
 /// Handler for the `user_change` event
 struct UserChangeBuilder: RTMAPIEventBuilder {
-    static var eventType: String { return "user_change" }
+    static var eventTypes: [String] { return ["user_change"] }
     
     static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }

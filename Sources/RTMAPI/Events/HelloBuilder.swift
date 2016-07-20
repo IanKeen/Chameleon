@@ -11,7 +11,7 @@ import Vapor
 
 /// Handler for the `hello` event
 struct HelloBuilder: RTMAPIEventBuilder {
-    static var eventType: String { return "hello" }
+    static var eventTypes: [String] { return ["hello"] }
     
     static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
