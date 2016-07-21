@@ -7,7 +7,7 @@
 //
 
 public extension Message {
-    public enum ItemType: String {
+    public enum ItemType: String, JSONRepresentable {
         case Channel = "C"
         case Group = "G"
         case File = "F"

@@ -21,7 +21,7 @@ public enum SlackModelTypeError<T: SlackModelType>: ErrorProtocol, CustomStringC
 }
 
 /// An abstraction representing a buildable Slack model type
-public protocol SlackModelType {
+public protocol SlackModelType: JSONRepresentable {
     /**
      Creates a Slack model from the provided `SlackModelBuilder`
      

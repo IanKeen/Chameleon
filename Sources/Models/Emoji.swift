@@ -7,13 +7,18 @@
 //
 
 /// An abstraction for an object that can represent an emoji 
-public protocol SlackEmoji {
+public protocol SlackEmoji: JSONRepresentable {
     /// The string slack uses to identify this emoji
     var emojiSymbol: String { get }
 }
+extension SlackEmoji {
+    public func makeJSON() -> JSON {
+        return JSON.string(self.emojiSymbol)
+    }
+}
 
 //From: https://github.com/iamcal/emoji-data
-public enum Emoji: String {
+public enum Emoji: String, JSONRepresentable {
     case hash
     case zero
     case one

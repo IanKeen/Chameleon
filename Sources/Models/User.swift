@@ -32,7 +32,7 @@ public struct User {
 }
 
 public extension User {
-    public enum Presence: String {
+    public enum Presence: String, JSONRepresentable {
         case Active = "active"
         case Away = "away"
     }

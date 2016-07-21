@@ -6,8 +6,6 @@
 //  Copyright © 2016 Mustard. All rights reserved.
 //
 
-import Vapor
-
 /// Describes a range of errors that can occur when attempting to build a model
 public enum SlackModelError: ErrorProtocol, CustomStringConvertible {
     /// The requested type did not match the type of the found value
@@ -207,6 +205,55 @@ extension SlackModelBuilder {
     }
 }
 
+//MARK: - Polymorphic SlackModelType Types
+public typealias MakeFunction = (SlackModelBuilder) throws -> SlackModelType
+extension SlackModelBuilder {
+    /**
+     Create a collection of required `SlackModelType`s from the `JSON` using the supplied keypath
+     
+     - parameter keyPath: The keypath to the `JSON` array used to create the `SlackModelType`s
+     - parameter makeFunction: Allows "on-the-fly" selection of the `SlackModelType` that should be built
+     - throws: A `JSON.Error`, `SlackModelError` or `SlackModelTypeError` with failure details
+     - returns: A new sequence of `SlackModelType`s object
+     */
+    public func collection<T>(_ keyPath: String, makeFunction: (JSON) -> MakeFunction) throws -> [T] {
+        let value: [JSON] = try self.json.keyPathValue(keyPath)
+        
+        return try value.map { data in
+            let builder = SlackModelBuilder(
+                json: data,
+                users: self.users,
+                channels: self.channels,
+                groups: self.groups,
+                ims: self.ims
+            )
+            
+            let maker = makeFunction(json)
+            let instance = try maker(builder)
+            guard let result = instance as? T else {
+                throw SlackModelError.typeMismatch(keyPath: keyPath, expected: String(T.self), got: String(instance.self))
+            }
+            return result
+        }
+    }
+    
+    /**
+     Create an optional collection of `SlackModelType`s from the `JSON` using the supplied keypath
+     
+     If a `JSON` array is found at the keypath a regular throwable attempt is made to build
+     the `SlackModelType` sequence otherwise it returns nil
+     
+     - parameter keyPath: The keypath to the `JSON` array used to create the `SlackModelType`s
+     - parameter makeFunction: Allows "on-the-fly" selection of the `SlackModelType` that should be built
+     - throws: A `JSON.Error`, `SlackModelError` or `SlackModelTypeError` with failure details
+     - returns: A new sequence of `SlackModelType`s objects of type `T`, or nil
+     */
+    public func optionalCollection<T>(_ keyPath: String, makeFunction: (JSON) -> MakeFunction) throws -> [T]? {
+        if (!self.json.keyPathExists(keyPath)) { return nil }
+        return try self.collection(keyPath, makeFunction: makeFunction)
+    }
+}
+
 //MARK: - Pre-loaded Models
 extension SlackModelBuilder {
     /**
@@ -349,7 +396,6 @@ extension SlackModelBuilder {
     }
 }
 
-
 //MARK: - Helpers
 extension SlackModelBuilder {
     //Not super stoked on this... but it does the job for now
@@ -370,6 +416,7 @@ extension SlackModelBuilder {
 
 //TODO:
 //MARK: remove when dependencies are cleared up
+import Vapor
 private extension JSON {
     var string: String? { return (self as Polymorphic).string }
 }

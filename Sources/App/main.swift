@@ -22,7 +22,7 @@ import Bot
 
 let bot = SlackBot(
     config: config,
-    services: [HelloBot()]
+    services: [HelloBot(), ButtonBot()]
 )
 
 bot.start()

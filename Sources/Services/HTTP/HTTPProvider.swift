@@ -8,7 +8,6 @@
 
 import Foundation
 import VaporTLS
-import String
 import S4
 import Engine
 

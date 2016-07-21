@@ -66,7 +66,7 @@ public struct File {
 }
 
 public extension File {
-    public enum Mode: String {
+    public enum Mode: String, JSONRepresentable {
         case hosted
         case external
         case snippet
