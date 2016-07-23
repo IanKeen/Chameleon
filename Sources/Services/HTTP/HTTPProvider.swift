@@ -19,7 +19,11 @@ final public class HTTPProvider: HTTPService {
     
     public func perform(with request: HTTPRequest) throws -> (Headers, JSON) {
         do {
-            guard let absoluteString = request.url.absoluteString
+            // For some reason on linux `absoluteString` _isn't_ `String?` - just `String`
+            //
+            //(╯°□°）╯︵ ┻━┻
+            let value: String? = request.url.absoluteString
+            guard let absoluteString = value
                 else { throw HTTPServiceError.invalidURL(url: request.url.absoluteString ?? "") }
             
             let response: HTTPResponse
