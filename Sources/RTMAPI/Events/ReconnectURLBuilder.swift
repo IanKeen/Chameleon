@@ -7,7 +7,6 @@
 //
 
 import Models
-import Vapor
 
 /// Handler for the `reconnect_url` event
 struct ReconnectURLBuilder: RTMAPIEventBuilder {

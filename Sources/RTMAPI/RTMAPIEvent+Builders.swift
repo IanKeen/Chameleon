@@ -7,7 +7,6 @@
 //
 
 import Models
-import Vapor
 import Common
 
 //MARK: - Protocol

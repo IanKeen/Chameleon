@@ -6,8 +6,6 @@
 //  Copyright © 2015 Mustard. All rights reserved.
 //
 
-import Vapor
-
 /// An abstraction representing an object capable of synchronous http requests
 public protocol HTTPService: class {
     /**
@@ -15,9 +13,9 @@ public protocol HTTPService: class {
      
      - parameter with: A `HTTPRequest` to execute
      - throws: A `HTTPServiceError` with failure details
-     - returns: A `JSON` response
+     - returns: A tuple containing the `Header`s and `JSON` response
      */
-    func perform(with: HTTPRequest) throws -> JSON
+    func perform(with: HTTPRequest) throws -> (Headers, JSON)
 }
 
 /// Describes a range of errors that can occur when attempting to use the service

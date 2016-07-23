@@ -11,6 +11,9 @@ import Models
 import Services
 import Common
 import Vapor
+import Services
+
+private let charSet = CharacterSet(charactersIn: uriQueryAllowed.joined(separator: ""))
 
 /**
  Builds a complete url to a webapi endpoint
@@ -66,25 +69,40 @@ public final class WebAPI {
         guard let slackModels = self.slackModels else { fatalError("Please set `slackModels`") }
         
         let request = self.request(for: method)
-        let json = try self.http.perform(with: request)
+        let (headers, json) = try self.http.perform(with: request)
         
         try self.checkForError(in: json)
         
-        return try method.handle(json: json, slackModels: slackModels())
+        return try method.handle(headers: headers, json: json, slackModels: slackModels())
     }
 }
 
 //MARK: - Helpers
 extension WebAPI {
     private func request<Method: WebAPIMethod>(for method: Method) -> HTTPRequest {
-        guard method.requiresAuthentication else { return method.networkRequest }
+        let request = self.requestWithHeaders(request: method.networkRequest)
         
-        //Copy the method, inserting the token
+        guard method.requiresAuthentication else { return request }
+        
+        //Copy the request, inserting the token
         return HTTPRequest(
-            method: method.networkRequest.method,
-            url: method.networkRequest.url,
-            parameters: method.networkRequest.parameters + ["token": self.token],
-            headers: method.networkRequest.headers
+            method: request.method,
+            url: request.url,
+            parameters: request.parameters + ["token": self.token],
+            headers: request.headers,
+            body: request.body
+        )
+    }
+    private func requestWithHeaders(request: HTTPRequest) -> HTTPRequest {
+        guard request.method == .post else { return request }
+        
+        //Copy the request, inserting the headers
+        return HTTPRequest(
+            method: request.method,
+            url: request.url,
+            parameters: request.parameters,
+            headers: request.headers + ["Content-Type": "application/json"],
+            body: request.body
         )
     }
     private func checkForError(in json: JSON) throws {

@@ -9,7 +9,6 @@
 import Models
 import Services
 import Common
-import Vapor
 
 /// Handler for the `chat.postMessage` endpoint
 public struct ChatPostMessage: WebAPIMethod {
@@ -46,11 +45,31 @@ public struct ChatPostMessage: WebAPIMethod {
     public var networkRequest: HTTPRequest {
         let encodedText = self.text
         
-        let requiredParams = [
+        var params = [String: String]()
+        
+        params = params + [
             "channel": self.target.id,
             "text": encodedText
         ]
-        let params = requiredParams + options.toParameters() + self.customParameters
+        
+        for (key, value) in options.toParameters() {
+            params[key] = value
+        }
+        
+        for (key, value) in self.customParameters ?? [:] {
+            params[key] = value
+        }
+        
+        if let attachments = self.attachments {
+            let json = attachments.makeJSON()
+            do {
+                let string = try JSON.serialize(json).string()
+                params["attachments"] = string
+                
+            } catch let error {
+                fatalError("\(error)")
+            }
+        }
         
         return HTTPRequest(
             method: .get,
@@ -58,5 +77,5 @@ public struct ChatPostMessage: WebAPIMethod {
             parameters: params
         )
     }
-    public func handle(json: JSON, slackModels: SlackModels) throws -> SuccessParameters { }
+    public func handle(headers: Headers, json: JSON, slackModels: SlackModels) throws -> SuccessParameters { }
 }

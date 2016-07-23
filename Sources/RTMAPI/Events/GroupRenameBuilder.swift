@@ -7,7 +7,6 @@
 //
 
 import Models
-import Vapor
 
 /// Handler for the `group_rename` event
 struct GroupRenameBuilder: RTMAPIEventBuilder {

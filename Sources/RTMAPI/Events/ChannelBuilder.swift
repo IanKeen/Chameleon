@@ -7,7 +7,6 @@
 //
 
 import Models
-import Vapor
 
 private enum ChannelEvent: String, RTMAPIEventBuilderEventType {
     case

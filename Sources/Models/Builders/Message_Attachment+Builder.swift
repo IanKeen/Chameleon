@@ -11,20 +11,22 @@ import Common
 extension Message.Attachment: SlackModelType {
     public static func make(with builder: SlackModelBuilder) throws -> Message.Attachment {
         return try tryMake(Message.Attachment(
-            fallback:       try builder.property("fallback"),
-            color:          try builder.optionalProperty("color"),
-            pretext:        builder.optionalProperty("pretext"),
-            author_name:    builder.optionalProperty("author_name"),
-            author_link:    builder.optionalProperty("author_link"),
-            author_icon:    builder.optionalProperty("author_icon"),
-            title:          builder.optionalProperty("title"),
-            title_link:     builder.optionalProperty("title_link"),
-            text:           try builder.property("text"),
-            fields:         try builder.optionalCollection("fields", makeFunction: chooseField),
-            from_url:       builder.optionalProperty("from_url"),
-            image_url:      builder.optionalProperty("image_url"),
-            thumb_url:      builder.optionalProperty("thumb_url"),
-            callback_id:    builder.optionalProperty("callback_id")
+            fallback:           try builder.property("fallback"),
+            color:              try builder.optionalProperty("color"),
+            pretext:            builder.optionalProperty("pretext"),
+            author_name:        builder.optionalProperty("author_name"),
+            author_link:        builder.optionalProperty("author_link"),
+            author_icon:        builder.optionalProperty("author_icon"),
+            title:              builder.optionalProperty("title"),
+            title_link:         builder.optionalProperty("title_link"),
+            text:               try builder.property("text"),
+            fields:             try builder.optionalCollection("fields", makeFunction: chooseField),
+            actions:            try builder.optionalCollection("actions", makeFunction: chooseField),
+            from_url:           builder.optionalProperty("from_url"),
+            image_url:          builder.optionalProperty("image_url"),
+            thumb_url:          builder.optionalProperty("thumb_url"),
+            callback_id:        builder.optionalProperty("callback_id"),
+            attachment_type:    builder.optionalProperty("attachment_type")
             )
         )
     }
@@ -46,9 +48,9 @@ extension Message.Attachment.Button: SlackModelType {
         return try tryMake(Message.Attachment.Button(
             name: try builder.property("name"),
             text: try builder.property("text"),
-            style: try builder.property("style"),
+            style: try builder.optionalProperty("style"),
             value: try builder.property("value"),
-            confirm: try builder.property("confirm")
+            confirm: try builder.optionalProperty("confirm")
             )
         )
     }

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Vapor
 
 public extension JSON {
     /**
@@ -44,6 +43,28 @@ public extension JSON {
         for keyPath in keyPathComponents {
             guard let next: JSON = json[keyPath] else { return false }
             json = next
+        }
+        return true
+    }
+    
+    /**
+     Determine if a provided keyPath exists within the given `JSON` and matches the specified `Type`
+     
+     - parameter keyPath: The keyPath to test
+     - parameter type: The `Type` the found value must be
+     - returns: If the keyPath exists and the types are valid `true`, otherwise `false`
+     */
+    public func keyPathExists<T>(_ keyPath: String, type: T.Type, predicate: (T) -> Bool = { _ in true }) -> Bool {
+        let keyPathComponents = keyPath.components(separatedBy: ".")
+        
+        var json = self
+        for keyPath in keyPathComponents {
+            guard let next: JSON = json[keyPath] else { return false }
+            json = next
+        }
+        
+        guard let value: T = json.tryGet(type: type) where predicate(value) else {
+            return false
         }
         return true
     }

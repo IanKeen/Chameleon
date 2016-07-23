@@ -7,7 +7,6 @@
 //
 
 import Models
-import Vapor
 
 /// Handler for the `presence_change` event
 struct PresenceChangeBuilder: RTMAPIEventBuilder {

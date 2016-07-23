@@ -45,4 +45,7 @@ public struct Message {
     public let edited: Edit?
     
     public let attachments: [Attachment]?
+    public let response_type: ResponseType?
+    public let replace_original: Bool?
+    public let delete_original: Bool?
 }

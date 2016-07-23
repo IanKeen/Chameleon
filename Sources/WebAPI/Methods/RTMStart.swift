@@ -8,7 +8,6 @@
 
 import Models
 import Services
-import Vapor
 import Strand
 
 /// Handler for the `rtm.start` endpoint
@@ -50,7 +49,7 @@ public struct RTMStart: WebAPIMethod {
             parameters: params
         )
     }
-    public func handle(json: JSON, slackModels: SlackModels) throws -> SuccessParameters {
+    public func handle(headers: Headers, json: JSON, slackModels: SlackModels) throws -> SuccessParameters {
         guard let socketUrl = json["url"].string else { throw WebAPI.Error.invalidResponse(json: json) }
         
         _ = try Strand {

@@ -78,7 +78,8 @@ extension SlackModelBuilder {
      - returns: The value at keypath if found and it is of type `T`, otherwise nil
      */
     public func optionalProperty<T>(_ keyPath: String) -> T? {
-        return try? self.property(keyPath)
+        do { return try self.property(keyPath) }
+        catch { return nil }
     }
 }
 
@@ -91,7 +92,8 @@ extension SlackModelBuilder {
      - returns: The value at keypath if found and it is of type `T`, otherwise the default value
      */
     public func property<T: DefaultValueType>(_ keyPath: String) -> T {
-        return (try? self.json.keyPathValue(keyPath)) ?? T.defaultValue
+        do { return try self.json.keyPathValue(keyPath) }
+        catch { return T.defaultValue }
     }
 }
 
@@ -228,7 +230,7 @@ extension SlackModelBuilder {
                 ims: self.ims
             )
             
-            let maker = makeFunction(json)
+            let maker = makeFunction(data)
             let instance = try maker(builder)
             guard let result = instance as? T else {
                 throw SlackModelError.typeMismatch(keyPath: keyPath, expected: String(T.self), got: String(instance.self))
@@ -300,12 +302,7 @@ extension SlackModelBuilder {
      - returns: The Slack model of type `T` with the retrieved id, or nil
      */
     public func optionalSlackModel<T: SlackModelTypeIdentifiable>(_ keyPath: String) throws -> T? {
-        let itemId: String? = try? self.property(keyPath)
-        guard
-            let unwrappedItemId = itemId
-            where !unwrappedItemId.isEmpty
-            else { return nil }
-        
+        if (!self.json.keyPathExists(keyPath, type: String.self, predicate: { !$0.isEmpty })) { return nil }
         return try self.slackModel(keyPath) as T
     }
     
@@ -371,12 +368,7 @@ extension SlackModelBuilder {
      - returns: The `Target` with the retrieved id, or nil
      */
     public func optionalSlackModel(_ keyPath: String) throws -> Target? {
-        let itemId: String? = try? self.property(keyPath)
-        guard
-            let unwrappedItemId = itemId
-            where !unwrappedItemId.isEmpty
-            else { return nil }
-        
+        if (!self.json.keyPathExists(keyPath, type: String.self, predicate: { !$0.isEmpty })) { return nil }
         return try self.slackModel(keyPath)
     }
     

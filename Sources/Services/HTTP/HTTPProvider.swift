@@ -8,15 +8,15 @@
 
 import Foundation
 import VaporTLS
-import S4
 import Engine
+import C7
 
 /// Standard implementation of a HTTPService
 final public class HTTPProvider: HTTPService {
     //MARK: - Public
     public init() { }
     
-    public func perform(with request: HTTPRequest) throws -> JSON {
+    public func perform(with request: HTTPRequest) throws -> (Headers, JSON) {
         do {
             guard let absoluteString = request.url.absoluteString
                 else { throw HTTPServiceError.invalidURL(url: request.url.absoluteString ?? "") }
@@ -26,11 +26,13 @@ final public class HTTPProvider: HTTPService {
             do {
                 let headers = request.headers ?? [:]
                 let query = request.parameters ?? [:]
+                let body = request.body?.makeBody() ?? []
                 response = try HTTPClient<TLSClientStream>.request(
                     request.clientMethod,
                     absoluteString,
                     headers: headers.makeHeaders(),
-                    query: query.makeQuery()
+                    query: query.makeQuery(),
+                    body: body
                 )
                 
             } catch let error {
@@ -48,13 +50,7 @@ final public class HTTPProvider: HTTPService {
                 throw HTTPServiceError.serverError(code: response.status.statusCode)
             }
             
-            do {
-                guard let bytes = response.body.bytes else { throw HTTPServiceError.invalidResponse(data: response.body) }
-                return try JSON.parse(bytes)
-                
-            } catch let error {
-                throw HTTPServiceError.internalError(error: error)
-            }
+            return (response.headers, response.json ?? .null)
         }
     }
 }
@@ -72,32 +68,23 @@ private extension HTTPRequest {
     }
 }
 
-private protocol StringType {
-    var string: String { get }
-}
-extension String: StringType {
-    var string: String { return self }
-}
-extension Dictionary where Key: CaseInsensitiveStringRepresentable, Value: StringType {
+extension Collection where Iterator.Element == (key: String, value: String) {
     private func makeHeaders() -> Headers {
         var headers = [CaseInsensitiveString: String]()
         for (key, value) in self {
-            headers.updateValue(value.string, forKey: key.caseInsensitiveString)
+            headers[key.caseInsensitiveString] = value
         }
         return Headers(headers)
     }
-}
-extension Dictionary where Key: StringType, Value: StringType {
     private func makeQuery() -> [String: CustomStringConvertible] {
         let charSet = CharacterSet(charactersIn: uriQueryAllowed.joined(separator: ""))
         var query = [String: CustomStringConvertible]()
         
         for (key, value) in self {
-            guard let value = value.string.addingPercentEncoding(withAllowedCharacters: charSet) else { continue }
-            query.updateValue(value, forKey: key.string)
+            guard let value = value.addingPercentEncoding(withAllowedCharacters: charSet) else { continue }
+            query[key] = value
         }
         return query
     }
 }
 
-private let uriQueryAllowed: [String] = ["!", "$", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "=", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "_", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "~"]

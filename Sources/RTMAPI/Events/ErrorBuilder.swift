@@ -7,7 +7,6 @@
 //
 
 import Models
-import Vapor
 
 /// Handler for the `error` event
 struct ErrorBuilder: RTMAPIEventBuilder {

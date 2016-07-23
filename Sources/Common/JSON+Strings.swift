@@ -6,9 +6,7 @@
 //
 //
 
-import Vapor
-
-extension JSON {
+public extension JSON {
     /// Provides a string representation of the type
     public var jsonTypeDescription: String {
         return String(self)

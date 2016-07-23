@@ -8,7 +8,6 @@
 
 import Models
 import Services
-import Vapor
 
 /// Represents the core slack types
 public typealias SlackModels = (users: [User], channels: [Channel], groups: [Group], ims: [IM])
@@ -27,12 +26,13 @@ public protocol WebAPIMethod {
     /**
      Handle the `JSON` response from an executed `WebAPIMethod`
      
+     - parameter headers:     The `Headers` of the request
      - parameter json:        The `JSON` result
      - parameter slackModels: The `SlackModels` that can be used to create a `SlackModelBuilder` for constructing a type-safe response
      - throws: Any `ErrorProtocol` that might result from the handling of the `JSON` response
      - returns: The result of handling the `JSON`
      */
-    func handle(json: JSON, slackModels: SlackModels) throws -> SuccessParameters
+    func handle(headers: Headers, json: JSON, slackModels: SlackModels) throws -> SuccessParameters
 }
 
 extension WebAPIMethod {

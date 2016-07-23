@@ -7,7 +7,6 @@
 //
 
 import Models
-import Vapor
 
 /// Handler for the `user_typing` event
 struct UserTypingBuilder: RTMAPIEventBuilder {

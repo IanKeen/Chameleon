@@ -7,7 +7,6 @@
 //
 
 import Models
-import Vapor
 
 private enum ReactionEvent: String, RTMAPIEventBuilderEventType {
     case reaction_added, reaction_removed

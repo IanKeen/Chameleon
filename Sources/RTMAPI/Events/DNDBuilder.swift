@@ -7,7 +7,6 @@
 //
 
 import Models
-import Vapor
 
 private enum DNDEvent: String, RTMAPIEventBuilderEventType {
     case dnd_updated, dnd_updated_user

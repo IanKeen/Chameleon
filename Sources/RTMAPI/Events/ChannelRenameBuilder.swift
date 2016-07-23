@@ -7,7 +7,6 @@
 //
 
 import Models
-import Vapor
 
 /// Handler for the `channel_rename` event
 struct ChannelRenameBuilder: RTMAPIEventBuilder {

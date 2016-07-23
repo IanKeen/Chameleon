@@ -11,7 +11,6 @@ import Models
 import Services
 import Common
 import Strand
-import Vapor
 
 /// Provides access to the Slack realtime messaging api
 public final class RTMAPI {

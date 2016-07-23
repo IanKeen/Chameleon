@@ -22,12 +22,14 @@ extension Message {
         public let text: String
         
         public let fields: [MessageAttachmentField]?
+        public let actions: [MessageAttachmentField]?
         
         public let from_url: String?
         public let image_url: String?
         public let thumb_url: String?
         
         public let callback_id: String?
+        public let attachment_type: String?
         
         //TODO: Remove this once memberwise `init`s follow the structs access :(
         public init(
@@ -41,10 +43,12 @@ extension Message {
             title_link: String?,
             text: String,
             fields: [MessageAttachmentField]?,
+            actions: [MessageAttachmentField]?,
             from_url: String?,
             image_url: String?,
             thumb_url: String?,
-            callback_id: String?) {
+            callback_id: String?,
+            attachment_type: String?) {
             
             self.fallback = fallback
             self.color = color
@@ -56,10 +60,12 @@ extension Message {
             self.title_link = title_link
             self.text = text
             self.fields = fields
+            self.actions = actions
             self.from_url = from_url
             self.image_url = image_url
             self.thumb_url = thumb_url
             self.callback_id = callback_id
+            self.attachment_type = attachment_type
         }
     }
 }

@@ -6,8 +6,6 @@
 //
 //
 
-import Vapor
-
 /// Describes a range of errors that can occur when attempting to build RTMAPI events from `JSON`
 public enum RTMAPIEventBuilderError: ErrorProtocol, CustomStringConvertible {
     /// A parent builder error and the nested error `error`

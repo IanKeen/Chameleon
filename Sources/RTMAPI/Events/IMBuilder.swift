@@ -7,7 +7,6 @@
 //
 
 import Models
-import Vapor
 
 private enum IMEvent: String, RTMAPIEventBuilderEventType {
     case im_close, im_created, im_marked, im_open
