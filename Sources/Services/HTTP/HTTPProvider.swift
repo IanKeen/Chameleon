@@ -81,10 +81,11 @@ extension Collection where Iterator.Element == (key: String, value: String) {
         var query = [String: CustomStringConvertible]()
         
         for (key, value) in self {
-            if let bytes = try? percentEncoded(value.bytes) {
-                let encoded = String(bytes)
-                query[key] = encoded
-            }
+            guard
+                let bytes = try? percentEncoded(value.bytes),
+                let encoded = try? String(data: Data(bytes)) else { continue }
+            
+            query[key] = encoded
         }
         return query
     }
