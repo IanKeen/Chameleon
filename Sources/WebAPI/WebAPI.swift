@@ -6,12 +6,10 @@
 //  Copyright © 2016 Mustard. All rights reserved.
 //
 
-import Foundation
 import Models
 import Services
 import Common
 import Vapor
-import Services
 
 /**
  Builds a complete url to a webapi endpoint

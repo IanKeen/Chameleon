@@ -6,7 +6,6 @@
 //  Copyright © 2015 Mustard. All rights reserved.
 //
 
-import Foundation
 
 /// Represents a HTTP Request
 public struct HTTPRequest {

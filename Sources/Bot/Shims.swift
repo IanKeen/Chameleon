@@ -6,5 +6,3 @@
 //
 //
 
-import Foundation
-public typealias URL = NSURL
