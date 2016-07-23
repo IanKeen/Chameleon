@@ -10,6 +10,7 @@ import Foundation
 import VaporTLS
 import Engine
 import C7
+//import Common
 
 /// Standard implementation of a HTTPService
 final public class HTTPProvider: HTTPService {
@@ -77,12 +78,13 @@ extension Collection where Iterator.Element == (key: String, value: String) {
         return Headers(headers)
     }
     private func makeQuery() -> [String: CustomStringConvertible] {
-        let charSet = CharacterSet(charactersIn: uriQueryAllowed.joined(separator: ""))
         var query = [String: CustomStringConvertible]()
         
         for (key, value) in self {
-            guard let value = value.addingPercentEncoding(withAllowedCharacters: charSet) else { continue }
-            query[key] = value
+            if let bytes = try? percentEncoded(value.bytes) {
+                let encoded = String(bytes)
+                query[key] = encoded
+            }
         }
         return query
     }

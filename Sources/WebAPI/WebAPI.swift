@@ -13,8 +13,6 @@ import Common
 import Vapor
 import Services
 
-private let charSet = CharacterSet(charactersIn: uriQueryAllowed.joined(separator: ""))
-
 /**
  Builds a complete url to a webapi endpoint
  
