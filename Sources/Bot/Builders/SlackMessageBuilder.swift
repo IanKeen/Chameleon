@@ -127,7 +127,7 @@ public final class SlackMessage {
 }
 
 //MARK: - SlackMessage > WebAPI.ChatPostMessage
-extension SlackMessage {
+public extension SlackMessage {
     /// Create a `ChatPostMessage` from this instance to use with the `WebAPI`
     public func apiMethod() -> ChatPostMessage {
         return ChatPostMessage(
@@ -141,14 +141,14 @@ extension SlackMessage {
 }
 
 //MARK: - Private Helpers
-extension SlackMessage {
+private extension SlackMessage {
     private func value(_ string: String, trailingSpace: Bool) -> String {
         return "\(string)\(trailingSpace ? " " : "")"
     }
 }
 
 //MARK: - SlackMessage.Command
-extension SlackMessage {
+public extension SlackMessage {
     /// Represents the available Slack commands
     public enum Command {
         /// Mention @channel
@@ -183,7 +183,7 @@ extension SlackMessage {
 }
 
 //MARK: - SlackMessage.Formatting
-extension SlackMessage {
+public extension SlackMessage {
     /// Represents the available message formatting for text
     public enum Formatting {
         /// Leave the text 'as-is'

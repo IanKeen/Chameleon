@@ -54,21 +54,21 @@ public final class RedisStorage: Storage {
 }
 
 //MARK: - Redis Serialization
-protocol RedisStorable {
+private protocol RedisStorable {
     var redisStoreCommand: String { get }
     var redisStoreParams: [String] { get }
 }
-extension RedisStorable {
+private extension RedisStorable {
     var redisStoreCommand: String { return "SET" }
     var redisStoreParams: [String] { return [String(self)] }
 }
 
 //MARK: - Redis Deserialization
-protocol RedisRetrievable {
+private protocol RedisRetrievable {
     static var redisRetrieveCommand: String { get }
     static func redisValue(from: String) -> Self?
 }
-extension RedisRetrievable {
+private extension RedisRetrievable {
     static var redisRetrieveCommand: String { return "GET" }
 }
 
@@ -88,7 +88,7 @@ extension Bool: RedisStorable, RedisRetrievable {
 
 //TOOD
 // I think these are wrong... need to test!!
-extension Sequence where Iterator.Element: RedisStorable {
+private extension Sequence where Iterator.Element: RedisStorable {
     var redisStoreCommand: String { return "LPUSH" }
     var redisStoreParams: [String] {
         return [self
@@ -96,7 +96,7 @@ extension Sequence where Iterator.Element: RedisStorable {
             .joined(separator: ";")]
     }
 }
-extension Sequence where Iterator.Element: RedisRetrievable {
+private extension Sequence where Iterator.Element: RedisRetrievable {
     var redisRetrieveCommand: String { return "MGET" }
     static func redisValue(from: String) -> Self? {
         return from.components(separatedBy: ";") as? Self

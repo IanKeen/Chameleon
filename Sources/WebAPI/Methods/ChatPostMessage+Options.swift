@@ -6,7 +6,7 @@
 //  Copyright © 2016 Mustard. All rights reserved.
 //
 
-extension ChatPostMessage {
+public extension ChatPostMessage {
     /// Defines how the message will be parsed
     public enum ParseMode: String {
         /// Slack will not perform _any_ processing of this message.

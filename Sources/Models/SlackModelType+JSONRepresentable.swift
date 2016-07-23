@@ -80,7 +80,7 @@ private extension Mirror {
     }
 }
 
-func +(left: JSON, right: JSON) -> JSON {
+public func +(left: JSON, right: JSON) -> JSON {
     switch left {
     case .object(let object):
         guard case let .object(otherObject) = right else { return right }

@@ -74,7 +74,7 @@ public final class WebAPI {
 }
 
 //MARK: - Helpers
-extension WebAPI {
+private extension WebAPI {
     private func request<Method: WebAPIMethod>(for method: Method) -> HTTPRequest {
         let request = self.requestWithHeaders(request: method.networkRequest)
         
@@ -110,7 +110,7 @@ extension WebAPI {
 }
 
 //MARK: - Errors
-extension WebAPI {
+public extension WebAPI {
     /// Describes a range of errors that can occur when attempting to use the the webapi
     public enum Error: ErrorProtocol, CustomStringConvertible {
         /// Something went wrong during execution

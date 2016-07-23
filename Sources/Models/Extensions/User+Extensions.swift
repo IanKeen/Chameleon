@@ -6,7 +6,7 @@
 //  Copyright © 2016 Mustard. All rights reserved.
 //
 
-extension Sequence where Iterator.Element == User {
+public extension Sequence where Iterator.Element == User {
     /**
      Returns a sequence of `User` models that represent the bot users.
      

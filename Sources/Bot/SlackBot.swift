@@ -126,7 +126,7 @@ public class SlackBot {
 }
 
 //MARK: - State
-extension SlackBot {
+private extension SlackBot {
     /// Defines the states the bot will move through during connection
     private enum State {
         /**
@@ -202,7 +202,7 @@ extension SlackBot {
 }
 
 //MARK: - Errors
-extension SlackBot {
+private extension SlackBot {
     //
     //TODO: add a back-off for retries
     //
@@ -286,7 +286,7 @@ extension SlackBot {
 }
 
 //MARK: - RTM
-extension SlackBot {
+private extension SlackBot {
     private func bindToRTM() {
         self.rtmAPI.onConnected = { /* not used at this time as the 'real' connected event is linked to .hello and data */ }
         self.rtmAPI.onDisconnected = { [weak self] error in
@@ -305,7 +305,7 @@ extension SlackBot {
 }
 
 //MARK: - Bot Event Handler
-extension SlackBot {
+private extension SlackBot {
     // TODO: turn this into an actual `SlackService`
     
     /// Handles internal/bot specific `RTMAPIEvent`s

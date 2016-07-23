@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension RTMStart {
+public extension RTMStart {
     /// Defines the options available when sending a message.
     public enum Option {
         /// Return timestamp only for latest message object of each channel (improves performance).

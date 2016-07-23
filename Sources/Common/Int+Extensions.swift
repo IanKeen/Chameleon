@@ -31,7 +31,7 @@ public enum Clamping {
     }
 }
 
-extension Int {
+public extension Int {
     /**
      Find out if `self` is between two other `Int`s
      Order does *not* matter

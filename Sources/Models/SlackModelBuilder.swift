@@ -59,7 +59,7 @@ public struct SlackModelBuilder {
 }
 
 //MARK: - Simple Types
-extension SlackModelBuilder {
+public extension SlackModelBuilder {
     /**
      Retrieve a required value from the `JSON` using the supplied keypath
      
@@ -84,7 +84,7 @@ extension SlackModelBuilder {
 }
 
 //MARK: - Defaultable Types
-extension SlackModelBuilder {
+public extension SlackModelBuilder {
     /**
      Retrieve a value from the `JSON` using the supplied keypath or a default value
      
@@ -98,7 +98,7 @@ extension SlackModelBuilder {
 }
 
 //MARK: - RawRepresentable Types
-extension SlackModelBuilder {
+public extension SlackModelBuilder {
     /**
      Retrieve a required `RawRepresentable` value from the `JSON` using the supplied keypath
      
@@ -133,7 +133,7 @@ extension SlackModelBuilder {
 }
 
 //MARK: - SlackModelType Types
-extension SlackModelBuilder {
+public extension SlackModelBuilder {
     /**
      Create a required `SlackModelType` from the `JSON` using the supplied keypath
      
@@ -209,7 +209,7 @@ extension SlackModelBuilder {
 
 //MARK: - Polymorphic SlackModelType Types
 public typealias MakeFunction = (SlackModelBuilder) throws -> SlackModelType
-extension SlackModelBuilder {
+public extension SlackModelBuilder {
     /**
      Create a collection of required `SlackModelType`s from the `JSON` using the supplied keypath
      
@@ -257,7 +257,7 @@ extension SlackModelBuilder {
 }
 
 //MARK: - Pre-loaded Models
-extension SlackModelBuilder {
+public extension SlackModelBuilder {
     /**
      Retrieve the id of a required Slack model and return a matching complete model from the supplied objects
      
@@ -323,7 +323,7 @@ extension SlackModelBuilder {
 }
 
 //MARK: - Targets
-extension SlackModelBuilder {
+public extension SlackModelBuilder {
     /**
      Retrieve the id of a required Slack `Target` and return a matching complete model from the supplied objects
      
@@ -389,7 +389,7 @@ extension SlackModelBuilder {
 }
 
 //MARK: - Helpers
-extension SlackModelBuilder {
+private extension SlackModelBuilder {
     //Not super stoked on this... but it does the job for now
     private func identifiables() -> [SlackModelTypeIdentifiable] {
         //combatting `Expression was too complex...`

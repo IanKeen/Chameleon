@@ -21,7 +21,7 @@ public protocol Target {
     var group: Group? { get }
     var instantMessage: IM? { get }
 }
-extension Target {
+public extension Target {
     public var channel: Channel? { return nil }
     public var group: Group? { return nil }
     public var instantMessage: IM? { return nil }

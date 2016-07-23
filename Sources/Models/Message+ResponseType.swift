@@ -6,7 +6,7 @@
 //
 //
 
-extension Message {
+public extension Message {
     public enum ResponseType: String, JSONRepresentable {
         case in_channel
         case ephemeral

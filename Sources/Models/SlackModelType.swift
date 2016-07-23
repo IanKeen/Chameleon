@@ -41,7 +41,7 @@ public protocol SlackModelType: JSONRepresentable {
  - throws: A `SlackModelTypeError` containing further details of the failure
  - returns: A new `SlackModelType` of type `T`
  */
-func tryMake<T: SlackModelType>(_ op: @autoclosure () throws -> T) throws -> T {
+public func tryMake<T: SlackModelType>(_ op: @autoclosure () throws -> T) throws -> T {
     do { return try op() }
     catch let error { throw SlackModelTypeError.buildError(type: T.self, error: error) }
 }

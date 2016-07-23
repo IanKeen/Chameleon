@@ -11,29 +11,29 @@ import Common
 import WebAPI
 import Environment
 
-extension SlackBotConfig {
+private extension SlackBotConfig {
     /// Supported Variables
-    public enum Variables {
+    private enum Variables {
         /// URL for the Storage layer to use
-        public static let StorageURL = "STORAGE_URL"
+        static let StorageURL = "STORAGE_URL"
         
         /// Token to use for the bot
-        public static let Token = "TOKEN"
+        static let Token = "TOKEN"
         
         /// How many times to retry connecting before giving up
-        public static let ReconnectionAttempts = "RECONNECTION_ATTEMPTS"
+        static let ReconnectionAttempts = "RECONNECTION_ATTEMPTS"
         
         /// How often to send a PING to slack once conencted to keep the connection alive
-        public static let PingPongInterval = "PING_PONG_INTERVAL"
+        static let PingPongInterval = "PING_PONG_INTERVAL"
         
         /// All available environment variables
-        public static var allVariables: [String] {
+        static var allVariables: [String] {
             return [Variables.StorageURL, Variables.Token, Variables.ReconnectionAttempts, Variables.PingPongInterval]
         }
     }
 }
 
-extension SlackBotConfig {
+public extension SlackBotConfig {
     /// Describes a range of errors that can occur when build configuration data
     public enum Error: ErrorProtocol {
         /// A required parameter was not provided
@@ -81,7 +81,7 @@ public struct SlackBotConfig {
 }
 
 //MARK: - Command line parameters
-extension SlackBotConfig {
+public extension SlackBotConfig {
     /**
      Creates a `SlackBotConfig` from a `NSProcessInfo`s command line arguments
      
@@ -118,7 +118,7 @@ extension SlackBotConfig {
 }
 
 //MARK: - Environment Variables
-extension SlackBotConfig {
+public extension SlackBotConfig {
     /**
      Creates a `SlackBotConfig` from a `Environment` variables
      

@@ -15,7 +15,7 @@
     @_exported import Darwin.C
 #endif
 
-extension Int {
+public extension Int {
     /**
      Generates a random number between (and inclusive of)
      the given minimum and maxiumum.

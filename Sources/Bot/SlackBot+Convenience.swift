@@ -10,7 +10,7 @@ import Services
 import WebAPI
 import RTMAPI
 
-extension SlackBot {
+public extension SlackBot {
     /**
      Provides a convenience `init` for a `SlackBot` instance prodiving the default `WebAPI` and `RTMAPI` instances.
      

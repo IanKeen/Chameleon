@@ -6,7 +6,7 @@
 //
 //
 
-extension String {
+public extension String {
     public var snakeToLowerCamel: String {
         return self
             .components(separatedBy: "_")

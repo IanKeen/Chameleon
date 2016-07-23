@@ -7,7 +7,6 @@
 //
 
 import Models
-import Foundation
 
 /**
  These are a set of optional operators to make constructing a `SlackMessage` made of lots of components a little more fluent
@@ -16,22 +15,21 @@ import Foundation
 
 
 //MARK: - SlackMessage Operators
-
-func +(builder: SlackMessage, value: String) -> SlackMessage {
+public func +(builder: SlackMessage, value: String) -> SlackMessage {
     return builder.text(value)
 }
-func +(builder: SlackMessage, value: User) -> SlackMessage {
+public func +(builder: SlackMessage, value: User) -> SlackMessage {
     return builder.user(value)
 }
-func +(builder: SlackMessage, value: Channel) -> SlackMessage {
+public func +(builder: SlackMessage, value: Channel) -> SlackMessage {
     return builder.channel(value)
 }
-func +(builder: SlackMessage, value: URL) -> SlackMessage {
+public func +(builder: SlackMessage, value: URL) -> SlackMessage {
     return builder.url(value)
 }
-func +(builder: SlackMessage, value: SlackMessage.Command) -> SlackMessage {
+public func +(builder: SlackMessage, value: SlackMessage.Command) -> SlackMessage {
     return builder.command(value)
 }
-func +(builder: SlackMessage, value: SlackEmoji) -> SlackMessage {
+public func +(builder: SlackMessage, value: SlackEmoji) -> SlackMessage {
     return builder.emoji(value)
 }

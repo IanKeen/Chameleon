@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 public typealias Date = NSDate
 public typealias URL = NSURL
 

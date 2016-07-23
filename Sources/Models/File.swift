@@ -7,62 +7,62 @@
 //
 
 public struct File {
-    let id: String
-    let created: Int?
-    let name: String?
-    let title: String?
-    let mimetype: String?
-    let filetype: String?
-    let pretty_type: String?
-    let user: User?
-    let mode: Mode?
-    let editable: Bool
-    let is_external: Bool
-    let is_public: Bool
-    let external_type: String?
-    let username: String?
-    let size: Int?
+    public let id: String
+    public let created: Int?
+    public let name: String?
+    public let title: String?
+    public let mimetype: String?
+    public let filetype: String?
+    public let pretty_type: String?
+    public let user: User?
+    public let mode: Mode?
+    public let editable: Bool
+    public let is_external: Bool
+    public let is_public: Bool
+    public let external_type: String?
+    public let username: String?
+    public let size: Int?
     
-    let updated: Int?
-    let editor: User?
-    let last_editor: User?
-    let state: String?
+    public let updated: Int?
+    public let editor: User?
+    public let last_editor: User?
+    public let state: String?
 
-    let url_private: String?
-    let url_private_download: String?
-    let thumb_64: String?
-    let thumb_80: String?
-    let thumb_360: String?
-    let thumb_360_gif: String?
-    let thumb_360_w: Int?
-    let thumb_360_h: Int?
-    let thumb_480: String?
-    let thumb_480_w: Int?
-    let thumb_480_h: Int?
-    let thumb_160: String?
-    let permalink: String?
-    let permalink_public: String?
-    let edit_link: String?
+    public let url_private: String?
+    public let url_private_download: String?
+    public let thumb_64: String?
+    public let thumb_80: String?
+    public let thumb_360: String?
+    public let thumb_360_gif: String?
+    public let thumb_360_w: Int?
+    public let thumb_360_h: Int?
+    public let thumb_480: String?
+    public let thumb_480_w: Int?
+    public let thumb_480_h: Int?
+    public let thumb_160: String?
+    public let permalink: String?
+    public let permalink_public: String?
+    public let edit_link: String?
     
-    let preview: String?
-    let preview_highlight: String?
+    public let preview: String?
+    public let preview_highlight: String?
 
-    let lines: Int?
-    let lines_more: Int?
-    let public_url_shared: Bool
-    let display_as_bot: Bool
+    public let lines: Int?
+    public let lines_more: Int?
+    public let public_url_shared: Bool
+    public let display_as_bot: Bool
 
-    let channels: [Channel]?
-    let groups: [Group]?
-    let ims: [IM]?
+    public let channels: [Channel]?
+    public let groups: [Group]?
+    public let ims: [IM]?
     
-    let initial_comment: AnyObject? //TODO
-    let num_stars: Int?
-    let is_starred: Bool?
-    let pinned_to: [Target]?
+    public let initial_comment: AnyObject? //TODO
+    public let num_stars: Int?
+    public let is_starred: Bool?
+    public let pinned_to: [Target]?
     
-    let reactions: [Reaction]?
-    let comments_count: Int?
+    public let reactions: [Reaction]?
+    public let comments_count: Int?
 }
 
 public extension File {

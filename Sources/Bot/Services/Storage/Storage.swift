@@ -14,7 +14,7 @@ public enum StorageNamespace {
     /// A custom namespace to keep service specific data separate
     case `in`(String)
     
-    var namespace: String {
+    public var namespace: String {
         switch self {
         case .shared: return "shared"
         case .in(let value): return value
@@ -75,7 +75,7 @@ public protocol Storage: class {
     func get<T: StorableType>(_ type: T.Type, in: StorageNamespace, key: String) -> T?
 }
 
-extension Storage {
+public extension Storage {
     /**
      Assign a value to a key under a namespace
      
@@ -130,7 +130,7 @@ public protocol StorableType {
     var storableValue: Any { get }
     func value<T>() -> T?
 }
-extension StorableType {
+public extension StorableType {
     public var storableValue: Any { return self }
     public func value<T>() -> T? { return self as? T }
 }

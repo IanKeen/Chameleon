@@ -44,7 +44,7 @@ public enum RTMAPIEventBuilderError: ErrorProtocol, CustomStringConvertible {
  - throws: A `RTMAPIEventBuilderError.error` containing further details of the failure
  - returns: A new `RTMAPIEvent`
  */
-func tryMake(_ type: RTMAPIEventBuilder.Type, _ op: @autoclosure () throws -> RTMAPIEvent) throws -> RTMAPIEvent {
+public func tryMake(_ type: RTMAPIEventBuilder.Type, _ op: @autoclosure () throws -> RTMAPIEvent) throws -> RTMAPIEvent {
     do { return try op() }
     catch let error { throw RTMAPIEventBuilderError.error(type: type, error: error) }
 }

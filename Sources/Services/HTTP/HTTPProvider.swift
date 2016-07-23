@@ -73,7 +73,7 @@ private extension HTTPRequest {
     }
 }
 
-extension Collection where Iterator.Element == (key: String, value: String) {
+private extension Collection where Iterator.Element == (key: String, value: String) {
     private func makeHeaders() -> Headers {
         var headers = [CaseInsensitiveString: String]()
         for (key, value) in self {

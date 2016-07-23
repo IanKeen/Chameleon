@@ -6,7 +6,7 @@
 //
 //
 
-extension Group {
+public extension Group {
     public func renamed(to newName: String) -> Group {
         return Group(
             id: self.id,

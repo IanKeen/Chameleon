@@ -64,7 +64,6 @@ extension RTMAPIEvent {
     //
     
     private static var builders: [String: RTMAPIEventBuilder.Type] = {
-        
         let builders: [RTMAPIEventBuilder.Type] = [
             ErrorBuilder.self,
             PingPongBuilder.self,

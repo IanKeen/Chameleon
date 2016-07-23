@@ -145,7 +145,7 @@ public extension JSON {
     }
 }
 
-extension JSON {
+public extension JSON {
     /**
      Describes a range of errors that can occur when attempting to access JSON via a keypath
      */

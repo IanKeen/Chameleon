@@ -18,7 +18,7 @@ public protocol SlackModelTypeIdentifiable {
     func asIM() -> IM?
 }
 
-extension SlackModelTypeIdentifiable {
+public extension SlackModelTypeIdentifiable {
     public func asUser() -> User? { return nil }
     public func asBotUser() -> BotUser? { return nil }
     public func asTeam() -> Team? { return nil }

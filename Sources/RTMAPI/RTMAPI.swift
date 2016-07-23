@@ -83,7 +83,7 @@ public final class RTMAPI {
 }
 
 //MARK: - Ping Pong
-extension RTMAPI {
+private extension RTMAPI {
     private func startPingPong() {
         self.stopPingPong()
         
@@ -122,7 +122,7 @@ extension RTMAPI {
 }
 
 //MARK: - Socket
-extension RTMAPI {
+private extension RTMAPI {
     private func bindToSocketEvents() {
         self.websocket.onConnect = { [weak self] in self?.websocketOnConnect() }
         self.websocket.onDisconnect = { [weak self] in self?.websocketOnDisconnect(error: $0) }
@@ -168,7 +168,7 @@ extension RTMAPI {
 }
 
 //MARK: - Helpers
-extension RTMAPI {
+private extension RTMAPI {
     private func makeBuilder(withJson json: JSON) -> SlackModelBuilder {
         guard let slackModels = self.slackModels else { fatalError("Please set `slackModels`") }
         
@@ -184,7 +184,7 @@ extension RTMAPI {
 }
 
 //MARK: - Errors
-extension RTMAPI {
+public extension RTMAPI {
     /// Describes a range of errors that can occur when attempting to use the the realtime messaging api
     public enum Error: ErrorProtocol, CustomStringConvertible {
         /// The response was invalid or the data was unexpected

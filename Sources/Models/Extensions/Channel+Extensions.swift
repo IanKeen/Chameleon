@@ -6,7 +6,7 @@
 //
 //
 
-extension Channel {
+public extension Channel {
     public func renamed(to newName: String) -> Channel {
         return Channel(
             id: self.id,

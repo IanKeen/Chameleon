@@ -35,7 +35,7 @@ public protocol WebAPIMethod {
     func handle(headers: Headers, json: JSON, slackModels: SlackModels) throws -> SuccessParameters
 }
 
-extension WebAPIMethod {
+public extension WebAPIMethod {
     public var requiresAuthentication: Bool { return true }
 }
 

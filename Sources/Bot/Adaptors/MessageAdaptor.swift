@@ -70,7 +70,7 @@ public struct MessageAdaptor {
 }
 
 //MARK: - Link Extraction
-extension MessageAdaptor {
+private extension MessageAdaptor {
     private func mentionedLinks(prefix: String = "", filter: ((Link) -> Bool) = { _ in true }) -> [Link] {
         guard self.text.characters.contains("<") && self.text.characters.contains(">") else { return [] }
         
@@ -100,7 +100,7 @@ extension MessageAdaptor {
 }
 
 //MARK: - Message.Link
-extension MessageAdaptor {
+public extension MessageAdaptor {
     /// Represents a link extracted from a `Message`
     public struct Link {
         public let link: String
