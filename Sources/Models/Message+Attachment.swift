@@ -6,7 +6,7 @@
 //  Copyright © 2016 Mustard. All rights reserved.
 //
 
-extension Message {
+public extension Message {
     public struct Attachment {
         public let fallback: String
         public let color: SlackColor?
@@ -70,7 +70,7 @@ extension Message {
     }
 }
 
-extension Message.Attachment {
+public extension Message.Attachment {
     public struct Field {
         public let title: String
         public let value: String
@@ -78,7 +78,7 @@ extension Message.Attachment {
     }
 }
 
-extension Message.Attachment {
+public extension Message.Attachment {
     public struct Button {
         public let name: String
         public let text: String
@@ -96,7 +96,7 @@ extension Message.Attachment {
         }
     }
 }
-extension Message.Attachment.Button {
+public extension Message.Attachment.Button {
     public struct Confirmation {
         public let title: String?
         public let text: String
@@ -111,7 +111,7 @@ extension Message.Attachment.Button {
         }
     }
 }
-extension Message.Attachment.Button {
+public extension Message.Attachment.Button {
     public enum Style: String, JSONRepresentable {
         case `default`
         case primary
