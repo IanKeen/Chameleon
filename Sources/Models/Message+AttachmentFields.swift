@@ -19,10 +19,10 @@ extension MessageAttachmentField {
     public func asButton() -> Message.Attachment.Button? { return nil }
 }
 
-extension Message.Attachment.Field: MessageAttachmentField {
-    public func asField() -> Message.Attachment.Field? { return self }
-}
-extension Message.Attachment.Button: MessageAttachmentField {
-    public var title: String { return self.name }
-    public func asButton() -> Message.Attachment.Button? { return self }
-}
+//extension Message.Attachment.Field: MessageAttachmentField {
+//    public func asField() -> Message.Attachment.Field? { return self }
+//}
+//extension Message.Attachment.Button: MessageAttachmentField {
+//    public var title: String { return self.name }
+//    public func asButton() -> Message.Attachment.Button? { return self }
+//}

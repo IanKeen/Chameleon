@@ -52,7 +52,7 @@ public struct MessageAdaptor {
         return self.mentionedLinks(prefix: "#")
             .flatMap { link in
                 channels.filter { $0.id == link.link }
-        }
+            }
     }
     
     /// A sequence of mentioned `Link`s in the `Message` that are not `Channel`s or `User`s

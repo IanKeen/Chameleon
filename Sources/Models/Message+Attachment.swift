@@ -71,7 +71,7 @@ public extension Message {
 }
 
 public extension Message.Attachment {
-    public struct Field {
+    public struct Field: MessageAttachmentField {
         public let title: String
         public let value: String
         public let short: Bool
@@ -79,7 +79,9 @@ public extension Message.Attachment {
 }
 
 public extension Message.Attachment {
-    public struct Button {
+    public struct Button: MessageAttachmentField {
+        public var title: String { return self.name }
+        
         public let name: String
         public let text: String
         public let style: Style?
