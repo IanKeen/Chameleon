@@ -10,6 +10,7 @@ import Models
 import WebAPI
 import RTMAPI
 import Common
+import Services
 
 /// An extensible Slack bot user than can provide custom functionality
 public class SlackBot {
@@ -40,7 +41,8 @@ public class SlackBot {
     
     //MARK: - Properties
     let webAPI: WebAPI
-    let rtmAPI: RTMAPI
+    private let rtmAPI: RTMAPI
+    private let httpServer: HTTPServer
     private(set) var botUser: BotUser?
     private(set) var team: Team?
     private(set) var users: [User] = []
@@ -64,11 +66,12 @@ public class SlackBot {
      
      - returns: A new `SlackBot` instance
      */
-    public init(config: SlackBotConfig, storage: Storage, webAPI: WebAPI, rtmAPI: RTMAPI, services: [SlackService]) {
+    public init(config: SlackBotConfig, storage: Storage, webAPI: WebAPI, rtmAPI: RTMAPI, httpServer: HTTPServer, services: [SlackService]) {
         self.config = config
         self.storage = storage
         self.webAPI = webAPI
         self.rtmAPI = rtmAPI
+        self.httpServer = httpServer
         self.services = services
         
         self.webAPI.slackModels = self.slackModels()
@@ -362,3 +365,6 @@ extension SlackBot {
         }
     }
 }
+
+//MARK: - HTTP Server Helpers
+extension HTTPServerProvider: SlackHTTPServer { }

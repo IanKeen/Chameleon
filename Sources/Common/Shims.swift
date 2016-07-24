@@ -7,9 +7,12 @@
 //
 
 import Vapor
+import Engine
 
 public typealias JSONRepresentable = Vapor.JSONRepresentable
 public typealias JSON = Vapor.JSON
+public typealias Headers = Vapor.Headers
+public typealias HTTPResponse = Engine.HTTPResponse
 
 import Foundation
 public typealias Date = NSDate

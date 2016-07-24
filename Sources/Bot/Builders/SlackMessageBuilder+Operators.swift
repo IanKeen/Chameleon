@@ -7,6 +7,7 @@
 //
 
 import Models
+import Services
 
 /**
  These are a set of optional operators to make constructing a `SlackMessage` made of lots of components a little more fluent

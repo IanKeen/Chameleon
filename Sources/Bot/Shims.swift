@@ -6,12 +6,6 @@
 //
 //
 
-import Foundation
+import Common
 
-public typealias Date = NSDate
-public typealias URL = NSURL
-
-#if os(Linux)
-    public typealias TimeInterval = NSTimeInterval
-    public typealias ProcessInfo = NSProcessInfo
-#endif
+public typealias URL = Common.URL

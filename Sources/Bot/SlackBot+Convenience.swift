@@ -9,6 +9,7 @@
 import Services
 import WebAPI
 import RTMAPI
+import Vapor
 
 public extension SlackBot {
     /**
@@ -23,6 +24,7 @@ public extension SlackBot {
     public convenience init(config: SlackBotConfig, storage: Storage = MemoryStorage(), services: [SlackService]) {
         let http = HTTPProvider()
         let websocket = WebSocketProvider()
+        let httpServer = HTTPServerProvider(server: Droplet())
         let storage = storage
         
         let webAPI = WebAPI(token: config.token, http: http)
@@ -33,6 +35,7 @@ public extension SlackBot {
             storage: storage,
             webAPI: webAPI,
             rtmAPI: rtmAPI,
+            httpServer:  httpServer,
             services: services
         )
     }

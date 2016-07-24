@@ -9,9 +9,15 @@
 import Models
 import WebAPI
 import RTMAPI
+import Services
 
 /// An empty abstraction used to provide a 'base' for each type of supported service
 public protocol SlackService { }
+
+public protocol SlackHTTPServer {
+    func respond(to method: HTTPRequest.Method, path: String, with handler: RouteHandler)
+    func respond<T: AnyObject>(to method: HTTPRequest.Method, path: String, with object: T, function: WeakRouteHandler)
+}
 
 /// An abstraction that represents the 'connection' event
 public protocol SlackConnectionService: SlackService {
