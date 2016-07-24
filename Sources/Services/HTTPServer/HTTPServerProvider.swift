@@ -22,7 +22,7 @@ final public class HTTPServerProvider: HTTPServer {
         self.server.serve()
     }
     public func respond<T: AnyObject>(to method: HTTPRequest.Method, path: String, with object: T, function: WeakRouteHandler) {
-        self.server.add(method.method, path: path) { [weak object] request in
+        self.server.add(methodFor(method), path: path) { [weak object] request in
             guard let object = object else { throw Abort.internalServerError }
             
             let headers = request.headers
@@ -31,7 +31,7 @@ final public class HTTPServerProvider: HTTPServer {
         }
     }
     public func respond(to method: HTTPRequest.Method, path: String, with handler: RouteHandler) {
-        self.server.add(method.method, path: path) { request in
+        self.server.add(methodFor(method), path: path) { request in
             let headers = request.headers
             let json = request.json ?? .null
             return handler(headers, json)
@@ -39,14 +39,12 @@ final public class HTTPServerProvider: HTTPServer {
     }
 }
 
-private extension HTTPRequest.Method {
-    var method: Method {
-        switch self {
-        case .get: return .get
-        case .put: return .put
-        case .post: return .post
-        case .patch: return .patch
-        case .delete: return .delete
-        }
+private func methodFor(_ method: HTTPRequest.Method) -> Method {
+    switch method {
+    case .get: return .get
+    case .put: return .put
+    case .post: return .post
+    case .patch: return .patch
+    case .delete: return .delete
     }
 }
