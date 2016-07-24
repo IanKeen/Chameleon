@@ -60,10 +60,9 @@ public struct ChatPostMessage: WebAPIMethod {
             params[key] = value
         }
         
-        if let attachments = self.attachments {
-            let json = attachments.makeJSON()
+        if let attachments = self.attachments.map({ $0.makeJSON() }) {
             do {
-                let string = try JSON.serialize(json).string()
+                let string = try JSON.serialize(attachments).string()
                 params["attachments"] = string
                 
             } catch let error {

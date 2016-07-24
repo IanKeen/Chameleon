@@ -8,6 +8,7 @@
 
 import Models
 import Services
+import Foundation
 
 /// Handler for the `emoji.list` endpoint
 public struct EmojiList: WebAPIMethod {

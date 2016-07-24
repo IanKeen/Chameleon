@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Vapor
 
 /// An abstraction representing an object capable of synchronous web sockets
 public protocol WebSocketService: class {

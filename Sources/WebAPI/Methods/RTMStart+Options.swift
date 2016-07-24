@@ -6,8 +6,6 @@
 //
 //
 
-import Foundation
-
 public extension RTMStart {
     /// Defines the options available when sending a message.
     public enum Option {
