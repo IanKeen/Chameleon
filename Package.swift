@@ -24,10 +24,13 @@ let package = Package(
             ]
         ),
         Target(
-            name: "Services"
+            name: "Common"
         ),
         Target(
-            name: "Common"
+            name: "Services",
+            dependencies: [
+                .Target(name: "Common"),
+            ]
         ),
         Target(
             name: "Models",
@@ -56,6 +59,7 @@ let package = Package(
             dependencies: [
                 .Target(name: "WebAPI"),
                 .Target(name: "RTMAPI"),
+                .Target(name: "Common"),
             ]
         )
     ]

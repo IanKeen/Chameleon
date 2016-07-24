@@ -39,17 +39,17 @@ public class SlackBot {
         }
     }
     
-    //MARK: - Properties
-    let webAPI: WebAPI
-    private let rtmAPI: RTMAPI
-    private let httpServer: HTTPServer
-    private(set) var botUser: BotUser?
-    private(set) var team: Team?
-    private(set) var users: [User] = []
-    private(set) var channels: [Channel] = []
-    private(set) var groups: [Group] = []
-    private(set) var ims: [IM] = []
-    //private(set) var mpims: [MPIM] = []
+    //MARK: - Internal Properties
+    internal let webAPI: WebAPI
+    internal let rtmAPI: RTMAPI
+    internal let httpServer: HTTPServer
+    internal private(set) var botUser: BotUser?
+    internal private(set) var team: Team?
+    internal private(set) var users: [User] = []
+    internal private(set) var channels: [Channel] = []
+    internal private(set) var groups: [Group] = []
+    internal private(set) var ims: [IM] = []
+    //internal private(set) var mpims: [MPIM] = []
     
     //MARK: - Public Properties
     public private(set) var storage: Storage
