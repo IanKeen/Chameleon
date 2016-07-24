@@ -41,7 +41,6 @@ let package = Package(
         Target(
             name: "WebAPI",
             dependencies: [
-                .Target(name: "Common"),
                 .Target(name: "Models"),
                 .Target(name: "Services"),
             ]
@@ -49,7 +48,6 @@ let package = Package(
         Target(
             name: "RTMAPI",
             dependencies: [
-                .Target(name: "Common"),
                 .Target(name: "Models"),
                 .Target(name: "Services"),
             ]
@@ -59,7 +57,6 @@ let package = Package(
             dependencies: [
                 .Target(name: "WebAPI"),
                 .Target(name: "RTMAPI"),
-                .Target(name: "Common"),
             ]
         )
     ]
