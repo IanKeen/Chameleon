@@ -42,13 +42,14 @@ public struct RTMStart: WebAPIMethod {
     
     //MARK: - Public
     public var networkRequest: HTTPRequest {
-        let params: [String: String] = { //self.options.toParameters()
-            var result = [String: String]()
-            for option in self.options {
-                result[option.key] = option.value
-            }
-            return result
-        }()
+        let params = [String: String]()
+//        let params: [String: String] = { //self.options.toParameters()
+//            var result = [String: String]()
+//            for option in self.options {
+//                result[option.key] = option.value
+//            }
+//            return result
+//        }()
         
         return HTTPRequest(
             method: .get,

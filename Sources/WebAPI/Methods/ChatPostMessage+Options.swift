@@ -44,29 +44,29 @@ extension ChatPostMessage {
     }
 }
 
-extension ChatPostMessage.Option { //: OptionRepresentable {
-    var key: String {
-        switch self {
-        case .parse: return "parse"
-        case .linkNames: return "link_names"
-        case .unfurlLinks: return "unfurl_links"
-        case .unfurlMedia: return "unfurl_media"
-        case .username: return "username"
-        case .asUser: return "as_user"
-        case .iconURL: return "icon_url"
-        case .iconEmoji: return "icon_emoji"
-        }
-    }
-    var value: String {
-        switch self {
-        case .parse(let value): return value.rawValue
-        case .linkNames(let value): return String(value)
-        case .unfurlLinks(let value): return String(value)
-        case .unfurlMedia(let value): return String(value)
-        case .username(let value): return value
-        case .asUser(let value): return String(value)
-        case .iconURL(let value): return value
-        case .iconEmoji(let value): return value
-        }
-    }
-}
+//extension ChatPostMessage.Option { //: OptionRepresentable {
+//    var key: String {
+//        switch self {
+//        case .parse: return "parse"
+//        case .linkNames: return "link_names"
+//        case .unfurlLinks: return "unfurl_links"
+//        case .unfurlMedia: return "unfurl_media"
+//        case .username: return "username"
+//        case .asUser: return "as_user"
+//        case .iconURL: return "icon_url"
+//        case .iconEmoji: return "icon_emoji"
+//        }
+//    }
+//    var value: String {
+//        switch self {
+//        case .parse(let value): return value.rawValue
+//        case .linkNames(let value): return String(value)
+//        case .unfurlLinks(let value): return String(value)
+//        case .unfurlMedia(let value): return String(value)
+//        case .username(let value): return value
+//        case .asUser(let value): return String(value)
+//        case .iconURL(let value): return value
+//        case .iconEmoji(let value): return value
+//        }
+//    }
+//}

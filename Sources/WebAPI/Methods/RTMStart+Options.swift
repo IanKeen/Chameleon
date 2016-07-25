@@ -22,19 +22,19 @@ extension RTMStart {
     }
 }
 
-extension RTMStart.Option { //: OptionRepresentable {
-    var key: String {
-        switch self {
-        case .simpleLatest: return "simple_latest"
-        case .noUnreads: return "link_names"
-        case .mpimAware: return "unfurl_links"
-        }
-    }
-    var value: String {
-        switch self {
-        case .simpleLatest(let value): return String(value)
-        case .noUnreads(let value): return String(value)
-        case .mpimAware(let value): return String(value)
-        }
-    }
-}
+//extension RTMStart.Option { //: OptionRepresentable {
+//    var key: String {
+//        switch self {
+//        case .simpleLatest: return "simple_latest"
+//        case .noUnreads: return "link_names"
+//        case .mpimAware: return "unfurl_links"
+//        }
+//    }
+//    var value: String {
+//        switch self {
+//        case .simpleLatest(let value): return String(value)
+//        case .noUnreads(let value): return String(value)
+//        case .mpimAware(let value): return String(value)
+//        }
+//    }
+//}

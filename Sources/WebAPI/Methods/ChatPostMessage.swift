@@ -51,13 +51,14 @@ public struct ChatPostMessage: WebAPIMethod {
             "text": encodedText
         ]
         
-        let optionParams: [String: String] = { //self.options.toParameters()
-            var result = [String: String]()
-            for option in self.options {
-                result[option.key] = option.value
-            }
-            return result
-        }()
+        let optionParams = [String: String]()
+//        let optionParams: [String: String] = { //self.options.toParameters()
+//            var result = [String: String]()
+//            for option in self.options {
+//                result[option.key] = option.value
+//            }
+//            return result
+//        }()
         
         let params = requiredParams + optionParams + self.customParameters
         
