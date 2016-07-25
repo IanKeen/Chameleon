@@ -13,6 +13,8 @@ import Common
 import Strand
 import Vapor
 
+public typealias Seconds = Double
+
 /// Provides access to the Slack realtime messaging api
 public final class RTMAPI {
     //MARK: - Typealiases
@@ -20,7 +22,7 @@ public final class RTMAPI {
     
     //MARK: - Private Properties
     private let websocket: WebSocketService
-    private var pingPongInterval: TimeInterval = 3.0
+    private var pingPongInterval: Seconds = 3.0
     private var pingPongTimer: Strand?
     
     //MARK: - Public Events
@@ -60,7 +62,7 @@ public final class RTMAPI {
      - parameter pingPongInterval: The number of seconds between sending each ping
      - throws: A `WebSocketServiceError` with failure details
      */
-    public func connect(to url: String, pingPongInterval: TimeInterval) throws {
+    public func connect(to url: String, pingPongInterval: Seconds) throws {
         self.pingPongInterval = pingPongInterval
         try self.websocket.connect(to: url)
     }
