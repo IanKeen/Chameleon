@@ -6,7 +6,6 @@
 //  Copyright © 2016 HitchPlanet. All rights reserved.
 //
 
-import Foundation
 import VaporTLS
 import S4
 import Engine
@@ -71,33 +70,24 @@ private extension HTTPRequest {
         }
     }
 }
-
-private protocol StringType {
-    var string: String { get }
-}
-extension String: StringType {
-    var string: String { return self }
-}
-extension Dictionary where Key: CaseInsensitiveStringRepresentable, Value: StringType {
+private extension Collection where Iterator.Element == (key: String, value: String) {
     private func makeHeaders() -> Headers {
         var headers = [CaseInsensitiveString: String]()
         for (key, value) in self {
-            headers.updateValue(value.string, forKey: key.caseInsensitiveString)
+            headers[key.caseInsensitiveString] = value
         }
         return Headers(headers)
     }
-}
-extension Dictionary where Key: StringType, Value: StringType {
     private func makeQuery() -> [String: CustomStringConvertible] {
-        let charSet = CharacterSet(charactersIn: uriQueryAllowed.joined(separator: ""))
         var query = [String: CustomStringConvertible]()
         
         for (key, value) in self {
-            guard let value = value.string.addingPercentEncoding(withAllowedCharacters: charSet) else { continue }
-            query.updateValue(value, forKey: key.string)
+            guard
+                let bytes = try? percentEncoded(value.bytes),
+                let encoded = try? String(data: Data(bytes)) else { continue }
+            
+            query[key] = encoded
         }
         return query
     }
 }
-
-private let uriQueryAllowed: [String] = ["!", "$", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "=", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "_", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "~"]
