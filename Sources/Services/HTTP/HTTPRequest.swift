@@ -6,7 +6,9 @@
 //  Copyright © 2015 Mustard. All rights reserved.
 //
 
+#if !os(Linux)
 import Foundation
+#endif
 
 /// Represents a HTTP Request
 public struct HTTPRequest {
