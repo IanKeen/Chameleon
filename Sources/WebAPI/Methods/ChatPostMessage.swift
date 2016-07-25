@@ -50,7 +50,16 @@ public struct ChatPostMessage: WebAPIMethod {
             "channel": self.target.id,
             "text": encodedText
         ]
-        let params = requiredParams + options.toParameters() + self.customParameters
+        
+        let optionParams: [String: String] = { //self.options.toParameters()
+            var result = [String: String]()
+            for option in self.options {
+                result[option.key] = option.value
+            }
+            return result
+        }()
+        
+        let params = requiredParams + optionParams + self.customParameters
         
         return HTTPRequest(
             method: .get,

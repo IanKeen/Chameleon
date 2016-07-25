@@ -22,7 +22,7 @@ extension RTMStart {
     }
 }
 
-extension RTMStart.Option: OptionRepresentable {
+extension RTMStart.Option { //: OptionRepresentable {
     var key: String {
         switch self {
         case .simpleLatest: return "simple_latest"

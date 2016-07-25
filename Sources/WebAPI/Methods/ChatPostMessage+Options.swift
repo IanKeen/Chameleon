@@ -44,7 +44,7 @@ extension ChatPostMessage {
     }
 }
 
-extension ChatPostMessage.Option: OptionRepresentable {
+extension ChatPostMessage.Option { //: OptionRepresentable {
     var key: String {
         switch self {
         case .parse: return "parse"
