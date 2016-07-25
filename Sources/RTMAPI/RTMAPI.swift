@@ -102,14 +102,16 @@ extension RTMAPI {
         self.pingPongTimer = nil
     }
     private func sendPingPong() {
+        //TODO: Date/Timestamp seem bugged right now - they aren't needed so I'll drop until it's finalilsed
+        //
         //`timestamp` will come back in the response
         //could potentially be used later for checking 
         //latency as suggested in the docs
         
         let packet: [String: JSON] = [
             "id": JSON.number(.integer(Int.random(min: 1, max: 999999))),
-            "type": JSON.string("ping"),
-            "timestamp": JSON.number(.integer(Int(Date().timeIntervalSince1970)))
+            "type": JSON.string("ping")/*,
+            "timestamp": JSON.number(.integer(Int(Date().timeIntervalSince1970)))*/
         ]
         
         do {
