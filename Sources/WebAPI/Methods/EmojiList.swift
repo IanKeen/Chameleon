@@ -30,22 +30,29 @@ public struct EmojiList: WebAPIMethod {
         )
     }
     public func handle(json: JSON, slackModels: SlackModels) throws -> SuccessParameters {
-        guard var emoji = json["emoji"]?.dictionary else { return [] }
+        guard let emoji = json["emoji"]?.dictionary else { return [] }
         
         return emoji.flatMap { (key: String, value: JSON) -> CustomEmoji? in
             guard
-                let string = value.string,
+                let string = stringFromPoly(value: value),
                 let alias = string.components(separatedBy: "alias:").last
                 else { return nil }
             
-            let imageUrl = emoji[alias]?.string ?? value.string ?? ""
+            let a = stringFromJson(value: emoji, key: alias)
+            let b = stringFromPoly(value: value)
+            
+            let imageUrl = a ?? b ?? ""
             return CustomEmoji(name: key, imageUrl: imageUrl)
         }
     }
-}
-
-//TODO:
-//MARK: remove when dependencies are cleared up
-private extension JSON {
-    var string: String? { return (self as Polymorphic).string }
+    
+    
+    //MARK: - Temp
+    private func stringFromPoly(value: Polymorphic) -> String? {
+        return value.string
+    }
+    private func stringFromJson(value: [String: JSON], key: String) -> String? {
+        guard let json: Polymorphic = value[key] else { return nil }
+        return json.string
+    }
 }
