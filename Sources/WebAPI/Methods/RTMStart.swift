@@ -58,49 +58,48 @@ public struct RTMStart: WebAPIMethod {
         )
     }
     public func handle(json: JSON, slackModels: SlackModels) throws -> SuccessParameters {
-//        guard let socketUrl = json["url"].string else { throw WebAPI.Error.invalidResponse(json: json) }
-//        
-//        _ = try Strand {
-//            guard
-//                let selfJson: JSON = json["self"],
-//                let teamJson: JSON = json["team"],
-//                let userJson: [JSON] = json["users"]?.array,
-//                let channelJson: [JSON] = json["channels"]?.array,
-//                let groupJson: [JSON] = json["groups"]?.array,
-//                let imJson: [JSON] = json["ims"]?.array
-//                else { return self.dataReady(serializedData: { throw WebAPI.Error.invalidResponse(json: json) }) }
-//            
-//            do {
-//                print("Deserializing \(userJson.count) Users")
-//                let users = try userJson.map { try User.make(with: makeSlackModelBuilder(json: $0)) }
-//                
-//                print("Deserializing \(channelJson.count) Channels")
-//                let channels = try channelJson.map { try Channel.make(with: makeSlackModelBuilder(json: $0, users: users)) }
-//                
-//                print("Deserializing \(groupJson.count) Groups")
-//                let groups = try groupJson.map { try Group.make(with: makeSlackModelBuilder(json: $0, users: users)) }
-//                
-//                print("Deserializing \(imJson.count) IMs")
-//                let ims = try imJson.map { try IM.make(with: makeSlackModelBuilder(json: $0, users: users)) }
-//                
-//                print("Deserializing Bot User and Team")
-//                let botUser = try BotUser.make(with: makeSlackModelBuilder(json: selfJson))
-//                let team = try Team.make(with: makeSlackModelBuilder(json: teamJson))
-//                
-//                self.dataReady(serializedData: { return
-//                    (botUser: botUser,
-//                    team: team,
-//                    users: users,
-//                    channels: channels,
-//                    groups: groups,
-//                    ims: ims)
-//                })
-//                
-//            } catch let error {
-//                return self.dataReady(serializedData: { throw error })
-//            }
-//        }
-//        return socketUrl
-        return ""
+        guard let socketUrl = json["url"].string else { throw WebAPI.Error.invalidResponse(json: json) }
+        
+        _ = try Strand {
+            guard
+                let selfJson: JSON = json["self"],
+                let teamJson: JSON = json["team"],
+                let userJson: [JSON] = json["users"]?.array,
+                let channelJson: [JSON] = json["channels"]?.array,
+                let groupJson: [JSON] = json["groups"]?.array,
+                let imJson: [JSON] = json["ims"]?.array
+                else { return self.dataReady(serializedData: { throw WebAPI.Error.invalidResponse(json: json) }) }
+            
+            do {
+                print("Deserializing \(userJson.count) Users")
+                let users = try userJson.map { try User.make(with: makeSlackModelBuilder(json: $0)) }
+                
+                print("Deserializing \(channelJson.count) Channels")
+                let channels = try channelJson.map { try Channel.make(with: makeSlackModelBuilder(json: $0, users: users)) }
+                
+                print("Deserializing \(groupJson.count) Groups")
+                let groups = try groupJson.map { try Group.make(with: makeSlackModelBuilder(json: $0, users: users)) }
+                
+                print("Deserializing \(imJson.count) IMs")
+                let ims = try imJson.map { try IM.make(with: makeSlackModelBuilder(json: $0, users: users)) }
+                
+                print("Deserializing Bot User and Team")
+                let botUser = try BotUser.make(with: makeSlackModelBuilder(json: selfJson))
+                let team = try Team.make(with: makeSlackModelBuilder(json: teamJson))
+                
+                self.dataReady(serializedData: { return
+                    (botUser: botUser,
+                    team: team,
+                    users: users,
+                    channels: channels,
+                    groups: groups,
+                    ims: ims)
+                })
+                
+            } catch let error {
+                return self.dataReady(serializedData: { throw error })
+            }
+        }
+        return socketUrl
     }
 }

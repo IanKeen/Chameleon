@@ -9,6 +9,7 @@
 import Models
 import WebAPI
 import Foundation
+import Vapor
 
 /// A builder to make creating Slack messages easier
 public final class SlackMessage {
@@ -77,15 +78,15 @@ public final class SlackMessage {
     }
     
     /**
-     Add a link to an `NSURL`
+     Add a link to an `URI`
      
-     - parameter value:         The `NSURL` to link
+     - parameter value:         The `URI` to link
      - parameter trailingSpace: Whether a trailing space should be added (defaults to `true`)
      
      - returns: The updated `SlackMessage` instance
      */
-    public func url(_ value: URL, trailingSpace: Bool = true) -> SlackMessage {
-        self.messageSegments += [self.value(value.absoluteString!, trailingSpace: trailingSpace)]
+    public func url(_ value: URI, trailingSpace: Bool = true) -> SlackMessage {
+        self.messageSegments += [self.value(value.absoluteString, trailingSpace: trailingSpace)]
         return self
     }
     
@@ -216,3 +217,26 @@ extension SlackMessage {
         }
     }
 }
+
+//MARK: - Private
+private extension URI {
+    private var absoluteString: String {
+        /*
+         foo://user:pass@example.com:8042/over/there?name=ferret#nose
+         \_/   \_______/ \_________/ \__/ \________/ \_________/ \__/
+         |         |          |       |        |          |       |
+         scheme  userInfo    host    port     path      query   fragment
+         */
+        var result = ""
+        if let scheme = self.scheme { result += "\(scheme)://" }
+        if let userInfo = self.userInfo { result += "\(userInfo.username):\(userInfo.password)@" }
+        if let host = self.host { result += host }
+        if let port = self.port { result += ":\(port)" }
+        if let path = self.path { result += (path.hasPrefix("/") ? "" : "/") + path }
+        if let query = self.query { result += "?\(query)" }
+        if let fragment = self.fragment { result += "#\(fragment)" }
+        
+        return result
+    }
+}
+

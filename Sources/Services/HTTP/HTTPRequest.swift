@@ -6,19 +6,17 @@
 //  Copyright © 2015 Mustard. All rights reserved.
 //
 
-#if !os(Linux)
-import Foundation
-#endif
+import Vapor
 
 /// Represents a HTTP Request
 public struct HTTPRequest {
     public let method: Method
-    public let url: URL
+    public let url: URI
     public let port: Int
     public let parameters: [String: String]?
     public let headers: [String: String]?
     
-    public init(method: Method, url: URL, port: Int = 443, parameters: [String: String]? = nil, headers: [String: String]? = nil) {
+    public init(method: Method, url: URI, port: Int = 443, parameters: [String: String]? = nil, headers: [String: String]? = nil) {
         self.method = method
         self.url = url
         self.port = port

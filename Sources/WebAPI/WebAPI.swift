@@ -6,7 +6,6 @@
 //  Copyright © 2016 Mustard. All rights reserved.
 //
 
-import Foundation
 import Models
 import Services
 import Common
@@ -15,14 +14,14 @@ import Vapor
 /**
  Builds a complete url to a webapi endpoint
  
- NOTE: will `fatalError()` when it cannot builda valid `NSURL`
+ NOTE: will `fatalError()` when it cannot builda valid `URI`
  
  - parameter pathSegments: `String` path segments
  - returns: A complete `NSURL`
  */
-public func WebAPIURL(_ pathSegments: String...) -> URL {
+public func WebAPIURL(_ pathSegments: String...) -> URI {
     let urlString = "https://slack.com/api/" + pathSegments.joined(separator: "/")
-    guard let url = URL(string: urlString) else { fatalError("Invalid URL: \(urlString)") }
+    guard let url = try? URI(urlString) else { fatalError("Invalid URL: \(urlString)") }
     return url
 }
 
