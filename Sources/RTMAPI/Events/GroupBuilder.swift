@@ -23,7 +23,7 @@ private enum GroupEvent: String, RTMAPIEventBuilderEventType {
 struct GroupBuilder: RTMAPIEventBuilder {
     static var eventTypes: [String] { return GroupEvent.all.map({ $0.rawValue }) }
     
-    static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
+    static func make(withJson json: [String: Any], builderFactory: (json: [String: Any]) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard let event = GroupEvent.eventType(fromJson: json)
             else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
         
@@ -31,28 +31,28 @@ struct GroupBuilder: RTMAPIEventBuilder {
         
         switch event {
         case .group_archive:
-            return .group_archive(group: try builder.slackModel("channel"))
+            return .group_archive(group: try builder.lookup("channel"))
         case .group_close:
             return .group_close(
-                user: try builder.slackModel("user"),
-                group: try builder.slackModel("channel")
+                user: try builder.lookup("user"),
+                group: try builder.lookup("channel")
             )
         case .group_joined:
-            return .group_joined(group: try builder.property("channel"))
+            return .group_joined(group: try builder.model("channel"))
         case .group_left:
-            return .group_left(group: try builder.slackModel("channel"))
+            return .group_left(group: try builder.lookup("channel"))
         case .group_marked:
             return .group_marked(
-                group: try builder.slackModel("channel"),
+                group: try builder.lookup("channel"),
                 timestamp: try builder.property("ts")
             )
         case .group_open:
             return .group_open(
-                user: try builder.slackModel("user"),
-                group: try builder.slackModel("channel")
+                user: try builder.lookup("user"),
+                group: try builder.lookup("channel")
             )
         case .group_unarchive:
-            return .group_unarchive(group: try builder.slackModel("channel"))
+            return .group_unarchive(group: try builder.lookup("channel"))
         }
     }
 }

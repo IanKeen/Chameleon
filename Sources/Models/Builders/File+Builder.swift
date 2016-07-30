@@ -7,7 +7,7 @@
 //
 
 extension File: SlackModelType {
-    public static func make(with builder: SlackModelBuilder) throws -> File {
+    public static func makeModel(with builder: SlackModelBuilder) throws -> File {
         return try tryMake(File(
             id:                     try builder.property("id"),
             created:                builder.optionalProperty("created"),
@@ -16,17 +16,17 @@ extension File: SlackModelType {
             mimetype:               builder.optionalProperty("mimetype"),
             filetype:               builder.optionalProperty("filetype"),
             pretty_type:            builder.optionalProperty("pretty_type"),
-            user:                   try builder.optionalSlackModel("user"),
+            user:                   try builder.optionalLookup("user"),
             mode:                   try builder.optionalProperty("mode"),
-            editable:               builder.property("editable"),
-            is_external:            builder.property("is_external"),
-            is_public:              builder.property("is_public"),
+            editable:               builder.default("editable"),
+            is_external:            builder.default("is_external"),
+            is_public:              builder.default("is_public"),
             external_type:          builder.optionalProperty("external_type"),
             username:               builder.optionalProperty("username"),
             size:                   builder.optionalProperty("size"),
             updated:                builder.optionalProperty("updated"),
-            editor:                 try builder.optionalSlackModel("editor"),
-            last_editor:            try builder.optionalSlackModel("last_editor"),
+            editor:                 try builder.optionalLookup("editor"),
+            last_editor:            try builder.optionalLookup("last_editor"),
             state:                  builder.optionalProperty("state"),
             url_private:            builder.optionalProperty("url_private"),
             url_private_download:   builder.optionalProperty("url_private_download"),
@@ -47,16 +47,16 @@ extension File: SlackModelType {
             preview_highlight:      builder.optionalProperty("preview_highlight"),
             lines:                  builder.optionalProperty("lines"),
             lines_more:             builder.optionalProperty("lines_more"),
-            public_url_shared:      builder.property("public_url_shared"),
-            display_as_bot:         builder.property("display_as_bot"),
-            channels:               try builder.optionalSlackModels("channels"),
-            groups:                 try builder.optionalSlackModels("groups"),
-            ims:                    try builder.optionalSlackModels("ims"),
+            public_url_shared:      builder.default("public_url_shared"),
+            display_as_bot:         builder.default("display_as_bot"),
+            channels:               try builder.optionalLookup("channels"),
+            groups:                 try builder.optionalLookup("groups"),
+            ims:                    try builder.optionalLookup("ims"),
             initial_comment:        builder.optionalProperty("initial_comment"),
             num_stars:              builder.optionalProperty("num_stars"),
             is_starred:             builder.optionalProperty("is_starred"),
-            pinned_to:              try builder.optionalSlackModels("pinned_to"),
-            reactions:              try builder.optionalCollection("reactions"),
+            pinned_to:              try builder.optionalTargets("pinned_to"),
+            reactions:              try builder.optionalModels("reactions"),
             comments_count:         builder.optionalProperty("comments_count")
             )
         )

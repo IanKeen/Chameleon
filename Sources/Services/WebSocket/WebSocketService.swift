@@ -14,16 +14,16 @@ public protocol WebSocketService: class {
     var onConnect: (() -> Void)? { get set }
     
     /// Closure that is called when a connection is closed with an error when applicable
-    var onDisconnect: ((ErrorProtocol?) -> Void)? { get set }
+    var onDisconnect: ((Error?) -> Void)? { get set }
     
     /// Closure that is called when receiving text data
     var onText: ((String) -> Void)? { get set }
     
     /// Closure that is called when receiving byte data
-    var onData: ((Bytes) -> Void)? { get set }
+    var onData: ((Data) -> Void)? { get set }
     
     /// Closure that is called when an error occurs
-    var onError: ((ErrorProtocol) -> Void)? { get set }
+    var onError: ((Error) -> Void)? { get set }
     
     /**
      Attempt to open a connection to a specified url
@@ -43,14 +43,14 @@ public protocol WebSocketService: class {
      
      - parameter json: `JSON` to send
      */
-    func send(_ json: JSON)
+    func send(_ json: [String: Any])
     
     /**
      Send `NSData` data
      
      - parameter data: `NSData` to send
      */
-    func send(_ data: Bytes)
+    func send(_ data: Data)
     
     /**
      Send `String` data
@@ -61,7 +61,7 @@ public protocol WebSocketService: class {
 }
 
 /// Describes a range of errors that can occur when attempting to use the service
-public enum WebSocketServiceError: ErrorProtocol, CustomStringConvertible {
+public enum WebSocketServiceError: Error, CustomStringConvertible {
     /// The provided URL was invalid
     case invalidURL(url: String)
     
@@ -69,7 +69,7 @@ public enum WebSocketServiceError: ErrorProtocol, CustomStringConvertible {
     case genericError(reason: String)
     
     /// Something went wrong with an dependency
-    case internalError(error: ErrorProtocol)
+    case internalError(error: Error)
     
     public var description: String {
         switch self {

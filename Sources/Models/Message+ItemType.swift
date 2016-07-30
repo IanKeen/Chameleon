@@ -7,7 +7,7 @@
 //
 
 public extension Message {
-    public enum ItemType: String, JSONRepresentable {
+    public enum ItemType: String, SlackModelValueType {
         case Channel = "C"
         case Group = "G"
         case File = "F"

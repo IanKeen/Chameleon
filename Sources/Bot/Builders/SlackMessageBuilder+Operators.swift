@@ -7,7 +7,7 @@
 //
 
 import Models
-import Services
+import Foundation
 
 /**
  These are a set of optional operators to make constructing a `SlackMessage` made of lots of components a little more fluent
@@ -25,7 +25,7 @@ public func +(builder: SlackMessage, value: User) -> SlackMessage {
 public func +(builder: SlackMessage, value: Channel) -> SlackMessage {
     return builder.channel(value)
 }
-public func +(builder: SlackMessage, value: URL) -> SlackMessage {
+public func +(builder: SlackMessage, value: NSURL) -> SlackMessage {
     return builder.url(value)
 }
 public func +(builder: SlackMessage, value: SlackMessage.Command) -> SlackMessage {

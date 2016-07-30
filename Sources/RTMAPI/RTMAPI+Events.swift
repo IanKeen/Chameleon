@@ -19,11 +19,11 @@ import Models
 /// Defines the events available from the realtime messaging api
 public enum RTMAPIEvent {
     case error(code: Int, message: String)
-    case pong(response: JSON) //TODO: does this need a struct model?
+    case pong(response: [String: Any]) //TODO: does this need a struct model?
     case hello
     case message(message: Message, previous: Message?)
     case user_typing(user: User, target: Target)
-    case channel_marked(channel: Channel, timestamp: Double)
+    case channel_marked(channel: Channel, timestamp: Int)
     case channel_created(channel: Channel)
     case channel_joined(channel: Channel)
     case channel_left(channel: Channel)
@@ -37,7 +37,7 @@ public enum RTMAPIEvent {
     case im_created(user: User, im: IM)
     case im_open(user: User, im: IM)
     case im_close(user: User, im: IM)
-    case im_marked(im: IM, timestamp: Double)
+    case im_marked(im: IM, timestamp: Int)
     case im_history_changed
     case group_joined(group: Group)
     case group_left(group: Group)
@@ -46,7 +46,7 @@ public enum RTMAPIEvent {
     case group_archive(group: Group)
     case group_unarchive(group: Group)
     case group_rename(group: Group, oldName: String)
-    case group_marked(group: Group, timestamp: Double)
+    case group_marked(group: Group, timestamp: Int)
     case group_history_changed
     case file_created(file: File)
     case file_shared(file: File)
@@ -54,7 +54,7 @@ public enum RTMAPIEvent {
     case file_public(file: File)
     case file_private(fileId: String)
     case file_change(file: File)
-    case file_deleted(fileId: String, timestamp: Double)
+    case file_deleted(fileId: String, timestamp: Int)
     case file_comment_added(file: File, comment: Any)
     case file_comment_edited(file: File, comment: Any)
     case file_comment_deleted(file: File, commentId: String)

@@ -27,10 +27,10 @@ public final class RTMAPI {
     public var onConnected: (() -> Void)?
     
     /// Closure that is called when a websocket connection is closed with an error when applicable
-    public var onDisconnected: ((error: ErrorProtocol?) -> Void)?
+    public var onDisconnected: ((error: Error?) -> Void)?
     
     /// Closure that is called when an error occurs
-    public var onError: ((error: ErrorProtocol) -> Void)?
+    public var onError: ((error: Error) -> Void)?
     
     /// Closure that is fired when a realtime messaging event occurs
     public var onEvent: ((event: RTMAPIEvent) -> Void)?
@@ -70,7 +70,7 @@ public final class RTMAPI {
     public func disconnect() {
         self.disconnect(error: nil)
     }
-    private func disconnect(error: ErrorProtocol? = nil) {
+    private func disconnect(error: Error? = nil) {
         self.websocket.disconnect()
         self.onDisconnected?(error: error)
     }
@@ -105,19 +105,13 @@ private extension RTMAPI {
         //could potentially be used later for checking 
         //latency as suggested in the docs
         
-        let packet: [String: JSON] = [
-            "id": JSON.number(.integer(Int.random(min: 1, max: 999999))),
-            "type": JSON.string("ping"),
-            "timestamp": JSON.number(.integer(Int(Date().timeIntervalSince1970)))
+        let packet: [String: Any] = [
+            "id": Int.random(min: 1, max: 999999),
+            "type": "ping",
+            "timestamp": Int(Date().timeIntervalSince1970)
         ]
         
-        do {
-            let data = try JSON.serialize(JSON.object(packet))
-            self.websocket.send(try data.string())
-            
-        } catch let error {
-            self.onError?(error: error)
-        }
+        self.websocket.send(packet)
     }
 }
 
@@ -134,21 +128,19 @@ private extension RTMAPI {
     private func websocketOnConnect() {
         self.onConnected?()
     }
-    private func websocketOnDisconnect(error: ErrorProtocol?) {
+    private func websocketOnDisconnect(error: Error?) {
         self.stopPingPong()
         self.onDisconnected?(error: error)
     }
     private func websocketOn(text: String) {
         do {
-            let data = Array(text.utf8)
-            let json = try JSON.parse(data)
-            
+            let json = try text.makeDictionary()
             let eventBuilder = try RTMAPIEvent.makeEventBuilder(withJson: json)
+            
             let event = try tryMake(
                 eventBuilder,
                 try eventBuilder.make(withJson: json, builderFactory: self.makeBuilder)
             )
-            //let event = try eventBuilder.make(withJson: json, builderFactory: self.makeBuilder)
             
             if case .hello = event { self.startPingPong() }
             
@@ -158,10 +150,10 @@ private extension RTMAPI {
             self.onError?(error: error)
         }
     }
-    private func websocketOn(data: Bytes) {
+    private func websocketOn(data: Data) {
         print("DATA: \(data)") //TODO: unused at this point
     }
-    private func websocketOn(error: ErrorProtocol) {
+    private func websocketOn(error: Error) {
         self.onError?(error: error)
         self.disconnect(error: error)
     }
@@ -169,7 +161,7 @@ private extension RTMAPI {
 
 //MARK: - Helpers
 private extension RTMAPI {
-    private func makeBuilder(withJson json: JSON) -> SlackModelBuilder {
+    private func makeBuilder(withJson json: [String: Any]) -> SlackModelBuilder {
         guard let slackModels = self.slackModels else { fatalError("Please set `slackModels`") }
         
         let models = slackModels()
@@ -184,17 +176,15 @@ private extension RTMAPI {
 }
 
 //MARK: - Errors
-public extension RTMAPI {
-    /// Describes a range of errors that can occur when attempting to use the the realtime messaging api
-    public enum Error: ErrorProtocol, CustomStringConvertible {
-        /// The response was invalid or the data was unexpected
-        case invalidResponse(json: JSON)
-        
-        public var description: String {
-            switch self {
-            case .invalidResponse(let json):
-                return "The response was invalid:\n\(json.jsonValueDescription)"
-            }
+/// Describes a range of errors that can occur when attempting to use the the realtime messaging api
+public enum RTMAPIError: Error, CustomStringConvertible {
+    /// The response was invalid or the data was unexpected
+    case invalidResponse(json: [String: Any])
+    
+    public var description: String {
+        switch self {
+        case .invalidResponse(let json):
+            return "The response was invalid:\n\(json)"
         }
     }
 }

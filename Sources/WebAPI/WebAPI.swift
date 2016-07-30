@@ -10,6 +10,7 @@ import Models
 import Services
 import Common
 import Vapor
+import Foundation
 
 /**
  Builds a complete url to a webapi endpoint
@@ -19,9 +20,9 @@ import Vapor
  - parameter pathSegments: `String` path segments
  - returns: A complete `NSURL`
  */
-public func WebAPIURL(_ pathSegments: String...) -> URL {
+public func WebAPIURL(_ pathSegments: String...) -> NSURL {
     let urlString = "https://slack.com/api/" + pathSegments.joined(separator: "/")
-    guard let url = URL(string: urlString) else { fatalError("Invalid URL: \(urlString)") }
+    guard let url = NSURL(string: urlString) else { fatalError("Invalid URL: \(urlString)") }
     return url
 }
 
@@ -101,31 +102,29 @@ private extension WebAPI {
             body: request.body
         )
     }
-    private func checkForError(in json: JSON) throws {
-        guard let ok = json["ok"]?.boolean where !ok else { return }
+    private func checkForError(in json: [String: Any]) throws {
+        guard let ok = json["ok"] as? Bool, !ok else { return }
         
-        let error = json["error"].string ?? "unknown_error"
-        throw Error.apiError(reason: error)
+        let error = (json["error"] as? String) ?? "unknown_error"
+        throw WebAPIError.apiError(reason: error)
     }
 }
 
 //MARK: - Errors
-public extension WebAPI {
-    /// Describes a range of errors that can occur when attempting to use the the webapi
-    public enum Error: ErrorProtocol, CustomStringConvertible {
-        /// Something went wrong during execution
-        case apiError(reason: String)
-        
-        /// The response was invalid or the data was unexpected
-        case invalidResponse(json: JSON)
-        
-        public var description: String {
-            switch self {
-            case .invalidResponse(let json):
-                return "The response was invalid:\n\(json.jsonValueDescription)"
-            case .apiError(let reason):
-                return "The API returned the error: \(reason)"
-            }
+/// Describes a range of errors that can occur when attempting to use the the webapi
+public enum WebAPIError: Error, CustomStringConvertible {
+    /// Something went wrong during execution
+    case apiError(reason: String)
+    
+    /// The response was invalid or the data was unexpected
+    case invalidResponse(json: [String: Any])
+    
+    public var description: String {
+        switch self {
+        case .invalidResponse(let json):
+            return "The response was invalid:\n\(json)"
+        case .apiError(let reason):
+            return "The API returned the error: \(reason)"
         }
     }
 }

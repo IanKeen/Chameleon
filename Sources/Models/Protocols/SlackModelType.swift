@@ -7,9 +7,9 @@
 //
 
 /// Represents an encapsulation error to build a nested chain of errors that can occur when attempting to build Slack models
-public enum SlackModelTypeError<T: SlackModelType>: ErrorProtocol, CustomStringConvertible {
+public enum SlackModelTypeError<T: SlackModelType>: Error, CustomStringConvertible {
     /// A build error of type `T` and the nested error `error`
-    case buildError(type: T.Type, error: ErrorProtocol)
+    case buildError(type: T.Type, error: Error)
     
     public var description: String {
         switch self {
@@ -21,15 +21,30 @@ public enum SlackModelTypeError<T: SlackModelType>: ErrorProtocol, CustomStringC
 }
 
 /// An abstraction representing a buildable Slack model type
-public protocol SlackModelType: JSONRepresentable {
+public protocol SlackModelType {
     /**
      Creates a Slack model from the provided `SlackModelBuilder`
      
      - parameter builder: The `SlackModelBuilder` that handles the `JSON` and other models
-     - throws: A `JSON.Error`, `SlackModelError` or `SlackModelTypeError` with failure details
+     - throws: A `KeyPathError`, `SlackModelError` or `SlackModelTypeError` with failure details
      - returns: A new `SlackModelType`
      */
-    static func make(with builder: SlackModelBuilder) throws -> Self
+    static func makeModel(with builder: SlackModelBuilder) throws -> Self
+
+    /**
+     Creates a `[String: Any]` from the `SlackModelType`
+     
+     - returns: A new `[String: Any]` representation of the `SlackModelType`
+     */
+    func makeDictionary() -> [String: Any]
+}
+
+/** 
+ An abstraction representing a single value, used for defining how a value is output (if possible)
+ when a model is being turned into a [String: Any]
+ */
+public protocol SlackModelValueType {
+    var modelValue: Any? { get }
 }
 
 /**

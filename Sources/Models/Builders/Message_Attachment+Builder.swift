@@ -9,10 +9,10 @@
 import Common
 
 extension Message.Attachment: SlackModelType {
-    public static func make(with builder: SlackModelBuilder) throws -> Message.Attachment {
+    public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment {
         return try tryMake(Message.Attachment(
             fallback:           try builder.property("fallback"),
-            color:              try builder.optionalProperty("color"),
+            color:              try builder.optionalEnum("color"),
             pretext:            builder.optionalProperty("pretext"),
             author_name:        builder.optionalProperty("author_name"),
             author_link:        builder.optionalProperty("author_link"),
@@ -20,8 +20,8 @@ extension Message.Attachment: SlackModelType {
             title:              builder.optionalProperty("title"),
             title_link:         builder.optionalProperty("title_link"),
             text:               try builder.property("text"),
-            fields:             try builder.optionalCollection("fields", makeFunction: chooseField),
-            actions:            try builder.optionalCollection("actions", makeFunction: chooseField),
+            fields:             try builder.optionalModels("fields", makeFunction: chooseField),
+            actions:            try builder.optionalModels("actions", makeFunction: chooseField),
             from_url:           builder.optionalProperty("from_url"),
             image_url:          builder.optionalProperty("image_url"),
             thumb_url:          builder.optionalProperty("thumb_url"),
@@ -33,7 +33,7 @@ extension Message.Attachment: SlackModelType {
 }
 
 extension Message.Attachment.Field: SlackModelType {
-    public static func make(with builder: SlackModelBuilder) throws -> Message.Attachment.Field {
+    public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment.Field {
         return try tryMake(Message.Attachment.Field(
             title: try builder.property("title"),
             value: try builder.property("value"),
@@ -44,19 +44,19 @@ extension Message.Attachment.Field: SlackModelType {
 }
 
 extension Message.Attachment.Button: SlackModelType {
-    public static func make(with builder: SlackModelBuilder) throws -> Message.Attachment.Button {
+    public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment.Button {
         return try tryMake(Message.Attachment.Button(
             name: try builder.property("name"),
             text: try builder.property("text"),
-            style: try builder.optionalProperty("style"),
+            style: try builder.optionalEnum("style"),
             value: try builder.property("value"),
-            confirm: try builder.optionalProperty("confirm")
+            confirm: try builder.optionalModel("confirm")
             )
         )
     }
 }
 extension Message.Attachment.Button.Confirmation: SlackModelType {
-    public static func make(with builder: SlackModelBuilder) throws -> Message.Attachment.Button.Confirmation {
+    public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment.Button.Confirmation {
         return try tryMake(Message.Attachment.Button.Confirmation(
             title: builder.optionalProperty("title"),
             text: try builder.property("text"),
@@ -67,9 +67,9 @@ extension Message.Attachment.Button.Confirmation: SlackModelType {
     }
 }
 
-private func chooseField(json: JSON) -> MakeFunction {
-    return (json.keyPathExists("type")
-        ? Message.Attachment.Button.make
-        : Message.Attachment.Field.make
+private func chooseField(input: [String: Any]) -> MakeFunction {
+    return (input.keyPathExists("type")
+        ? Message.Attachment.Button.makeModel
+        : Message.Attachment.Field.makeModel
     )
 }

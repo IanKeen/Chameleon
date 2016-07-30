@@ -32,7 +32,7 @@ public struct Message {
     public let members: [User]?
     public let file: File?
     public let upload: Bool
-    public let comment: AnyObject?
+    public let comment: Any?
     
     public let item_type: ItemType?
     public let item: [String: Any]?

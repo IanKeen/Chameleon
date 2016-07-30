@@ -9,7 +9,7 @@
 //NOTE: rather than a `String` hex value - it would be nice to use UIColor and have it generate the hex
 //      obviously not available on linux, just adding this note for future thoughts on removing strings
 
-public enum SlackColor: RawRepresentable, JSONRepresentable {
+public enum SlackColor: RawRepresentable, SlackModelValueType {
     public typealias RawValue = String
     
     case good, warning, danger

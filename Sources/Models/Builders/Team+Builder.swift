@@ -7,12 +7,12 @@
 //
 
 extension Team: SlackModelType {
-    public static func make(with builder: SlackModelBuilder) throws -> Team {
+    public static func makeModel(with builder: SlackModelBuilder) throws -> Team {
         return try tryMake(Team(
             id:             try builder.property("id"),
             name:           try builder.property("name"),
             domain:         try builder.property("domain"),
-            image_default:  builder.property("icon.image_default"),
+            image_default:  builder.default("icon.image_default"),
             image_34:       builder.optionalProperty("icon.image_34"),
             image_44:       builder.optionalProperty("icon.image_44"),
             image_68:       builder.optionalProperty("icon.image_68"),

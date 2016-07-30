@@ -7,12 +7,12 @@
 //
 
 extension DNDStatus: SlackModelType {
-    public static func make(with builder: SlackModelBuilder) throws -> DNDStatus {
+    public static func makeModel(with builder: SlackModelBuilder) throws -> DNDStatus {
         return try tryMake(DNDStatus(
-            dnd_enabled:        builder.property("dnd_enabled"),
+            dnd_enabled:        builder.default("dnd_enabled"),
             next_dnd_start_ts:  try builder.property("next_dnd_start_ts"),
             next_dnd_end_ts:    try builder.property("next_dnd_end_ts"),
-            snooze_enabled:     builder.property("snooze_enabled"),
+            snooze_enabled:     builder.default("snooze_enabled"),
             snooze_endtime:     builder.optionalProperty("snooze_endtime")
             )
         )

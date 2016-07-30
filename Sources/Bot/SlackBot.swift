@@ -139,9 +139,9 @@ private extension SlackBot {
          *                        Reconnection attempts are caused by a call to `stop(reconnect: true)`
          *                        or when we haven't exceeded the maximum number of retry attempts yet
          *
-         *  @param ErrorProtocol? Exists when the disconnection was the result of an error
+         *  @param Error? Exists when the disconnection was the result of an error
          */
-        case disconnected(reconnect: Bool, error: ErrorProtocol?)
+        case disconnected(reconnect: Bool, error: Error?)
         
         /**
          *  The bot is attempting to connect
@@ -209,7 +209,7 @@ private extension SlackBot {
     //
     //TODO: add a back-off for retries
     //
-    private func handleConnectionError(_ error: ErrorProtocol?) {
+    private func handleConnectionError(_ error: Error?) {
         switch self.state {
         case .disconnected(let reconnect, _):
             if (!reconnect) { return }
@@ -246,7 +246,7 @@ extension SlackBot {
             )
         }
     }
-    private func notifyDisconnected(error: ErrorProtocol?) {
+    private func notifyDisconnected(error: Error?) {
         let services = self.services.flatMap { $0 as? SlackDisconnectionService }
         
         for service in services {
@@ -276,7 +276,7 @@ extension SlackBot {
             }
         }
     }
-    func notify(error: ErrorProtocol) {
+    func notify(error: Error) {
         print("ERROR: \(error)")
         guard self.state.ready else { return }
         

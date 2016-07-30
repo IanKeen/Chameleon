@@ -12,12 +12,12 @@ import Models
 struct ChannelRenameBuilder: RTMAPIEventBuilder {
     static var eventTypes: [String] { return ["channel_rename"] }
     
-    static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
+    static func make(withJson json: [String: Any], builderFactory: (json: [String: Any]) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
         
         let builder = builderFactory(json: json)
         
-        var channel: Channel = try builder.slackModel("channel.id")
+        var channel: Channel = try builder.lookup("channel.id")
         let oldName = channel.name
         
         let newName: String = try builder.property("channel.name")

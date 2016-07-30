@@ -24,15 +24,15 @@ public protocol WebAPIMethod {
     var requiresAuthentication: Bool { get }
     
     /**
-     Handle the `JSON` response from an executed `WebAPIMethod`
+     Handle the `[String: Any]` response from an executed `WebAPIMethod`
      
-     - parameter headers:     The `Headers` of the request
-     - parameter json:        The `JSON` result
+     - parameter headers:     The `[String: String]` of the request
+     - parameter json:        The `[String: Any]` result
      - parameter slackModels: The `SlackModels` that can be used to create a `SlackModelBuilder` for constructing a type-safe response
-     - throws: Any `ErrorProtocol` that might result from the handling of the `JSON` response
-     - returns: The result of handling the `JSON`
+     - throws: Any `Error` that might result from the handling of the `[String: Any]` response
+     - returns: The result of handling the `[String: Any]`
      */
-    func handle(headers: Headers, json: JSON, slackModels: SlackModels) throws -> SuccessParameters
+    func handle(headers: [String: String], json: [String: Any], slackModels: SlackModels) throws -> SuccessParameters
 }
 
 public extension WebAPIMethod {
@@ -40,10 +40,10 @@ public extension WebAPIMethod {
 }
 
 /**
- Creates a new `SlackModelBuilder` instance using the provided `JSON` 
+ Creates a new `SlackModelBuilder` instance using the provided `[String: Any]`
  and, optionally, existing models
  
- - parameter json:     `JSON` data to use when building models
+ - parameter json:     `[String: Any]` data to use when building models
  - parameter users:    optional: A `User` array
  - parameter channels: optional: A `Channel` array
  - parameter groups:   optional: A `Group` array
@@ -52,7 +52,7 @@ public extension WebAPIMethod {
  - returns: A new `SlackModelBuilder` instance
  */
 public func makeSlackModelBuilder(
-    json: JSON,
+    json: [String: Any],
     users: [User] = [],
     channels: [Channel] = [],
     groups: [Group] = [],

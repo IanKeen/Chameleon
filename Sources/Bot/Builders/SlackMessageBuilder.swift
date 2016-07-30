@@ -84,7 +84,7 @@ public final class SlackMessage {
      
      - returns: The updated `SlackMessage` instance
      */
-    public func url(_ value: URL, trailingSpace: Bool = true) -> SlackMessage {
+    public func url(_ value: NSURL, trailingSpace: Bool = true) -> SlackMessage {
         self.messageSegments += [self.value(value.absoluteString!, trailingSpace: trailingSpace)]
         return self
     }

@@ -7,7 +7,7 @@
 //
 
 extension BotUser: SlackModelType {
-    public static func make(with builder: SlackModelBuilder) throws -> BotUser {
+    public static func makeModel(with builder: SlackModelBuilder) throws -> BotUser {
         return try tryMake(BotUser(
             id:     try builder.property("id"),
             name:   try builder.property("name")

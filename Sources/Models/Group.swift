@@ -22,7 +22,7 @@ public struct Group {
     public let topic: Topic?
     public let purpose: Purpose?
     
-    public let last_read: Double?
+    public let last_read: Int?
     public let latest: Message?
     
     public let unread_count: Int?

@@ -9,6 +9,8 @@
 import Foundation
 import Vapor
 import VaporTLS
+import Engine
+import Common
 
 /// Standard implementation of a WebSocketService
 final public class WebSocketProvider: WebSocketService {
@@ -26,7 +28,7 @@ final public class WebSocketProvider: WebSocketService {
                 self.onText?(text)
             }
             socket.onBinary = { _, bytes in
-                self.onData?(bytes)
+                self.onData?(Data(bytes: bytes))
             }
         }
     }
@@ -35,10 +37,10 @@ final public class WebSocketProvider: WebSocketService {
     public init() { }
     
     public var onConnect: (() -> Void)?
-    public var onDisconnect: ((ErrorProtocol?) -> Void)?
+    public var onDisconnect: ((Error?) -> Void)?
     public var onText: ((String) -> Void)?
-    public var onData: ((Bytes) -> Void)?
-    public var onError: ((ErrorProtocol) -> Void)?
+    public var onData: ((Data) -> Void)?
+    public var onError: ((Error) -> Void)?
     
     public func connect(to url: String) throws {
         let uri: URI
@@ -61,17 +63,17 @@ final public class WebSocketProvider: WebSocketService {
     public func disconnect() {
         _ = try? self.socket?.close()
     }
-    public func send(_ json: JSON) {
+    public func send(_ json: [String: Any]) {
         do {
-            let data = try JSON.serialize(json)
-            try self.socket?.send(try data.string())
+            let data = try json.makeJSONObject().makeBytes().toString()
+            try self.socket?.send(data)
             
         } catch let error {
             self.onError?(error)
         }
     }
-    public func send(_ data: Bytes) {
-        do { try self.socket?.send(data) }
+    public func send(_ data: Data) {
+        do { try self.socket?.send(try data.makeBytes()) }
         catch let error { self.onError?(error) }
     }
     public func send(_ string: String) {

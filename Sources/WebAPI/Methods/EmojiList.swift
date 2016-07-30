@@ -29,24 +29,17 @@ public struct EmojiList: WebAPIMethod {
             url: WebAPIURL("emoji.list")
         )
     }
-    public func handle(headers: Headers, json: JSON, slackModels: SlackModels) throws -> SuccessParameters {
-        guard var emoji = json["emoji"]?.dictionary else { return [] }
+    public func handle(headers: [String: String], json: [String: Any], slackModels: SlackModels) throws -> SuccessParameters {
+        guard var emoji = json["emoji"] as? [String: Any] else { return [] }
         
-        return emoji.flatMap { (key: String, value: JSON) -> CustomEmoji? in
+        return emoji.flatMap { (key: String, value: Any) -> CustomEmoji? in
             guard
-                let string = value.string,
+                let string = value as? String,
                 let alias = string.components(separatedBy: "alias:").last
                 else { return nil }
             
-            let imageUrl = emoji[alias]?.string ?? value.string ?? ""
+            let imageUrl = (emoji[alias] as? String) ?? (value as? String) ?? ""
             return CustomEmoji(name: key, imageUrl: imageUrl)
         }
     }
-}
-
-//TODO:
-//MARK: remove when dependencies are cleared up
-import Vapor
-private extension JSON {
-    var string: String? { return (self as Polymorphic).string }
 }

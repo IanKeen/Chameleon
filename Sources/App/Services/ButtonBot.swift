@@ -16,7 +16,7 @@ import Strand
 
 extension Message.Attachment {
     public static func makeButtonAttachments(text: String, color: SlackColor? = nil, buttons: [Button]) -> (attachment: Message.Attachment, callback_id: String) {
-        let callback_id = String(Int.random(1, max: 999999))
+        let callback_id = "\(Int.random(min: 1, max: 999999))"
         
         let attachment = Message.Attachment(
             fallback: text,

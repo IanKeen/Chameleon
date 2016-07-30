@@ -33,18 +33,16 @@ private extension SlackBotConfig {
     }
 }
 
-public extension SlackBotConfig {
-    /// Describes a range of errors that can occur when build configuration data
-    public enum Error: ErrorProtocol {
-        /// A required parameter was not provided
-        case missingRequiredParameter(parameter: String)
-        
-        /// An invalid parameter was provided
-        case invalidParameter(parameter: String)
-        
-        /// An unsupported parameter was provided
-        case unsupportedParameter(parameter: String)
-    }
+/// Describes a range of errors that can occur when build configuration data
+public enum SlackBotConfigError: Error {
+    /// A required parameter was not provided
+    case missingRequiredParameter(parameter: String)
+    
+    /// An invalid parameter was provided
+    case invalidParameter(parameter: String)
+    
+    /// An unsupported parameter was provided
+    case unsupportedParameter(parameter: String)
 }
 
 /// Defines the configuration options that can be used
@@ -67,7 +65,7 @@ public struct SlackBotConfig {
     
     //MARK: - Lifecycle
     public init(token: String?, startOptions: [RTMStart.Option]?, reconnectionAttempts: Int?, pingPongInterval: TimeInterval?, storageUrl: String?) throws {
-        guard let token = token else { throw Error.missingRequiredParameter(parameter: "token") }
+        guard let token = token else { throw SlackBotConfigError.missingRequiredParameter(parameter: "token") }
         
         self.token = token
         self.startOptions = startOptions ?? self.startOptions
@@ -97,9 +95,9 @@ public extension SlackBotConfig {
             guard
                 let key = pair[safe: 0]?.components(separatedBy: "--").last,
                 let value = pair[safe: 1]
-                else { throw Error.invalidParameter(parameter: argument) }
+                else { throw SlackBotConfigError.invalidParameter(parameter: argument) }
             
-            //guard supportedArguments.contains("--\(key)=") else { throw Error.unsupportedParameter(parameter: argument) }
+            //guard supportedArguments.contains("--\(key)=") else { throw SlackBotConfigError.unsupportedParameter(parameter: argument) }
             
             return (key: key.lowercased(), value: value)
         }

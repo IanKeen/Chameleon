@@ -23,7 +23,7 @@ private enum ChannelEvent: String, RTMAPIEventBuilderEventType {
 struct ChannelBuilder: RTMAPIEventBuilder {
     static var eventTypes: [String] { return ChannelEvent.all.map({ $0.rawValue }) }
     
-    static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
+    static func make(withJson json: [String: Any], builderFactory: (json: [String: Any]) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard let event = ChannelEvent.eventType(fromJson: json)
             else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
         
@@ -32,26 +32,26 @@ struct ChannelBuilder: RTMAPIEventBuilder {
         switch event {
         case .channel_marked:
             return .channel_marked(
-                channel: try builder.slackModel("channel"),
+                channel: try builder.lookup("channel"),
                 timestamp: try builder.property("ts")
             )
         case .channel_created:
-            return .channel_created(channel: try builder.property("channel"))
+            return .channel_created(channel: try builder.model("channel"))
         case .channel_joined:
-            return .channel_joined(channel: try builder.property("channel"))
+            return .channel_joined(channel: try builder.model("channel"))
         case .channel_left:
-            return .channel_left(channel: try builder.slackModel("channel"))
+            return .channel_left(channel: try builder.lookup("channel"))
         case .channel_deleted:
-            return .channel_deleted(channel: try builder.slackModel("channel"))
+            return .channel_deleted(channel: try builder.lookup("channel"))
         case .channel_archive:
             return .channel_archive(
-                channel: try builder.slackModel("channel"),
-                user: try builder.slackModel("user")
+                channel: try builder.lookup("channel"),
+                user: try builder.lookup("user")
             )
         case .channel_unarchive:
             return .channel_archive(
-                channel: try builder.slackModel("channel"),
-                user: try builder.slackModel("user")
+                channel: try builder.lookup("channel"),
+                user: try builder.lookup("user")
             )
         }
     }

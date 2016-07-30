@@ -7,7 +7,7 @@
 //
 
 public extension Message {
-    public enum SubType: String, JSONRepresentable {
+    public enum SubType: String, SlackModelValueType {
         case bot_message
         case me_message
         case message_changed

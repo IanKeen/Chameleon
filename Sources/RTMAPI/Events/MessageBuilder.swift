@@ -12,19 +12,19 @@ import Models
 struct MessageBuilder: RTMAPIEventBuilder {
     static var eventTypes: [String] { return ["message"] }
     
-    static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
+    static func make(withJson json: [String: Any], builderFactory: (json: [String: Any]) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
         
         //edits contain the message as a nested item :\
-        let previousMessageJson: JSON? = json["message"]
+        let previousMessageJson = json["message"] as? [String: Any]
         let messageJson = previousMessageJson ?? json
         
         let builder = builderFactory(json: messageJson)
-        let previousBuilder = builderFactory(json: previousMessageJson ?? JSON.null)
+        let previousBuilder = builderFactory(json: previousMessageJson ?? [:])
         
         return .message(
-            message: try Message.make(with: builder),
-            previous: try? Message.make(with: previousBuilder)
+            message: try Message.makeModel(with: builder),
+            previous: try? Message.makeModel(with: previousBuilder)
         )
     }
 }

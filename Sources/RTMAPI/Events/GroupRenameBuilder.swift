@@ -12,12 +12,12 @@ import Models
 struct GroupRenameBuilder: RTMAPIEventBuilder {
     static var eventTypes: [String] { return ["group_rename"] }
     
-    static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
+    static func make(withJson json: [String: Any], builderFactory: (json: [String: Any]) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
         
         let builder = builderFactory(json: json)
         
-        var group: Group = try builder.slackModel("channel.id")
+        var group: Group = try builder.lookup("channel.id")
         let oldName = group.name
         
         let newName: String = try builder.property("channel.name")

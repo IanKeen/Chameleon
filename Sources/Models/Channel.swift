@@ -10,7 +10,7 @@ public struct Channel {
     public let id: String
     public let name: String
     
-    public let created: Double
+    public let created: Int
     public let creator: User
     
     public let is_channel: Bool
@@ -23,7 +23,7 @@ public struct Channel {
     public let topic: Topic?
     public let purpose: Purpose?
     
-    public let last_read: Double?
+    public let last_read: Int?
     public let latest: Message?
     
     public let unread_count: Int?

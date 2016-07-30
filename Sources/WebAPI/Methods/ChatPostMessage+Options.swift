@@ -60,11 +60,11 @@ extension ChatPostMessage.Option: OptionRepresentable {
     var value: String {
         switch self {
         case .parse(let value): return value.rawValue
-        case .linkNames(let value): return String(value)
-        case .unfurlLinks(let value): return String(value)
-        case .unfurlMedia(let value): return String(value)
+        case .linkNames(let value): return try! String(value)
+        case .unfurlLinks(let value): return try! String(value)
+        case .unfurlMedia(let value): return try! String(value)
         case .username(let value): return value
-        case .asUser(let value): return String(value)
+        case .asUser(let value): return try! String(value)
         case .iconURL(let value): return value
         case .iconEmoji(let value): return value
         }

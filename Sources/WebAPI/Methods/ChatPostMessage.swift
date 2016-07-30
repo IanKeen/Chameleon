@@ -9,6 +9,7 @@
 import Models
 import Services
 import Common
+import Foundation
 
 /// Handler for the `chat.postMessage` endpoint
 public struct ChatPostMessage: WebAPIMethod {
@@ -60,14 +61,8 @@ public struct ChatPostMessage: WebAPIMethod {
             params[key] = value
         }
         
-        if let attachments = self.attachments.map({ $0.makeJSON() }) {
-            do {
-                let string = try JSON.serialize(attachments).string()
-                params["attachments"] = string
-                
-            } catch let error {
-                fatalError("\(error)")
-            }
+        if let attachments = self.attachments?.makeEncodedParameters() {
+            params["attachments"] = attachments
         }
         
         return HTTPRequest(
@@ -76,5 +71,5 @@ public struct ChatPostMessage: WebAPIMethod {
             parameters: params
         )
     }
-    public func handle(headers: Headers, json: JSON, slackModels: SlackModels) throws -> SuccessParameters { }
+    public func handle(headers: [String: String], json: [String: Any], slackModels: SlackModels) throws -> SuccessParameters { }
 }

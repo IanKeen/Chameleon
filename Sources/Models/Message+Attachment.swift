@@ -72,6 +72,8 @@ public extension Message {
 
 public extension Message.Attachment {
     public struct Field: MessageAttachmentField {
+        public func asField() -> Message.Attachment.Field? { return self }
+        
         public let title: String
         public let value: String
         public let short: Bool
@@ -81,6 +83,7 @@ public extension Message.Attachment {
 public extension Message.Attachment {
     public struct Button: MessageAttachmentField {
         public var title: String { return self.name }
+        public func asButton() -> Message.Attachment.Button? { return self }
         
         public let name: String
         public let text: String
@@ -114,7 +117,7 @@ public extension Message.Attachment.Button {
     }
 }
 public extension Message.Attachment.Button {
-    public enum Style: String, JSONRepresentable {
+    public enum Style: String, SlackModelValueType {
         case `default`
         case primary
         case danger

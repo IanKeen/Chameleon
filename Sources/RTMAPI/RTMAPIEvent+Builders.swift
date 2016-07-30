@@ -16,14 +16,14 @@ public protocol RTMAPIEventBuilder {
     static var eventTypes: [String] { get }
     
     /**
-     Creates a `RTMAPIEvent` from the provided `JSON`
+     Creates a `RTMAPIEvent` from the provided `[String: Any]`
      
-     - parameter json:           The `JSON` used to build the `RTMAPIEvent`
+     - parameter json:           The `[String: Any]` used to build the `RTMAPIEvent`
      - parameter builderFactory: A function that can be called to create a `SlackModelBuilder` to obtain model objects needed for the event
      - throws: A `RTMAPIEventBuilderError` with failure details
      - returns: A new `RTMAPIEvent` instance
      */
-    static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent
+    static func make(withJson json: [String: Any], builderFactory: (json: [String: Any]) -> SlackModelBuilder) throws -> RTMAPIEvent
 }
 
 /// A simple protocol that can be used in builders to handle multiple events in a type-safe way
@@ -31,8 +31,8 @@ protocol RTMAPIEventBuilderEventType: RawRepresentable {
     static var all: [Self] { get }
 }
 extension RTMAPIEventBuilderEventType where RawValue == String {
-    static func eventType(fromJson json: JSON) -> Self? {
-        guard let event = json["type"].string else { return nil }
+    static func eventType(fromJson json: [String: Any]) -> Self? {
+        guard let event = json["type"] as? String else { return nil }
         return Self(rawValue: event)
     }
 }
@@ -41,13 +41,13 @@ extension RTMAPIEventBuilderEventType where RawValue == String {
 //MARK: - Default Implementation
 extension RTMAPIEventBuilder {
     /**
-     Defines if this object is capable of creating a `RTMAPIEvent` from the provided `JSON`
+     Defines if this object is capable of creating a `RTMAPIEvent` from the provided `[String: Any]`
      
-     - parameter json: The `JSON` to handle
+     - parameter json: The `[String: Any]` to handle
      - returns: If the object can build a `RTMAPIEvent` `true`, otherwise `false`
      */
-    static func canMake(fromJson json: JSON) -> Bool {
-        guard let event = json["type"].string else { return false }
+    static func canMake(fromJson json: [String: Any]) -> Bool {
+        guard let event = json["type"] as? String else { return false }
         return (self.eventTypes.contains(event))
     }
 }
@@ -97,21 +97,21 @@ extension RTMAPIEvent {
     }()
     
     /**
-     Finds a `RTMAPIEventBuilder` that can be used to create a `RTMAPIEvent` from the provided `JSON`
+     Finds a `RTMAPIEventBuilder` that can be used to create a `RTMAPIEvent` from the provided `[String: Any]`
      
-     - parameter json: The `JSON` representing the event
+     - parameter json: The `[String: Any]` representing the event
      - throws: A `RTMAPIEventBuilderError` with failure details
      - returns: A `RTMAPIEventBuilder` to build the event
      */
-    static func makeEventBuilder(withJson json: JSON) throws -> RTMAPIEventBuilder.Type {
+    static func makeEventBuilder(withJson json: [String: Any]) throws -> RTMAPIEventBuilder.Type {
         guard
-            let type = json["type"].string,
+            let type = json["type"] as? String,
             let builder = self.builders[type]
             else {
-                print("Missing Builder: \(json["type"].string ?? "")\n")
+                print("Missing Builder: \((json["type"] as? String) ?? "")\n")
                 print(json) //TODO remove once all builders are built
                 print("\n")
-                throw RTMAPIEventBuilderError.noAvailableBuilder(type: json["type"].string ?? "no type provided")
+                throw RTMAPIEventBuilderError.noAvailableBuilder(type: (json["type"] as? String) ?? "no type provided")
         }
         
         return builder

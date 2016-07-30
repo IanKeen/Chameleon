@@ -7,7 +7,7 @@
 //
 
 public extension Message {
-    public enum ResponseType: String, JSONRepresentable {
+    public enum ResponseType: String, SlackModelValueType {
         case in_channel
         case ephemeral
     }

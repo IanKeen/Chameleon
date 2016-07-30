@@ -30,9 +30,9 @@ extension RTMStart.Option: OptionRepresentable {
     }
     var value: String {
         switch self {
-        case .simpleLatest(let value): return String(value)
-        case .noUnreads(let value): return String(value)
-        case .mpimAware(let value): return String(value)
+        case .simpleLatest(let value): return try! String(value)
+        case .noUnreads(let value): return try! String(value)
+        case .mpimAware(let value): return try! String(value)
         }
     }
 }

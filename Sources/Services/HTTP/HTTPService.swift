@@ -13,18 +13,18 @@ public protocol HTTPService: class {
      
      - parameter with: A `HTTPRequest` to execute
      - throws: A `HTTPServiceError` with failure details
-     - returns: A tuple containing the `Header`s and `JSON` response
+     - returns: A tuple containing the `Header`s and `[String: Any]` response
      */
-    func perform(with: HTTPRequest) throws -> (Headers, JSON)
+    func perform(with: HTTPRequest) throws -> ([String: String], [String: Any])
 }
 
 /// Describes a range of errors that can occur when attempting to use the service
-public enum HTTPServiceError: ErrorProtocol, Equatable, CustomStringConvertible {
+public enum HTTPServiceError: Error, CustomStringConvertible {
     /// The provided URL was invalid
     case invalidURL(url: String)
     
     /// Something was wrong with the request data
-    case clientError(code: Int, data: JSON?)
+    case clientError(code: Int, data: [String: Any]?)
     
     /// Something went wrong on the server
     case serverError(code: Int)
@@ -33,7 +33,7 @@ public enum HTTPServiceError: ErrorProtocol, Equatable, CustomStringConvertible 
     case invalidResponse(data: Any)
     
     /// Something went wrong with an dependency
-    case internalError(error: ErrorProtocol)
+    case internalError(error: Error)
     
     public var description: String {
         switch self {
@@ -52,14 +52,3 @@ public enum HTTPServiceError: ErrorProtocol, Equatable, CustomStringConvertible 
     }
 }
 
-public func ==(lhs: HTTPServiceError, rhs: HTTPServiceError) -> Bool {
-    switch (lhs, rhs) {
-    case (.serverError(let lhs_code), .serverError(let rhs_code)):
-        return (lhs_code == rhs_code)
-        
-    case (.clientError(let lhs_code, let lhs_data), .clientError(let rhs_code, let rhs_data)):
-        return (lhs_code == rhs_code) && (lhs_data == rhs_data)
-        
-    default: return false
-    }
-}

@@ -6,17 +6,18 @@
 //  Copyright © 2015 Mustard. All rights reserved.
 //
 
+import Foundation
 
 /// Represents a HTTP Request
 public struct HTTPRequest {
     public let method: Method
-    public let url: URL
+    public let url: NSURL
     public let port: Int
     public let parameters: [String: String]?
     public internal(set) var headers: [String: String]?
-    public let body: JSON?
+    public let body: [String: Any]?
     
-    public init(method: Method, url: URL, port: Int = 443, parameters: [String: String]? = nil, headers: [String: String]? = nil, body: JSON? = nil) {
+    public init(method: Method, url: NSURL, port: Int = 443, parameters: [String: String]? = nil, headers: [String: String]? = nil, body: [String: Any]? = nil) {
         self.method = method
         self.url = url
         self.port = port

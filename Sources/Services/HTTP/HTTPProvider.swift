@@ -3,20 +3,19 @@
 //  Chameleon
 //
 //  Created by Ian Keen on 31/01/2016.
-//  Copyright © 2016 HitchPlanet. All rights reserved.
+//  
 //
 
-import Foundation
+//import Foundation
 import VaporTLS
 import Engine
-import C7
 
 /// Standard implementation of a HTTPService
 final public class HTTPProvider: HTTPService {
     //MARK: - Public
     public init() { }
     
-    public func perform(with request: HTTPRequest) throws -> (Headers, JSON) {
+    public func perform(with request: HTTPRequest) throws -> ([String: String], [String: Any]) {
         do {
             // For some reason on linux `absoluteString` _isn't_ `String?` - just `String`
             //
@@ -29,13 +28,13 @@ final public class HTTPProvider: HTTPService {
             
             do {
                 let headers = request.headers ?? [:]
-                let query = request.parameters ?? [:]
-                let body = request.body?.makeBody() ?? []
-                response = try HTTPClient<TLSClientStream>.request(
+                let parameters = request.parameters ?? [:]
+                let body = request.body?.makeJSONObject().makeBody() ?? []
+                response = try Engine.HTTPClient<TLSClientStream>.request(
                     request.clientMethod,
                     absoluteString,
                     headers: headers.makeHeaders(),
-                    query: query.makeQuery(),
+                    query: parameters.makeQueryParameters(),
                     body: body
                 )
                 
@@ -54,43 +53,8 @@ final public class HTTPProvider: HTTPService {
                 throw HTTPServiceError.serverError(code: response.status.statusCode)
             }
             
-            return (response.headers, response.json ?? .null)
+            return (response.headers.makeDictionary(), response.json?.makeDictionary() ?? [:])
         }
-    }
-}
-
-//MARK: - Helpers
-private extension HTTPRequest {
-    var clientMethod: Engine.Method {
-        switch self.method {
-        case .get: return .get
-        case .put: return .put
-        case .patch: return .patch
-        case .post: return .post
-        case .delete: return .delete
-        }
-    }
-}
-
-private extension Collection where Iterator.Element == (key: String, value: String) {
-    private func makeHeaders() -> Headers {
-        var headers = [CaseInsensitiveString: String]()
-        for (key, value) in self {
-            headers[key.caseInsensitiveString] = value
-        }
-        return Headers(headers)
-    }
-    private func makeQuery() -> [String: CustomStringConvertible] {
-        var query = [String: CustomStringConvertible]()
-        
-        for (key, value) in self {
-            guard
-                let bytes = try? percentEncoded(value.bytes),
-                let encoded = try? String(data: Data(bytes)) else { continue }
-            
-            query[key] = encoded
-        }
-        return query
     }
 }
 

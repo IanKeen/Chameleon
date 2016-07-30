@@ -7,8 +7,8 @@
 //
 
 //MARK: Typealiases
-public typealias RouteHandler = (Headers, JSON) -> HTTPResponse
-public typealias WeakRouteHandler = (AnyObject) -> (Headers, JSON) -> HTTPResponse
+public typealias RouteHandler = ([String: String], [String: Any]) -> Void
+public typealias WeakRouteHandler = (AnyObject) -> ([String: String], [String: Any]) -> Void
 
 //MARK: - HTTPServer
 public protocol HTTPServer {

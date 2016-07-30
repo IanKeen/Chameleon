@@ -56,7 +56,7 @@ public struct File {
     public let groups: [Group]?
     public let ims: [IM]?
     
-    public let initial_comment: AnyObject? //TODO
+    public let initial_comment: Any? //TODO
     public let num_stars: Int?
     public let is_starred: Bool?
     public let pinned_to: [Target]?
@@ -66,7 +66,7 @@ public struct File {
 }
 
 public extension File {
-    public enum Mode: String, JSONRepresentable {
+    public enum Mode: String, SlackModelValueType {
         case hosted
         case external
         case snippet

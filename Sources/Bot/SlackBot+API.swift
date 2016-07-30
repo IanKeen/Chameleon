@@ -49,9 +49,9 @@ public protocol SlackDisconnectionService: SlackService {
      Called when the bot disconnects
      
      - parameter slackBot: The `SlackBot` instance
-     - parameter error:    The `ErrorProtocol` _if_ the disconnection was a result of an error
+     - parameter error:    The `Error` _if_ the disconnection was a result of an error
      */
-    func disconnected(slackBot: SlackBot, error: ErrorProtocol?)
+    func disconnected(slackBot: SlackBot, error: Error?)
 }
 
 /// An abstraction that represents the 'error' event
@@ -60,9 +60,9 @@ public protocol SlackErrorService: SlackService {
      Called when the bot encounters an error
      
      - parameter slackBot: The `SlackBot` instance
-     - parameter error:    The `ErrorProtocol` describing the details
+     - parameter error:    The `Error` describing the details
      */
-    func error(slackBot: SlackBot, error: ErrorProtocol)
+    func error(slackBot: SlackBot, error: Error)
 }
 
 /// An abstraction that represents any `RTMAPI` event

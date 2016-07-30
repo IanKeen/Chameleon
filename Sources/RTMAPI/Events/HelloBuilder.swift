@@ -12,7 +12,7 @@ import Models
 struct HelloBuilder: RTMAPIEventBuilder {
     static var eventTypes: [String] { return ["hello"] }
     
-    static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
+    static func make(withJson json: [String: Any], builderFactory: (json: [String: Any]) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
         return .hello
     }

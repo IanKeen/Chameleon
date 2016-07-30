@@ -18,14 +18,14 @@ private enum DNDEvent: String, RTMAPIEventBuilderEventType {
 struct DNDBuilder: RTMAPIEventBuilder {
     static var eventTypes: [String] { return DNDEvent.all.map({ $0.rawValue }) }
     
-    static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
+    static func make(withJson json: [String: Any], builderFactory: (json: [String: Any]) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard let event = DNDEvent.eventType(fromJson: json)
             else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
         
         let builder = builderFactory(json: json)
         
-        let user: User = try builder.slackModel("user")
-        let status: DNDStatus = try builder.property("dnd_status")
+        let user: User = try builder.lookup("user")
+        let status: DNDStatus = try builder.model("dnd_status")
         
         switch event {
         case .dnd_updated:      return .dnd_updated(user: user, status: status)

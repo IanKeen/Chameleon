@@ -12,13 +12,13 @@ import Models
 struct UserTypingBuilder: RTMAPIEventBuilder {
     static var eventTypes: [String] { return ["user_typing"] }
     
-    static func make(withJson json: JSON, builderFactory: (json: JSON) -> SlackModelBuilder) throws -> RTMAPIEvent {
+    static func make(withJson json: [String: Any], builderFactory: (json: [String: Any]) -> SlackModelBuilder) throws -> RTMAPIEvent {
         guard self.canMake(fromJson: json) else { throw RTMAPIEventBuilderError.invalidBuilder(builder: self) }
         
         let builder = builderFactory(json: json)
         return .user_typing(
-            user: try builder.slackModel("user"),
-            target: try builder.slackModel("channel")
+            user: try builder.lookup("user"),
+            target: try builder.target("channel")
         )
     }
 }

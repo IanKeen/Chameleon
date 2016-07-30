@@ -32,7 +32,7 @@ public struct User {
 }
 
 public extension User {
-    public enum Presence: String, JSONRepresentable {
+    public enum Presence: String, SlackModelValueType {
         case Active = "active"
         case Away = "away"
     }

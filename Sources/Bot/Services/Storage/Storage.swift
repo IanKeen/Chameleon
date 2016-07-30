@@ -23,7 +23,7 @@ public enum StorageNamespace {
 }
 
 /// Describes a range of errors that can occur when using storage
-public enum StorageError: ErrorProtocol, CustomStringConvertible {
+public enum StorageError: Error, CustomStringConvertible {
     /// The connection url supplied is invalid
     case invalidURL(url: String)
     
@@ -34,7 +34,7 @@ public enum StorageError: ErrorProtocol, CustomStringConvertible {
     case unsupportedType(value: Any.Type)
     
     /// Something went wrong with an dependency
-    case internalError(error: ErrorProtocol)
+    case internalError(error: Error)
     
     public var description: String {
         switch self {
