@@ -21,8 +21,8 @@ public extension Message {
         
         public let text: String
         
-        public let fields: [MessageAttachmentField]?
-        public let actions: [MessageAttachmentField]?
+        public let fields: [Message.Attachment.Field]?
+        public let actions: [Message.Attachment.Action]?
         
         public let from_url: String?
         public let image_url: String?
@@ -42,8 +42,8 @@ public extension Message {
             title: String?,
             title_link: String?,
             text: String,
-            fields: [MessageAttachmentField]?,
-            actions: [MessageAttachmentField]?,
+            fields: [Message.Attachment.Field]?,
+            actions: [Message.Attachment.Action]?,
             from_url: String?,
             image_url: String?,
             thumb_url: String?,
@@ -71,9 +71,7 @@ public extension Message {
 }
 
 public extension Message.Attachment {
-    public struct Field: MessageAttachmentField {
-        public func asField() -> Message.Attachment.Field? { return self }
-        
+    public struct Field {
         public let title: String
         public let value: String
         public let short: Bool
@@ -81,10 +79,7 @@ public extension Message.Attachment {
 }
 
 public extension Message.Attachment {
-    public struct Button: MessageAttachmentField {
-        public var title: String { return self.name }
-        public func asButton() -> Message.Attachment.Button? { return self }
-        
+    public struct Action {
         public let name: String
         public let text: String
         public let style: Style?
@@ -101,7 +96,7 @@ public extension Message.Attachment {
         }
     }
 }
-public extension Message.Attachment.Button {
+public extension Message.Attachment.Action {
     public struct Confirmation {
         public let title: String?
         public let text: String
@@ -116,7 +111,7 @@ public extension Message.Attachment.Button {
         }
     }
 }
-public extension Message.Attachment.Button {
+public extension Message.Attachment.Action {
     public enum Style: String, SlackModelValueType {
         case `default`
         case primary

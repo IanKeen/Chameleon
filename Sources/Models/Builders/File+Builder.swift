@@ -17,7 +17,7 @@ extension File: SlackModelType {
             filetype:               builder.optionalProperty("filetype"),
             pretty_type:            builder.optionalProperty("pretty_type"),
             user:                   try builder.optionalLookup("user"),
-            mode:                   try builder.optionalProperty("mode"),
+            mode:                   try builder.optionalEnum("mode"),
             editable:               builder.default("editable"),
             is_external:            builder.default("is_external"),
             is_public:              builder.default("is_public"),

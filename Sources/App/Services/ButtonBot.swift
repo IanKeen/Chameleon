@@ -11,11 +11,11 @@ import RTMAPI
 import WebAPI
 import Models
 import Vapor
-import Engine
+import HTTP
 import Strand
 
-extension Message.Attachment {
-    public static func makeButtonAttachments(text: String, color: SlackColor? = nil, buttons: [Button]) -> (attachment: Message.Attachment, callback_id: String) {
+extension Models.Message.Attachment {
+    public static func makeButtonAttachments(text: String, color: SlackColor? = nil, actions: [Action]) -> (attachment: Models.Message.Attachment, callback_id: String) {
         let callback_id = "\(Int.random(min: 1, max: 999999))"
         
         let attachment = Message.Attachment(
@@ -29,7 +29,7 @@ extension Message.Attachment {
             title_link: nil,
             text: text,
             fields: nil,
-            actions: buttons.map { $0 as MessageAttachmentField },
+            actions: actions,
             from_url: nil,
             image_url: nil,
             thumb_url: nil,
@@ -51,21 +51,21 @@ final class ButtonBot: SlackMessageService {
         self.thread = try! Strand { [unowned self] in
             self.server.post { request in
                 print(request)
-                if let bot = self.slackBot, target = self.target {
+                if let bot = self.slackBot, let target = self.target {
                     bot.chat(with: target, text: "post")
                 }
                 return ""
             }
             self.server.post("/button") { request in
                 print(request)
-                if let bot = self.slackBot, target = self.target {
+                if let bot = self.slackBot, let target = self.target {
                     bot.chat(with: target, text: "post/button")
                 }
                 return try Response(status: .ok, json: .null)
             }
             self.server.get { request -> ResponseRepresentable in
                 print(request)
-                if let bot = self.slackBot, target = self.target {
+                if let bot = self.slackBot, let target = self.target {
                     bot.chat(with: target, text: "get")
                 }
                 return ""
@@ -78,8 +78,8 @@ final class ButtonBot: SlackMessageService {
         guard
             let target = message.target,
             let channel = target.channel?.name,
-            let sender = message.sender?.name
-            where channel == "bot-laboratory" &&
+            let sender = message.sender?.name,
+            channel == "bot-laboratory" &&
                 sender.hasPrefix("ian") &&
                 message.text == "button"
             else { return }
@@ -91,27 +91,27 @@ final class ButtonBot: SlackMessageService {
             .makeButtonAttachments(
                 text: "this is the text",
                 color: .danger,
-                buttons: [
-                    Message.Attachment.Button(
+                actions: [
+                    Message.Attachment.Action(
                         name: "Button 1",
                         text: "Text 1",
                         style: .default,
                         value: "value1",
                         confirm: nil
                     ),
-                    Message.Attachment.Button(
+                    Message.Attachment.Action(
                         name: "Button 2",
                         text: "Text 2",
                         style: .primary,
                         value: "value2",
                         confirm: nil
                     ),
-                    Message.Attachment.Button(
+                    Message.Attachment.Action(
                         name: "Button 3",
                         text: "Text 3",
                         style: .danger,
                         value: "value3",
-                        confirm: Message.Attachment.Button.Confirmation(
+                        confirm: Message.Attachment.Action.Confirmation(
                             title: "Title",
                             text: "Text",
                             ok_text: "ok",

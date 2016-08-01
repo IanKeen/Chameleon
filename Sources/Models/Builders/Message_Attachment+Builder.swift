@@ -20,8 +20,8 @@ extension Message.Attachment: SlackModelType {
             title:              builder.optionalProperty("title"),
             title_link:         builder.optionalProperty("title_link"),
             text:               try builder.property("text"),
-            fields:             try builder.optionalModels("fields", makeFunction: chooseField),
-            actions:            try builder.optionalModels("actions", makeFunction: chooseField),
+            fields:             try builder.optionalModels("fields"),
+            actions:            try builder.optionalModels("actions"),
             from_url:           builder.optionalProperty("from_url"),
             image_url:          builder.optionalProperty("image_url"),
             thumb_url:          builder.optionalProperty("thumb_url"),
@@ -43,9 +43,9 @@ extension Message.Attachment.Field: SlackModelType {
     }
 }
 
-extension Message.Attachment.Button: SlackModelType {
-    public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment.Button {
-        return try tryMake(Message.Attachment.Button(
+extension Message.Attachment.Action: SlackModelType {
+    public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment.Action {
+        return try tryMake(Message.Attachment.Action(
             name: try builder.property("name"),
             text: try builder.property("text"),
             style: try builder.optionalEnum("style"),
@@ -55,9 +55,9 @@ extension Message.Attachment.Button: SlackModelType {
         )
     }
 }
-extension Message.Attachment.Button.Confirmation: SlackModelType {
-    public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment.Button.Confirmation {
-        return try tryMake(Message.Attachment.Button.Confirmation(
+extension Message.Attachment.Action.Confirmation: SlackModelType {
+    public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment.Action.Confirmation {
+        return try tryMake(Message.Attachment.Action.Confirmation(
             title: builder.optionalProperty("title"),
             text: try builder.property("text"),
             ok_text: builder.optionalProperty("ok_text"),
@@ -65,11 +65,4 @@ extension Message.Attachment.Button.Confirmation: SlackModelType {
             )
         )
     }
-}
-
-private func chooseField(input: [String: Any]) -> MakeFunction {
-    return (input.keyPathExists("type")
-        ? Message.Attachment.Button.makeModel
-        : Message.Attachment.Field.makeModel
-    )
 }

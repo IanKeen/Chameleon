@@ -9,7 +9,8 @@
 import Foundation
 import Vapor
 import VaporTLS
-import Engine
+import HTTP
+import URI
 import Common
 
 /// Standard implementation of a WebSocketService
@@ -49,7 +50,7 @@ final public class WebSocketProvider: WebSocketService {
         catch { throw WebSocketServiceError.invalidURL(url: url) }
         
         do {
-            try WebSocket.connect(to: uri, using: HTTPClient<TLSClientStream>.self) { [weak self] socket in
+            try WebSocket.connect(to: uri, using: Client<TLSClientStream>.self) { [weak self] socket in
                 guard let `self` = self else { return }
                 
                 self.socket = socket

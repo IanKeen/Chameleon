@@ -77,7 +77,7 @@ extension String: RedisStorable, RedisRetrievable {
     static func redisValue(from: String) -> String? { return from }
 }
 extension Int: RedisStorable, RedisRetrievable {
-    var redisStoreParams: [String] { return [ try! String(self)] }
+    var redisStoreParams: [String] { return [String(self)] }
     static func redisValue(from: String) -> Int? { return Int(from) }
 }
 extension Bool: RedisStorable, RedisRetrievable {

@@ -52,8 +52,8 @@ let package = Package(
         )
     ],
     dependencies: [
-        .Package(url: "https://github.com/qutheory/engine.git", majorVersion: 0, minor: 3),
-        .Package(url: "https://github.com/IanKeen/vapor-tls", majorVersion: 0, minor: 3),
+        .Package(url: "https://github.com/qutheory/engine.git", majorVersion: 0, minor: 4),
+        .Package(url: "https://github.com/qutheory/vapor-tls", majorVersion: 0, minor: 4),
         .Package(url: "https://github.com/czechboy0/Redbird.git", majorVersion: 0, minor: 9),
         .Package(url: "https://github.com/czechboy0/Environment.git", majorVersion: 0, minor: 5),
     ],

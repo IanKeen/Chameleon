@@ -60,8 +60,8 @@ final class KarmaBot: SlackRTMEventService, SlackMessageService {
             guard
                 let target = target,
                 let itemCreator = itemCreator,
-                let karma = self.karma(for: itemCreator, fromReaction: reaction)
-                where user != itemCreator && self.isKarmaChannel(target)
+                let karma = self.karma(for: itemCreator, fromReaction: reaction),
+                user != itemCreator && self.isKarmaChannel(target)
                 else { return }
             
             self.adjustKarma(of: itemCreator, action: karma, storage: slackBot.storage)
@@ -78,7 +78,7 @@ final class KarmaBot: SlackRTMEventService, SlackMessageService {
     }
     
     func message(slackBot: SlackBot, message: MessageAdaptor, previous: MessageAdaptor?) {
-        guard let target = message.target where self.isKarmaChannel(target) else { return }
+        guard let target = message.target, self.isKarmaChannel(target) else { return }
         
         let response = message
             .mentioned_users
@@ -107,19 +107,19 @@ final class KarmaBot: SlackRTMEventService, SlackMessageService {
         
         if
             let add = self.options.addText,
-            let possibleAdd = message.text.range(of: add)?.lowerBound
-            where message.text.distance(from: userIndex, to: possibleAdd) <= self.options.textDistanceThreshold { return .add }
+            let possibleAdd = message.text.range(of: add)?.lowerBound,
+            message.text.distance(from: userIndex, to: possibleAdd) <= self.options.textDistanceThreshold { return .add }
         
         else if
             let remove = self.options.removeText,
-            let possibleRemove = message.text.range(of: remove)?.lowerBound
-            where message.text.distance(from: userIndex, to: possibleRemove) <= self.options.textDistanceThreshold { return .remove }
+            let possibleRemove = message.text.range(of: remove)?.lowerBound,
+            message.text.distance(from: userIndex, to: possibleRemove) <= self.options.textDistanceThreshold { return .remove }
         
         return nil
     }
     private func karma(for user: User, fromReaction reaction: String) -> KarmaAction? {
-        if let add = self.options.addReaction where reaction.hasPrefix(add) { return .add }
-        else if let remove = self.options.removeReaction where reaction.hasPrefix(remove) { return .remove }
+        if let add = self.options.addReaction, reaction.hasPrefix(add) { return .add }
+        else if let remove = self.options.removeReaction, reaction.hasPrefix(remove) { return .remove }
         return nil
     }
     private func adjustKarma(of user: User, action: KarmaAction, storage: Storage) {

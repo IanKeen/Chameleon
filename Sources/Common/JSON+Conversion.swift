@@ -105,7 +105,8 @@ private extension JSON {
         case .number(let number):
             switch number {
             case .double(let value): return value
-            case .integer(let value): return value
+            case .int(let value): return value
+            case .uint(let value): return value
             }
         case .array(let value):
             return value.flatMap { $0.asAny }
@@ -120,15 +121,16 @@ private extension JSON {
     }
 }
 
-////Private func pulled from Vapor.JSON
+////Private func pulled from qutheory/JSON
+
 private func _cast(_ anyObject: Any) -> JSON {
     if let double = anyObject as? Double {
         if double == Double(Int(double)) {
             let int = Int(double)
-            return .number(.integer(int))
-        } else {
-            return .number(.double(double))
+            return .number(.int(int))
         }
+        
+        return .number(Node.Number(double))
     }
     
     if let dict = anyObject as? [String: Any] {
@@ -142,7 +144,7 @@ private func _cast(_ anyObject: Any) -> JSON {
     }
     
     if let int = anyObject as? Int {
-        return .number(.integer(int))
+        return .number(.int(int))
     } else if let bool = anyObject as? Bool {
         return .bool(bool)
     }

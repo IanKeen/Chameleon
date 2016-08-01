@@ -6,9 +6,8 @@
 //  
 //
 
-//import Foundation
 import VaporTLS
-import Engine
+import HTTP
 
 /// Standard implementation of a HTTPService
 final public class HTTPProvider: HTTPService {
@@ -24,13 +23,13 @@ final public class HTTPProvider: HTTPService {
             guard let absoluteString = value
                 else { throw HTTPServiceError.invalidURL(url: request.url.absoluteString ?? "") }
             
-            let response: HTTPResponse
+            let response: Response
             
             do {
                 let headers = request.headers ?? [:]
                 let parameters = request.parameters ?? [:]
                 let body = request.body?.makeJSONObject().makeBody() ?? []
-                response = try Engine.HTTPClient<TLSClientStream>.request(
+                response = try Client<TLSClientStream>.request(
                     request.clientMethod,
                     absoluteString,
                     headers: headers.makeHeaders(),

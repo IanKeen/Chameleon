@@ -7,7 +7,7 @@
 //
 
 import Vapor
-import Engine
+import HTTP
 import Foundation
 
 
@@ -18,7 +18,7 @@ import Foundation
 
 //MARK: - HTTP Method
 extension HTTPRequest {
-    var clientMethod: Engine.HTTPMethod {
+    var clientMethod: HTTP.Method {
         switch self.method {
         case .get: return .get
         case .put: return .put
