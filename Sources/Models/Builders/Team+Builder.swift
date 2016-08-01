@@ -8,7 +8,7 @@
 
 extension Team: SlackModelType {
     public static func makeModel(with builder: SlackModelBuilder) throws -> Team {
-        return try tryMake(Team(
+        return try tryMake(builder, Team(
             id:             try builder.property("id"),
             name:           try builder.property("name"),
             domain:         try builder.property("domain"),

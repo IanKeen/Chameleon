@@ -10,7 +10,7 @@ import Common
 
 extension Message: SlackModelType {
     public static func makeModel(with builder: SlackModelBuilder) throws -> Message {
-        return try tryMake(Message(
+        return try tryMake(builder, Message(
             subtype:            builder.optionalEnum("subtype"),
             timestamp:          try builder.property("ts"),
             text:               builder.optionalProperty("text"),

@@ -8,7 +8,7 @@
 
 extension Channel: SlackModelType {
     public static func makeModel(with builder: SlackModelBuilder) throws -> Channel {
-        return try tryMake(Channel(
+        return try tryMake(builder, Channel(
             id:                     try builder.property("id"),
             name:                   try builder.property("name"),
             created:                try builder.property("created"),

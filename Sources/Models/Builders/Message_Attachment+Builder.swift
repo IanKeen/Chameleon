@@ -10,7 +10,7 @@ import Common
 
 extension Message.Attachment: SlackModelType {
     public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment {
-        return try tryMake(Message.Attachment(
+        return try tryMake(builder, Message.Attachment(
             fallback:           try builder.property("fallback"),
             color:              try builder.optionalEnum("color"),
             pretext:            builder.optionalProperty("pretext"),
@@ -34,7 +34,7 @@ extension Message.Attachment: SlackModelType {
 
 extension Message.Attachment.Field: SlackModelType {
     public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment.Field {
-        return try tryMake(Message.Attachment.Field(
+        return try tryMake(builder, Message.Attachment.Field(
             title: try builder.property("title"),
             value: try builder.property("value"),
             short: builder.property("short")
@@ -45,7 +45,7 @@ extension Message.Attachment.Field: SlackModelType {
 
 extension Message.Attachment.Action: SlackModelType {
     public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment.Action {
-        return try tryMake(Message.Attachment.Action(
+        return try tryMake(builder, Message.Attachment.Action(
             name: try builder.property("name"),
             text: try builder.property("text"),
             style: try builder.optionalEnum("style"),
@@ -57,7 +57,7 @@ extension Message.Attachment.Action: SlackModelType {
 }
 extension Message.Attachment.Action.Confirmation: SlackModelType {
     public static func makeModel(with builder: SlackModelBuilder) throws -> Message.Attachment.Action.Confirmation {
-        return try tryMake(Message.Attachment.Action.Confirmation(
+        return try tryMake(builder, Message.Attachment.Action.Confirmation(
             title: builder.optionalProperty("title"),
             text: try builder.property("text"),
             ok_text: builder.optionalProperty("ok_text"),

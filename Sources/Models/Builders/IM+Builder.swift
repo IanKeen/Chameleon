@@ -8,7 +8,7 @@
 
 extension IM: SlackModelType {
     public static func makeModel(with builder: SlackModelBuilder) throws -> IM {
-        return try tryMake(IM(
+        return try tryMake(builder, IM(
             id:                 try builder.property("id"),
             is_im:              builder.default("is_im"),
             is_open:            builder.default("is_open"),
