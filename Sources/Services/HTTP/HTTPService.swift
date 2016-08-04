@@ -15,7 +15,7 @@ public protocol HTTPService: class {
      - throws: A `HTTPServiceError` with failure details
      - returns: A tuple containing the `Header`s and `[String: Any]` response
      */
-    func perform(with: HTTPRequest) throws -> ([String: String], [String: Any])
+    func perform(with: HTTPRequest) throws -> (headers: [String: String], json: [String: Any])
 }
 
 /// Describes a range of errors that can occur when attempting to use the service

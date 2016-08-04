@@ -8,15 +8,7 @@
 
 import Services
 
-public protocol SlackHTTPServer {
-    func respond(to method: HTTPRequest.Method, path: String, with handler: RouteHandler)
-    func respond<T: AnyObject>(to method: HTTPRequest.Method, path: String, with object: T, function: WeakRouteHandler)
+public protocol SlackHTTPResponder: SlackService {
+    //func configure(server: SlackHTTPServer)
 }
-
-public protocol SlackHTTPServerResponder: SlackService {
-    func configure(server: SlackHTTPServer)
-}
-
-
-//here;
 

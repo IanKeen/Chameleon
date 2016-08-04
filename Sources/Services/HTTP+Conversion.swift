@@ -17,9 +17,9 @@ import Foundation
 
 
 //MARK: - HTTP Method
-extension HTTPRequest {
-    var clientMethod: HTTP.Method {
-        switch self.method {
+extension HTTPRequestMethod {
+    var requestMethod: HTTP.Method {
+        switch self {
         case .get: return .get
         case .put: return .put
         case .patch: return .patch

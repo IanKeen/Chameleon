@@ -7,12 +7,22 @@
 //
 
 //MARK: Typealiases
-public typealias RouteHandler = (headers: [String: String], json: [String: Any]) -> Void
-public typealias WeakRouteHandler = (AnyObject) -> (headers: [String: String], json: [String: Any]) -> Void
+public typealias RouteHandler = (headers: [String: String], json: [String: Any]?) throws -> Void
 
 //MARK: - HTTPServer
 public protocol HTTPServer {
     func start()
-    func respond(to method: HTTPRequest.Method, path: String, with handler: RouteHandler)
-    func respond<T: AnyObject>(to method: HTTPRequest.Method, path: String, with object: T, function: WeakRouteHandler)
+    
+    func respond(
+        to method: HTTPRequestMethod,
+        at path: [String],
+        with handler: RouteHandler
+    )
+    
+    func respond<T: AnyObject>(
+        to method: HTTPRequestMethod,
+        at path: [String],
+        with object: T,
+        _ function: (T) -> RouteHandler
+    )
 }

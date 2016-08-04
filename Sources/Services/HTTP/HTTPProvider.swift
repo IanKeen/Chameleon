@@ -14,7 +14,7 @@ final public class HTTPProvider: HTTPService {
     //MARK: - Public
     public init() { }
     
-    public func perform(with request: HTTPRequest) throws -> ([String: String], [String: Any]) {
+    public func perform(with request: HTTPRequest) throws -> (headers: [String: String], json: [String: Any]) {
         do {
             // For some reason on linux `absoluteString` _isn't_ `String?` - just `String`
             //
@@ -30,7 +30,7 @@ final public class HTTPProvider: HTTPService {
                 let parameters = request.parameters ?? [:]
                 let body = request.body?.makeJSONObject().makeBody() ?? []
                 response = try Client<TLSClientStream>.request(
-                    request.clientMethod,
+                    request.method.requestMethod,
                     absoluteString,
                     headers: headers.makeHeaders(),
                     query: parameters.makeQueryParameters(),
@@ -52,7 +52,10 @@ final public class HTTPProvider: HTTPService {
                 throw HTTPServiceError.serverError(code: response.status.statusCode)
             }
             
-            return (response.headers.makeDictionary(), response.json?.makeDictionary() ?? [:])
+            return (
+                headers: response.headers.makeDictionary(),
+                json: response.json?.makeDictionary() ?? [:]
+            )
         }
     }
 }

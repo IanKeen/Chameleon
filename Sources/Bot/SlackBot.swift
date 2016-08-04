@@ -365,6 +365,3 @@ extension SlackBot {
         }
     }
 }
-
-//MARK: - HTTP Server Helpers
-extension HTTPServerProvider: SlackHTTPServer { }

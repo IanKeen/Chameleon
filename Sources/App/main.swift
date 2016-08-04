@@ -25,4 +25,19 @@ let bot = SlackBot(
     services: [HelloBot(), ButtonBot()]
 )
 
+let oauth = OAuthAuthentication(
+    http: HTTPProvider(),
+    server: HTTPServerProvider(),
+    clientId: "4962332711.62338921731",
+    clientSecret: "ffa5dcdc68698c3dcaa70b0677d55478"
+)
+oauth.authenticate(
+    success: { token in
+        print("TOKEN: \(token)")
+    },
+    failure: { error in
+        print("ERROR: \(error)")
+    }
+)
+
 bot.start()
