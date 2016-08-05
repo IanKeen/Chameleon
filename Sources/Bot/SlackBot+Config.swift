@@ -88,7 +88,7 @@ public extension SlackBotConfig {
      - returns: A new `SlackBotConfig` instance
      */
     public static func makeConfig(from process: ProcessInfo) throws -> SlackBotConfig {
-        let supportedArguments = Variables.allVariables.map { "--\($0.snakeToLowerCamel)=" }
+        let supportedArguments = Variables.allVariables.map { "--\($0.lowerCamelCase)=" }
         let arguments = try process.arguments.dropFirst().flatMap { argument -> (key: String, value: String) in
             let pair = argument.components(separatedBy: "=")
             

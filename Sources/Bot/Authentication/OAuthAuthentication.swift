@@ -10,7 +10,7 @@ import Foundation
 import Services
 
 /// Describes the range of possible errors that can occur when authenticating using OAuth
-public enum OAuthAuthenticationError: Error, CustomStringConvertible {
+enum OAuthAuthenticationError: Error, CustomStringConvertible {
     /// A derived url was invalid
     case invalidURL
     
@@ -20,7 +20,7 @@ public enum OAuthAuthenticationError: Error, CustomStringConvertible {
     /// A generic error (usually received from the server)
     case genericError(reason: String)
     
-    public var description: String {
+    var description: String {
         switch self {
         case .invalidURL: return "Invalid URL"
         case .invalidResponse(let data): return "Invalid Response: \(data)"
@@ -30,7 +30,7 @@ public enum OAuthAuthenticationError: Error, CustomStringConvertible {
 }
 
 /// Handles oauth authentication
-public final class OAuthAuthentication: SlackAuthenticator {
+final class OAuthAuthentication: SlackAuthenticator {
     //MARK: - Private
     private let http: HTTPService
     private let server: HTTPServer
@@ -39,7 +39,7 @@ public final class OAuthAuthentication: SlackAuthenticator {
     private var state = ""
     
     //MARK: - Lifecycle
-    public init(http: HTTPService, server: HTTPServer, clientId: String, clientSecret: String) {
+    init(http: HTTPService, server: HTTPServer, clientId: String, clientSecret: String) {
         self.http = http
         self.server = server
         self.clientId = clientId
@@ -49,11 +49,12 @@ public final class OAuthAuthentication: SlackAuthenticator {
     }
     
     //MARK: - Authentication
-    public func authenticate(success: (token: String) -> Void, failure: (error: Error) -> Void) {
+    func authenticate(success: (token: String) -> Void, failure: (error: Error) -> Void) {
         do {
             let oAuthPath = try self.obtainOAuthPath()
             
             let oAuthURL = "http://slack.com/\(oAuthPath)"
+            print(oAuthURL)
             // user goes to url, follows prompts, gets a code.. needs to feed back in here somehow
             
             //let token = try self.exchange(code: <#T##String#>)
@@ -102,6 +103,25 @@ public final class OAuthAuthentication: SlackAuthenticator {
         
         let error: String = (try? json.keyPathValue("error")) ?? "Unknown Error"
         throw OAuthAuthenticationError.genericError(reason: error)
+    }
+}
+
+//MARK: - Config
+extension OAuthAuthentication {
+    static func makeAuthenticator(parameters: (http: HTTPService, server: HTTPServer)) -> (Config) -> OAuthAuthentication? {
+        return { config in
+            guard
+                let clientId: String = config.value(for: "CLIENT_ID"),
+                let clientSecret: String = config.value(for: "CLIENT_SECRET")
+                else { return nil }
+            
+            return OAuthAuthentication(
+                http: parameters.http,
+                server: parameters.server,
+                clientId: clientId,
+                clientSecret: clientSecret
+            )
+        }
     }
 }
 

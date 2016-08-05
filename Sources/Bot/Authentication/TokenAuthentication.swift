@@ -7,17 +7,26 @@
 //
 
 /// Handles direct token authentication
-public struct TokenAuthentication: SlackAuthenticator {
+struct TokenAuthentication: SlackAuthenticator {
     //MARK: - Private
     private let token: String
     
     //MARK: - Lifecycle
-    public init(token: String) {
+    init(token: String) {
         self.token = token
     }
     
     //MARK: - Authentication
-    public func authenticate(success: (token: String) -> Void, failure: (error: Error) -> Void) {
+    func authenticate(success: (token: String) -> Void, failure: (error: Error) -> Void) {
         success(token: self.token)
+    }
+}
+
+extension TokenAuthentication {
+    static func makeAuthenticator(parameters: Void) -> (Config) -> TokenAuthentication? {
+        return { config in
+            guard let token: String = config.value(for: "TOKEN") else { return nil }
+            return TokenAuthentication(token: token)
+        }
     }
 }

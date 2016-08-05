@@ -7,7 +7,9 @@
 //
 
 /// Abstraction representing a means for the `SlackBot` to authenticate.
-public protocol SlackAuthenticator {
+protocol SlackAuthenticator {
+    associatedtype FactoryParameters
+    
     /**
      Authenticate the `SlackBot`
      
@@ -15,4 +17,6 @@ public protocol SlackAuthenticator {
      - parameter failure:   This closure fires with the reason the authentication attempt failed
      */
     func authenticate(success: (token: String) -> Void, failure: (error: Error) -> Void)
+    
+    static func makeAuthenticator(parameters: FactoryParameters) -> (Config) -> Self?
 }

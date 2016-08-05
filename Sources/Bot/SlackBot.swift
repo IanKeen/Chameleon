@@ -12,6 +12,12 @@ import RTMAPI
 import Common
 import Services
 
+
+//func authenticate(with authenticator: SlackAuthenticator) {
+//    //
+//}
+
+
 /// An extensible Slack bot user than can provide custom functionality
 public class SlackBot {
     //MARK: - Private Properties

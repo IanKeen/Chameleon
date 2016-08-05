@@ -12,32 +12,26 @@ import WebAPI
 import RTMAPI
 import Bot
 
-#if os(Linux)
-    import Environment
-    let config = try SlackBotConfig.makeConfig(from: Environment())
-#else
-    import Foundation
-    let config = try SlackBotConfig.makeConfig(from: ProcessInfo.processInfo)
-#endif
+let config = try Config(from: DefaultConfigInput)
 
-let bot = SlackBot(
-    config: config,
-    services: [HelloBot(), ButtonBot()]
-)
+//let bot = SlackBot(
+//    config: config,
+//    services: [HelloBot(), ButtonBot()]
+//)
 
-let oauth = OAuthAuthentication(
-    http: HTTPProvider(),
-    server: HTTPServerProvider(),
-    clientId: "4962332711.62338921731",
-    clientSecret: "ffa5dcdc68698c3dcaa70b0677d55478"
-)
-oauth.authenticate(
-    success: { token in
-        print("TOKEN: \(token)")
-    },
-    failure: { error in
-        print("ERROR: \(error)")
-    }
-)
+//let oauth = OAuthAuthentication(
+//    http: HTTPProvider(),
+//    server: HTTPServerProvider(),
+//    clientId: "4962332711.62338921731",
+//    clientSecret: "ffa5dcdc68698c3dcaa70b0677d55478"
+//)
+//oauth.authenticate(
+//    success: { token in
+//        print("TOKEN: \(token)")
+//    },
+//    failure: { error in
+//        print("ERROR: \(error)")
+//    }
+//)
 
-bot.start()
+//bot.start()
