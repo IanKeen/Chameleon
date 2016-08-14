@@ -27,7 +27,8 @@ public extension SlackModelBuilder {
                 users: self.users,
                 channels: self.channels,
                 groups: self.groups,
-                ims: self.ims
+                ims: self.ims,
+                team: self.team
             )
             
             let maker = makeFunction(data)

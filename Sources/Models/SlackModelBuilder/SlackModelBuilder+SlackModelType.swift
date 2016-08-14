@@ -23,7 +23,8 @@ public extension SlackModelBuilder {
             users: self.users,
             channels: self.channels,
             groups: self.groups,
-            ims: self.ims
+            ims: self.ims,
+            team: self.team
         )
         return try T.makeModel(with: builder)
     }
@@ -59,7 +60,8 @@ public extension SlackModelBuilder {
                 users: self.users,
                 channels: self.channels,
                 groups: self.groups,
-                ims: self.ims
+                ims: self.ims,
+                team: self.team
             )
             return try T.makeModel(with: builder)
         }

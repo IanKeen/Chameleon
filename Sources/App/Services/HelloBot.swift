@@ -1,24 +1,18 @@
-//
-//  HelloBot.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 4/06/2016.
-//
-//
-
 import Bot
-import RTMAPI
-import WebAPI
-import Models
+import SlackSugar
 
 final class HelloBot: SlackMessageService {
-    func message(slackBot: SlackBot, message: MessageAdaptor, previous: MessageAdaptor?) {
+    override func message(slackBot: SlackBot, webApi: WebAPI, message: MessageDecorator, previous: MessageDecorator?) throws {
         let greetings = ["hello", "hi", "hey"]
         guard
             let target = message.target, let sender = message.sender
             else { return }
+        
         if (message.text.hasPrefix(options: greetings) && message.mentioned_users.contains(slackBot.me)) {
-            slackBot.chat(with: target, text: "hey, <@\(sender.id)>")
+            let message = SlackMessage(target: target)
+                .text("hey, ").user(sender)
+            
+            try webApi.execute(message.apiMethod())
         }
     }
 }

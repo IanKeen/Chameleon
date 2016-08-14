@@ -1,10 +1,3 @@
-//
-//  Defaultable.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 28/07/2016.
-//
-//
 
 /// An abstraction the represents a type that can have a default value
 public protocol Defaultable {

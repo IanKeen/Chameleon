@@ -1,11 +1,3 @@
-//
-//  UserTypingBuilder.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 20/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
-
 import Models
 
 /// Handler for the `user_typing` event

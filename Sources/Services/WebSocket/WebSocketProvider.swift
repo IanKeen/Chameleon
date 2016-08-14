@@ -1,11 +1,3 @@
-//
-//  WebSocketProvider.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 3/06/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
-
 import Foundation
 import Vapor
 import VaporTLS
@@ -14,16 +6,16 @@ import URI
 import Common
 
 /// Standard implementation of a WebSocketService
-final public class WebSocketProvider: WebSocketService {
+final public class WebSocketProvider: WebSocket {
     //MARK: - Private Properties
-    private var socket: WebSocket? {
+    private var socket: Vapor.WebSocket? {
         willSet {
             _ = try? self.socket?.close()
         }
         didSet {
             guard let socket = self.socket else { return }
             socket.onClose = { _, code, reason, _ in
-                self.onDisconnect?(WebSocketServiceError.genericError(reason: reason ?? "unknown"))
+                self.onDisconnect?(WebSocketError.genericError(reason: reason ?? "unknown"))
             }
             socket.onText = { _, text in
                 self.onText?(text)
@@ -47,10 +39,10 @@ final public class WebSocketProvider: WebSocketService {
         let uri: URI
         
         do { uri = try URI(url) }
-        catch { throw WebSocketServiceError.invalidURL(url: url) }
+        catch { throw WebSocketError.invalidURL(url: url) }
         
         do {
-            try WebSocket.connect(to: uri, using: Client<TLSClientStream>.self) { [weak self] socket in
+            try Vapor.WebSocket.connect(to: uri, using: Client<TLSClientStream>.self) { [weak self] socket in
                 guard let `self` = self else { return }
                 
                 self.socket = socket
@@ -58,7 +50,7 @@ final public class WebSocketProvider: WebSocketService {
             }
             
         } catch let error {
-            throw WebSocketServiceError.internalError(error: error)
+            throw WebSocketError.internalError(error: error)
         }
     }
     public func disconnect() {

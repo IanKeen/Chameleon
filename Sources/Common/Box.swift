@@ -1,10 +1,3 @@
-//
-//  Box.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 22/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
 
 public final class Box<T> {
     public let value: T

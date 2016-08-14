@@ -1,14 +1,7 @@
-//
-//  HTTPServerProvider.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 23/07/2016.
-//
-//
-
 import Vapor
 import HTTP
 import Routing
+@_exported import struct Foundation.URL
 
 final public class HTTPServerProvider: HTTPServer {
     //MARK: - Private
@@ -27,52 +20,50 @@ final public class HTTPServerProvider: HTTPServer {
         self.server.serve()
     }
     public func respond(to method: HTTPRequestMethod, at path: [String], with handler: RouteHandler) {
-        self.server.addResponder(method.requestMethod, path) { request in
+        self.server.addResponder(method.method, path) { request in
             let headers = request.headers
-            let json = request.json ?? .null
+            let json = request.json ?? (try? JSON(node: request.formURLEncoded)) ?? .null
             
             do {
-                try handler(
-                    headers: headers.makeDictionary(),
-                    json: json.makeDictionary()
-                )
-                return Response(status: .ok)
+                guard let response = try handler(url: request.uri.makeURL(), headers: headers.makeDictionary(), json: json.makeDictionary())
+                    else { return Response(status: .ok) }
                 
-            } catch { //let error {
+                return try response.makeResponse()
+                
+            } catch {
                 return Response(status: .internalServerError)
             }
         }
     }
-    public func respond<T : AnyObject>(to method: HTTPRequestMethod, at path: [String], with object: T, _ function: (T) -> RouteHandler) {
-        self.server.addResponder(method.requestMethod, path) { [weak object] request in
+    public func respond<T: AnyObject>(to method: HTTPRequestMethod, at path: [String], with object: T, _ function: (T) -> RouteHandler) {
+        self.server.addResponder(method.method, path) { [weak object] request in
             guard let object = object else { return Response(status: .internalServerError) }
             
             let headers = request.headers
-            let json = request.json ?? .null
+            let json = request.json ?? (try? JSON(node: request.formURLEncoded)) ?? .null
             
             do {
-                try function(object)(
-                    headers: headers.makeDictionary(),
-                    json: json.makeDictionary()
-                )
-                return Response(status: .ok)
+                guard let response = try function(object)(url: request.uri.makeURL(), headers: headers.makeDictionary(), json: json.makeDictionary())
+                    else { return Response(status: .ok) }
                 
-            } catch { //let error {
+                return try response.makeResponse()
+                
+            } catch {
                 return Response(status: .internalServerError)
             }
         }
     }
 }
 
-extension Routing.RouteBuilder where Value == HTTP.Responder {
+extension Routing.RouteBuilder where Value == Responder {
     public func addResponder(
-        _ method: HTTP.Method,
+        _ method: Method,
         _ path: [String],
-        _ value: (HTTP.Request) throws -> HTTP.ResponseRepresentable
+        _ value: (Request) throws -> ResponseRepresentable
         ) {
         add(
             path: ["*", method.description] + path,
-            value: HTTP.Request.Handler({ request in
+            value: Request.Handler({ request in
                 return try value(request).makeResponse()
             })
         )

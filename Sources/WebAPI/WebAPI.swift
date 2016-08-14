@@ -1,60 +1,34 @@
-//
-//  WebAPI.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 19/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
-
-import Models
 import Services
+import Models
 import Common
-import Foundation
-
-/**
- Builds a complete url to a webapi endpoint
- 
- NOTE: will `fatalError()` when it cannot builda valid `NSURL`
- 
- - parameter pathSegments: `String` path segments
- - returns: A complete `NSURL`
- */
-public func WebAPIURL(_ pathSegments: String...) -> NSURL {
-    let urlString = "https://slack.com/api/" + pathSegments.joined(separator: "/")
-    guard let url = NSURL(string: urlString) else { fatalError("Invalid URL: \(urlString)") }
-    return url
-}
 
 /// Provides access to the Slack webapi
 public final class WebAPI {
-    //MARK: - Typealiases
-    public typealias SlackModelClosure = () -> (users: [User], channels: [Channel], groups: [Group], ims: [IM])
-    
     //MARK: - Private
-    private let http: HTTPService
-    private let token: String
+    private let http: HTTP
     
     //MARK: - Public
     /// A closure that needs to be set before the webapi can correctly serialise and build responses.
-    public var slackModels: SlackModelClosure?
+    public var slackModels: (() -> SlackModels)?
+    
+    //The token to use in authenticated webapi requests
+    public var token: String?
     
     //MARK: - Lifecycle
     /**
      Create a new `WebAPI` instance.
      
-     - parameter token: The token to use in authenticated webapi requests
-     - parameter http:  The `HTTPService` to use when making requests
+     - parameter http:  The `HTTP` to use when making requests
      - returns: New `WebAPI` instance
      */
-    public init(token: String, http: HTTPService) {
-        self.token = token
+    public init(http: HTTP) {
         self.http = http
     }
     
     //MARK: - Public Functions
     /**
      Executes a webapi request using the provided `WebAPIMethod`.
-    
+     
      NOTE: Will crash if `.slackModels` has not been set
      
      - parameter method: A `WebAPIMethod` to execute
@@ -64,7 +38,7 @@ public final class WebAPI {
     public func execute<Method: WebAPIMethod>(_ method: Method) throws -> Method.SuccessParameters {
         guard let slackModels = self.slackModels else { fatalError("Please set `slackModels`") }
         
-        let request = self.request(for: method)
+        let request = try self.request(for: method)
         let (headers, json) = try self.http.perform(with: request)
         
         try self.checkForError(in: json)
@@ -75,16 +49,17 @@ public final class WebAPI {
 
 //MARK: - Helpers
 private extension WebAPI {
-    private func request<Method: WebAPIMethod>(for method: Method) -> HTTPRequest {
+    private func request<Method: WebAPIMethod>(for method: Method) throws -> HTTPRequest {
         let request = self.requestWithHeaders(request: method.networkRequest)
         
         guard method.requiresAuthentication else { return request }
+        guard let token = self.token else { throw WebAPIError.missingToken }
         
         //Copy the request, inserting the token
         return HTTPRequest(
             method: request.method,
             url: request.url,
-            parameters: request.parameters + ["token": self.token],
+            parameters: request.parameters + ["token": token],
             headers: request.headers,
             body: request.body
         )
@@ -102,28 +77,8 @@ private extension WebAPI {
         )
     }
     private func checkForError(in json: [String: Any]) throws {
-        guard let ok = json["ok"] as? Bool, !ok else { return }
-        
-        let error = (json["error"] as? String) ?? "unknown_error"
-        throw WebAPIError.apiError(reason: error)
-    }
-}
-
-//MARK: - Errors
-/// Describes a range of errors that can occur when attempting to use the the webapi
-public enum WebAPIError: Error, CustomStringConvertible {
-    /// Something went wrong during execution
-    case apiError(reason: String)
-    
-    /// The response was invalid or the data was unexpected
-    case invalidResponse(json: [String: Any])
-    
-    public var description: String {
-        switch self {
-        case .invalidResponse(let json):
-            return "The response was invalid:\n\(json)"
-        case .apiError(let reason):
-            return "The API returned the error: \(reason)"
+        if let error = json["error"] as? String {
+            throw WebAPIError.apiError(reason: error)
         }
     }
 }

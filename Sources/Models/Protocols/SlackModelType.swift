@@ -1,10 +1,3 @@
-//
-//  SlackModelType.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 20/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
 
 /// An abstraction representing a buildable Slack model type
 public protocol SlackModelType {
@@ -23,6 +16,17 @@ public protocol SlackModelType {
      - returns: A new `[String: Any]` representation of the `SlackModelType`
      */
     func makeDictionary() -> [String: Any]
+}
+
+public extension Sequence where Iterator.Element: SlackModelType {
+    /**
+     Creates a `Sequence` of `[String: Any]`s from a `Sequence` of `SlackModelType`s
+     
+     - returns: A new `Sequence` of `[String: Any]`s representing the `SlackModelType`s
+     */
+    func makeArray() -> [[String: Any]] {
+        return self.map { $0.makeDictionary() }
+    }
 }
 
 /** 

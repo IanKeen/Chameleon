@@ -1,11 +1,3 @@
-//
-//  ErrorBuilder.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 24/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
-
 import Models
 
 /// Handler for the `error` event

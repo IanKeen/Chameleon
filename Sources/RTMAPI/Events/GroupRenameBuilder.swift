@@ -1,11 +1,3 @@
-//
-//  GroupRenameBuilder.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 17/07/2016.
-//
-//
-
 import Models
 
 /// Handler for the `group_rename` event

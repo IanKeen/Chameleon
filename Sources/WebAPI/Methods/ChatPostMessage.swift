@@ -1,11 +1,3 @@
-//
-//  ChatPostMessage.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 21/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
-
 import Models
 import Services
 import Common
@@ -18,9 +10,11 @@ public struct ChatPostMessage: WebAPIMethod {
     //MARK: - Private Properties
     private let target: Target
     private let text: String
-    private let options: [Option]
+    private let response_type: MessageResponseType?
+    private let options: [ChatPostMessageOption]
     private let customParameters: [String: String]?
-    private let attachments: [Message.Attachment]?
+    private let attachments: [MessageAttachment]?
+    private let customUrl: URL?
     
     //MARK: - Lifecycle
     /**
@@ -28,48 +22,61 @@ public struct ChatPostMessage: WebAPIMethod {
      
      - parameter target:           The `Target` to send the message to
      - parameter text:             The text to send
+     - parameter response_type:    The `MessageResponseType` that determines how the message appears
      - parameter options:          `ChatPostMessage.Option`s to use
      - parameter customParameters: Custom parameters to send
      - parameter attachments:      Attachments to this message
+     - parameter customUrl:        Allows for overridding the default url (generally used by responders)
+     
+     - Warning:                     Using a custom url will not use token authentication
      
      - returns: A new instance
      */
-    public init(target: Target, text: String, options: [Option] = [], customParameters: [String: String]? = nil, attachments: [Message.Attachment]? = nil) {
+    public init(target: Target, text: String, response_type: MessageResponseType? = nil, options: [ChatPostMessageOption] = [], customParameters: [String: String]? = nil, attachments: [MessageAttachment]? = nil, customUrl: URL? = nil) {
         self.target = target
         self.text = text
+        self.response_type = response_type
         self.options = options
         self.customParameters = customParameters
         self.attachments = attachments
+        self.customUrl = customUrl
     }
     
     //MARK: - Public
     public var networkRequest: HTTPRequest {
         let encodedText = self.text
         
-        var params = [String: String]()
+        var packet = [String: Any]()
         
-        params = params + [
+        packet = packet + [
             "channel": self.target.id,
             "text": encodedText
         ]
         
-        for (key, value) in options.toParameters() {
-            params[key] = value
+        for (key, value) in options.makeParameters() {
+            packet[key] = value
         }
         
         for (key, value) in self.customParameters ?? [:] {
-            params[key] = value
+            packet[key] = value
         }
         
-        if let attachments = self.attachments?.makeEncodedParameters() {
-            params["attachments"] = attachments
+        if let attachments = self.attachments?.encodedString {
+            packet["attachments"] = attachments
+        }
+        
+        if let response_type = response_type {
+            packet["response_type"] = response_type.rawValue
         }
         
         return HTTPRequest(
-            method: .get,
-            url: WebAPIURL("chat.postMessage"),
-            parameters: params
+            method: .post,
+            url: self.customUrl ?? WebAPIURL("chat.postMessage"),
+            body: packet
         )
+    }
+    public var requiresAuthentication: Bool {
+        return (self.customUrl == nil)
     }
     public func handle(headers: [String: String], json: [String: Any], slackModels: SlackModels) throws -> SuccessParameters { }
 }

@@ -1,11 +1,3 @@
-//
-//  ChannelRenameBuilder.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 16/07/2016.
-//
-//
-
 import Models
 
 /// Handler for the `channel_rename` event

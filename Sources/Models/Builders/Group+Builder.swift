@@ -1,10 +1,3 @@
-//
-//  Group+Builder.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 15/06/2016.
-//
-//
 
 extension Group: SlackModelType {
     public static func makeModel(with builder: SlackModelBuilder) throws -> Group {

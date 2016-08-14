@@ -1,11 +1,3 @@
-//
-//  HTTPRequest.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 26/09/2015.
-//  Copyright © 2015 Mustard. All rights reserved.
-//
-
 import Foundation
 
 /// Represents a HTTP Request

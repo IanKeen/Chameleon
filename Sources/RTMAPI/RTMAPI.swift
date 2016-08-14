@@ -1,26 +1,14 @@
-//
-//  RTMAPI.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 19/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
-
-import Foundation
 import Models
-import Services
 import Common
-import Strand
+import Services
+import Foundation
 
 /// Provides access to the Slack realtime messaging api
 public final class RTMAPI {
-    //MARK: - Typealiases
-    public typealias SlackModelClosure = () -> (users: [User], channels: [Channel], groups: [Group], ims: [IM])
-    
     //MARK: - Private Properties
-    private let websocket: WebSocketService
+    private let websocket: WebSocket
     private var pingPongInterval: TimeInterval = 3.0
-    private var pingPongTimer: Strand?
+    private var pingPongTimer: CancellableDispatchOperation?
     
     //MARK: - Public Events
     /// Closure that is called when a websocket connection is made
@@ -37,16 +25,16 @@ public final class RTMAPI {
     
     //MARK: - Public Properties
     /// A closure that needs to be set before the rtmapi can correctly serialise and build responses.
-    public var slackModels: SlackModelClosure?
+    public var slackModels: (() -> SlackModels)?
     
     //MARK: - Lifecycle
     /**
      Create a new `RTMAPI` instance.
      
-     - parameter websocket: A `WebSocketService` that will be used for the websocket connection
+     - parameter websocket: A `WebSocket` that will be used for the websocket connection
      - returns: New `RTMAPI` instance.
      */
-    public init(websocket: WebSocketService) {
+    public init(websocket: WebSocket) {
         self.websocket = websocket
         self.bindToSocketEvents()
     }
@@ -92,8 +80,8 @@ private extension RTMAPI {
             self.sendPingPong()
             self.startPingPong()
         }
-        do { self.pingPongTimer = try Strand(closure: ping) }
-        catch let error { self.onError?(error: error) }
+        
+        self.pingPongTimer = inBackground(function: ping)
     }
     private func stopPingPong() {
         guard let pingPongTimer = self.pingPongTimer else { return }
@@ -102,7 +90,7 @@ private extension RTMAPI {
     }
     private func sendPingPong() {
         //`timestamp` will come back in the response
-        //could potentially be used later for checking 
+        //could potentially be used later for checking
         //latency as suggested in the docs
         
         let packet: [String: Any] = [
@@ -132,23 +120,34 @@ private extension RTMAPI {
         self.stopPingPong()
         self.onDisconnected?(error: error)
     }
+    
     private func websocketOn(text: String) {
-        do {
-            let json = try text.makeDictionary()
-            let eventBuilder = try RTMAPIEvent.makeEventBuilder(withJson: json)
-            
-            let event = try tryMake(
-                eventBuilder,
-                try eventBuilder.make(withJson: json, builderFactory: self.makeBuilder)
-            )
-            
-            if case .hello = event { self.startPingPong() }
-            
-            self.onEvent?(event: event)
-            
-        } catch let error {
-            self.onError?(error: error)
-        }
+        //TODO: before using `inBackground` this was a `do/catch`
+        //      however it crashes with the TokenAuth (but not OAuth)
+        //      inBackground is working but this needs investigation to
+        //      understand why it crashes using the original method 
+        //
+        _ = inBackground(
+            try: {
+                let json = text.makeDictionary()
+                let eventBuilder = try RTMAPIEvent.makeEventBuilder(withJson: json)
+                
+                let event = try tryMake(
+                    eventBuilder,
+                    try eventBuilder.make(
+                        withJson: json,
+                        builderFactory: SlackModelBuilder.make(models: self.slackModels?())
+                    )
+                )
+                
+                if case .hello = event { self.startPingPong() }
+                
+                self.onEvent?(event: event)
+            },
+            catch: { error in
+                self.onError?(error: error)
+            }
+        )
     }
     private func websocketOn(data: Data) {
         print("DATA: \(data)") //TODO: unused at this point
@@ -156,35 +155,5 @@ private extension RTMAPI {
     private func websocketOn(error: Error) {
         self.onError?(error: error)
         self.disconnect(error: error)
-    }
-}
-
-//MARK: - Helpers
-private extension RTMAPI {
-    private func makeBuilder(withJson json: [String: Any]) -> SlackModelBuilder {
-        guard let slackModels = self.slackModels else { fatalError("Please set `slackModels`") }
-        
-        let models = slackModels()
-        return SlackModelBuilder(
-            json: json,
-            users: models.users,
-            channels: models.channels,
-            groups: models.groups,
-            ims: models.ims
-        )
-    }
-}
-
-//MARK: - Errors
-/// Describes a range of errors that can occur when attempting to use the the realtime messaging api
-public enum RTMAPIError: Error, CustomStringConvertible {
-    /// The response was invalid or the data was unexpected
-    case invalidResponse(json: [String: Any])
-    
-    public var description: String {
-        switch self {
-        case .invalidResponse(let json):
-            return "The response was invalid:\n\(json)"
-        }
     }
 }

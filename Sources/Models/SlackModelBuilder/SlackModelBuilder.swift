@@ -21,6 +21,7 @@ public struct SlackModelBuilder {
     internal let channels: [Channel]
     internal let groups: [Group]
     internal let ims: [IM]
+    internal let team: Team?
     
     /**
      Creates a new instance from the provided `[String: Any]` using the supplied models to complete the objects graph via ids
@@ -30,14 +31,16 @@ public struct SlackModelBuilder {
      - parameter channels: A sequence of `Channel`s used to find and populate any channels in the graph via their id
      - parameter groups:   A sequence of `Group`s used to find and populate any groups in the graph via their id
      - parameter ims:      A sequence of `IM`s used to find and populate any ims in the graph via their id
+     - parameter team:     The `Team` used to populate any teams in the graph via their id
      - returns: A new `SlackModelBuilder` instance
      */
-    public init(json: [String: Any], users: [User], channels: [Channel], groups: [Group], ims: [IM]) {
+    public init(json: [String: Any], users: [User], channels: [Channel], groups: [Group], ims: [IM], team: Team?) {
         self.json = json
         self.users = users
         self.channels = channels
         self.groups = groups
         self.ims = ims
+        self.team = team
     }
 }
 
@@ -52,6 +55,9 @@ internal extension SlackModelBuilder {
         items.append(contentsOf: self.channels.flatMap({ $0 as SlackModelTypeIdentifiable }))
         items.append(contentsOf: self.groups.flatMap({ $0 as SlackModelTypeIdentifiable }))
         items.append(contentsOf: self.ims.flatMap({ $0 as SlackModelTypeIdentifiable }))
+        if let team = self.team {
+            items.append(team as SlackModelTypeIdentifiable)
+        }
         return items
     }
     internal func targets() -> [Target] {

@@ -1,11 +1,3 @@
-//
-//  DNDBuilder.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 20/07/2016.
-//
-//
-
 import Models
 
 private enum DNDEvent: String, RTMAPIEventBuilderEventType {

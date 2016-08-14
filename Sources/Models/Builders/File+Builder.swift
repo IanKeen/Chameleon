@@ -1,10 +1,3 @@
-//
-//  File+Builder.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 17/07/2016.
-//
-//
 
 extension File: SlackModelType {
     public static func makeModel(with builder: SlackModelBuilder) throws -> File {

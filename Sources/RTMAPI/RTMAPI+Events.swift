@@ -1,20 +1,4 @@
-//
-//  RTMAPI+Events.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 20/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
-
 import Models
-
-//TODO: have a conversation regarding these cases - i.e. `user_typing` vs userTyping
-//      the former is a 1:1 match for the api, it arguably easier to read
-//      however it breaks consistency with the rest of the frameworks
-//
-//      the latter is in line with naming conventions
-//
-//      am I just being lazy? :P (I think I am)
 
 /// Defines the events available from the realtime messaging api
 public enum RTMAPIEvent {

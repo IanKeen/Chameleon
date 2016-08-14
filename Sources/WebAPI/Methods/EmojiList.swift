@@ -1,10 +1,3 @@
-//
-//  EmojiList.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 6/06/2016.
-//
-//
 
 import Models
 import Services

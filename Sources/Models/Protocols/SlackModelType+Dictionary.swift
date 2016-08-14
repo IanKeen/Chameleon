@@ -1,11 +1,3 @@
-//
-//  SlackModelType+Dictionary.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 28/07/2016.
-//
-//
-
 import Common
 
 public extension SlackModelType {
@@ -24,9 +16,6 @@ extension Optional: SlackModelValueType {
             } else if let value = value as? SlackModelType {
                 return value.makeDictionary()
                 
-            } else if let value = value as? [SlackModelValueType] {
-                return value.flatMap { $0.modelValue }
-                
             } else if let value = value as? SlackModelValueType {
                 return value.modelValue
             }
@@ -36,9 +25,27 @@ extension Optional: SlackModelValueType {
     }
 }
 
+extension Array: SlackModelValueType {
+    public var modelValue: Any? {
+        return self
+            .flatMap { $0 as? SlackModelValueType }
+            .map { $0.modelValue }
+    }
+}
 extension SlackModelValueType where Self: RawRepresentable {
     public var modelValue: Any? {
         return self.rawValue
+    }
+}
+
+extension FailableBox: SlackModelValueType {
+    public var modelValue: Any? {
+        if let value = self.value as? SlackModelType {
+            return value.makeDictionary()
+        } else if let value = value as? SlackModelValueType {
+            return value.modelValue
+        }
+        return self.value
     }
 }
 

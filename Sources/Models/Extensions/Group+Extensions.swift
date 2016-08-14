@@ -1,10 +1,3 @@
-//
-//  Group+Extensions.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 17/07/2016.
-//
-//
 
 public extension Group {
     public func renamed(to newName: String) -> Group {

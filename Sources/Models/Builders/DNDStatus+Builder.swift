@@ -1,10 +1,3 @@
-//
-//  DNDStatus+Builder.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 16/07/2016.
-//
-//
 
 extension DNDStatus: SlackModelType {
     public static func makeModel(with builder: SlackModelBuilder) throws -> DNDStatus {

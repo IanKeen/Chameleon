@@ -1,10 +1,3 @@
-//
-//  Int+Extensions.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 8/06/2016.
-//
-//
 
 /// Represents how a number should be clamped
 public enum Clamping {
@@ -44,6 +37,6 @@ public extension Int {
      */
     public func between(_ first: Int, and second: Int, _ clamping: Clamping = .inclusive) -> Bool {
         return clamping.minOperator(self, Swift.min(first, second)) &&
-               clamping.maxOperator(self, Swift.max(first, second))
+                clamping.maxOperator(self, Swift.max(first, second))
     }
 }

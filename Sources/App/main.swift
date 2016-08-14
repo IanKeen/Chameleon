@@ -1,37 +1,17 @@
-//
-//  main.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 28/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
-
-import Common
-import Services
-import WebAPI
-import RTMAPI
 import Bot
 
-let config = try Config(from: DefaultConfigInput)
+private final class Logger: SlackRTMEventService {
+    private func event(slackBot: SlackBot, event: RTMAPIEvent, webApi: WebAPI) throws {
+        if case .pong = event { return }
+        print(event)
+    }
+}
 
-//let bot = SlackBot(
-//    config: config,
-//    services: [HelloBot(), ButtonBot()]
-//)
+let bot = try SlackBot(
+    configDataSource: DefaultConfigDataSource,
+    authenticator: TokenAuthentication.self, //OAuthAuthentication.self,
+    storage: MemoryStorage.self,
+    services: [HelloBot(), Logger()]
+)
 
-//let oauth = OAuthAuthentication(
-//    http: HTTPProvider(),
-//    server: HTTPServerProvider(),
-//    clientId: "4962332711.62338921731",
-//    clientSecret: "ffa5dcdc68698c3dcaa70b0677d55478"
-//)
-//oauth.authenticate(
-//    success: { token in
-//        print("TOKEN: \(token)")
-//    },
-//    failure: { error in
-//        print("ERROR: \(error)")
-//    }
-//)
-
-//bot.start()
+bot.start()

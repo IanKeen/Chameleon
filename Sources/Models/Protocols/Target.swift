@@ -1,11 +1,3 @@
-//
-//  Target.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 20/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
-
 /**
  *  A `Target` represents a Slack object that can be the "target" of interaction.
  *  They can have messages sent to them.

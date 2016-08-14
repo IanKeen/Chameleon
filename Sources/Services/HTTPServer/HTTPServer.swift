@@ -1,13 +1,11 @@
-//
-//  HTTPServer.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 23/07/2016.
-//
-//
+import Foundation
 
 //MARK: Typealiases
-public typealias RouteHandler = (headers: [String: String], json: [String: Any]?) throws -> Void
+public typealias RouteHandler = (
+    url: URL,
+    headers: [String: String],
+    json: [String: Any]?
+    ) throws -> HTTPServerResponse?
 
 //MARK: - HTTPServer
 public protocol HTTPServer {
@@ -25,4 +23,22 @@ public protocol HTTPServer {
         with object: T,
         _ function: (T) -> RouteHandler
     )
+}
+
+//MARK: - Responses
+public protocol HTTPServerResponse {
+    var code: Int { get }
+    var headers: [String: String]? { get }
+    var body: [String: Any]? { get }
+}
+
+extension URL: HTTPServerResponse {
+    public var code: Int { return 307 }
+    public var headers: [String : String]? {
+        let url: String? = self.absoluteString
+        guard let urlString = url else { fatalError("Invalid URL: \(self)") }
+        
+        return ["Location": urlString]
+    }
+    public var body: [String : Any]? { return nil }
 }

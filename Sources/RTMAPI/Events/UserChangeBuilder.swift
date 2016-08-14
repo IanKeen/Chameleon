@@ -1,11 +1,3 @@
-//
-//  UserChangeBuilder.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 25/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
-
 import Models
 
 /// Handler for the `user_change` event

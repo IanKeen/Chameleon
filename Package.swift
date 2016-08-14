@@ -6,49 +6,64 @@ let package = Package(
         Target(
             name: "App",
             dependencies: [
-                .Target(name: "Common"),
-                .Target(name: "Services"),
-                .Target(name: "Models"),
-                .Target(name: "RTMAPI"),
-                .Target(name: "WebAPI"),
                 .Target(name: "Bot"),
-                ]
+                .Target(name: "SlackSugar")
+            ]
         ),
         Target(
-            name: "Common"
-        ),
-        Target(
-            name: "Services",
+            name: "SlackSugar",
             dependencies: [
-                .Target(name: "Common"),
-                ]
-        ),
-        Target(
-            name: "Models",
-            dependencies: [
-                .Target(name: "Common"),
-                ]
-        ),
-        Target(
-            name: "WebAPI",
-            dependencies: [
-                .Target(name: "Models"),
-                .Target(name: "Services"),
-                ]
-        ),
-        Target(
-            name: "RTMAPI",
-            dependencies: [
-                .Target(name: "Models"),
-                .Target(name: "Services"),
-                ]
+                .Target(name: "Bot")
+            ]
         ),
         Target(
             name: "Bot",
             dependencies: [
+                .Target(name: "Common"),
+                .Target(name: "Config"),
+                .Target(name: "Models"),
+                .Target(name: "Services"),
                 .Target(name: "WebAPI"),
                 .Target(name: "RTMAPI"),
-                ]
+            ]
+        ),
+        Target(
+            name: "Common",
+            dependencies: []
+        ),
+        Target(
+            name: "Config",
+            dependencies: [
+                .Target(name: "Common")
+            ]
+        ),
+        Target(
+            name: "Models",
+            dependencies: [
+                .Target(name: "Common")
+            ]
+        ),
+        Target(
+            name: "Services",
+            dependencies: [
+                .Target(name: "Common")
+            ]
+        ),
+        Target(
+            name: "WebAPI",
+            dependencies: [
+                .Target(name: "Common"),
+                .Target(name: "Services"),
+                .Target(name: "Models")
+            ]
+        ),
+        Target(
+            name: "RTMAPI",
+            dependencies: [
+                .Target(name: "Common"),
+                .Target(name: "Services"),
+                .Target(name: "Models")
+            ]
         )
     ],
     dependencies: [
@@ -61,4 +76,3 @@ let package = Package(
         "XcodeProject"
     ]
 )
-

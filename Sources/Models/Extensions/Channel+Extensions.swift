@@ -1,10 +1,3 @@
-//
-//  Channel+Extensions.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 16/07/2016.
-//
-//
 
 public extension Channel {
     public func renamed(to newName: String) -> Channel {

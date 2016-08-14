@@ -1,12 +1,14 @@
-//
-//  Dictionary+Extensions.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 11/05/2016.
-//  Copyright © 2016 Mustard. All rights reserved.
-//
-
 import Foundation
+
+public extension Dictionary {
+    public init<S: Sequence where S.Iterator.Element == (Key, Value)>(_ tuples: S) {
+        self.init()
+        
+        for (key, value) in tuples {
+            self[key] = value
+        }
+    }
+}
 
 public func +<Key, Value>(lhs: [Key: Value]?, rhs: [Key: Value]?) -> [Key: Value] {
     let lhs = lhs ?? [:]
@@ -29,5 +31,17 @@ public extension Dictionary {
         for (key, value) in other {
             self.updateValue(value, forKey: key)
         }
+    }
+}
+
+public extension Dictionary where Key: StringType, Value: Any {
+    public func makeString() -> String? {
+        guard
+            let anyObject = self as? AnyObject,
+            let data = try? JSONSerialization.data(withJSONObject: anyObject, options: []),
+            let string = String(data: data, encoding: .utf8)
+            else { return nil }
+        
+        return string
     }
 }

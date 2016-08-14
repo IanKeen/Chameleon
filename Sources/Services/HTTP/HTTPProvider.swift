@@ -1,16 +1,9 @@
-//
-//  HTTPProvider.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 31/01/2016.
-//  
-//
-
+import Common
 import VaporTLS
 import HTTP
 
-/// Standard implementation of a HTTPService
-final public class HTTPProvider: HTTPService {
+/// Standard implementation of a HTTP
+final public class HTTPProvider: HTTP {
     //MARK: - Public
     public init() { }
     
@@ -21,16 +14,16 @@ final public class HTTPProvider: HTTPService {
             //(╯°□°）╯︵ ┻━┻
             let value: String? = request.url.absoluteString
             guard let absoluteString = value
-                else { throw HTTPServiceError.invalidURL(url: request.url.absoluteString ?? "") }
+                else { throw HTTPError.invalidURL(url: request.url.absoluteString ?? "") }
             
             let response: Response
             
             do {
                 let headers = request.headers ?? [:]
                 let parameters = request.parameters ?? [:]
-                let body = request.body?.makeJSONObject().makeBody() ?? []
+                let body = try request.body?.makeJSONObject().makeBody() ?? []
                 response = try Client<TLSClientStream>.request(
-                    request.method.requestMethod,
+                    request.method.method,
                     absoluteString,
                     headers: headers.makeHeaders(),
                     query: parameters.makeQueryParameters(),
@@ -38,18 +31,14 @@ final public class HTTPProvider: HTTPService {
                 )
                 
             } catch let error {
-                throw HTTPServiceError.internalError(error: error)
+                throw HTTPError.internalError(error: error)
             }
-        
-            //NOTE: There is an Int.between(_:and:clapming:) extension in Common.
-            //      However it fails to build with a linker error which I wasn't able to fix yet
-            //      So I'm falling back to this ugly syntax :( - for now...
-            //
-            if (400...499 ~= response.status.statusCode) {
-                throw HTTPServiceError.clientError(code: response.status.statusCode, data: nil)
+            
+            if (response.status.statusCode.between(400, and: 499)) {
+                throw HTTPError.clientError(code: response.status.statusCode, data: nil)
                 
-            } else if (500...599 ~= response.status.statusCode) {
-                throw HTTPServiceError.serverError(code: response.status.statusCode)
+            } else if (response.status.statusCode.between(500, and: 599)) {
+                throw HTTPError.serverError(code: response.status.statusCode)
             }
             
             return (

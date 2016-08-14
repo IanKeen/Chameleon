@@ -1,10 +1,16 @@
-//
-//  RTMAPI+Errors.swift
-//  Chameleon
-//
-//  Created by Ian Keen on 20/07/2016.
-//
-//
+
+/// Describes a range of errors that can occur when attempting to use the the realtime messaging api
+public enum RTMAPIError: Error, CustomStringConvertible {
+    /// The response was invalid or the data was unexpected
+    case invalidResponse(json: [String: Any])
+    
+    public var description: String {
+        switch self {
+        case .invalidResponse(let json):
+            return "The response was invalid:\n\(json)"
+        }
+    }
+}
 
 /// Describes a range of errors that can occur when attempting to build RTMAPI events from `[String: Any]`
 public enum RTMAPIEventBuilderError: Error, CustomStringConvertible {
