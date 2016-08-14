@@ -74,15 +74,14 @@ public class SlackBot {
     //MARK: - Public Functions
     /// Start the bot
     public func start() {
-        _ = inBackground(
-            try: {
-                let maximumAttempts: Int = try self.config.value(for: ReconnectionAttempts.self)
-                self.state.transition(withEvent: .connect(maximumAttempts: maximumAttempts))
-            },
-            catch: { error in
-                self.state.transition(withEvent: .disconnect(reconnect: true, error: error))
-            }
-        )
+        do {
+            let maximumAttempts: Int = try self.config.value(for: ReconnectionAttempts.self)
+            self.state.transition(withEvent: .connect(maximumAttempts: maximumAttempts))
+            
+        } catch let error {
+            self.state.transition(withEvent: .disconnect(reconnect: true, error: error))
+        }
+        
         self.server.start()
     }
 }

@@ -122,32 +122,25 @@ private extension RTMAPI {
     }
     
     private func websocketOn(text: String) {
-        //TODO: before using `inBackground` this was a `do/catch`
-        //      however it crashes with the TokenAuth (but not OAuth)
-        //      inBackground is working but this needs investigation to
-        //      understand why it crashes using the original method 
-        //
-        _ = inBackground(
-            try: {
-                let json = text.makeDictionary()
-                let eventBuilder = try RTMAPIEvent.makeEventBuilder(withJson: json)
-                
-                let event = try tryMake(
-                    eventBuilder,
-                    try eventBuilder.make(
-                        withJson: json,
-                        builderFactory: SlackModelBuilder.make(models: self.slackModels?())
-                    )
+        do {
+            let json = text.makeDictionary()
+            let eventBuilder = try RTMAPIEvent.makeEventBuilder(withJson: json)
+            
+            let event = try tryMake(
+                eventBuilder,
+                try eventBuilder.make(
+                    withJson: json,
+                    builderFactory: SlackModelBuilder.make(models: self.slackModels?())
                 )
-                
-                if case .hello = event { self.startPingPong() }
-                
-                self.onEvent?(event: event)
-            },
-            catch: { error in
-                self.onError?(error: error)
-            }
-        )
+            )
+            
+            if case .hello = event { self.startPingPong() }
+            
+            self.onEvent?(event: event)
+            
+        } catch let error {
+            self.onError?(error: error)
+        }
     }
     private func websocketOn(data: Data) {
         print("DATA: \(data)") //TODO: unused at this point
