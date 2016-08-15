@@ -9,7 +9,7 @@ private final class Logger: SlackRTMEventService {
 
 let bot = try SlackBot(
     configDataSource: DefaultConfigDataSource,
-    authenticator: OAuthAuthentication.self,
+    authenticator: TokenAuthentication.self,
     storage: MemoryStorage.self,
     services: [HelloBot(), Logger()]
 )

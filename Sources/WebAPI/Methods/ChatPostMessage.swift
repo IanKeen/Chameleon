@@ -46,7 +46,7 @@ public struct ChatPostMessage: WebAPIMethod {
     public var networkRequest: HTTPRequest {
         let encodedText = self.text
         
-        var packet = [String: Any]()
+        var packet = [String: String]()
         
         packet = packet + [
             "channel": self.target.id,
@@ -70,9 +70,10 @@ public struct ChatPostMessage: WebAPIMethod {
         }
         
         return HTTPRequest(
-            method: .post,
+            method: (self.customUrl == nil ? .get : .post),
             url: self.customUrl ?? WebAPIURL("chat.postMessage"),
-            body: packet
+            parameters: (self.customUrl == nil ? packet : nil),
+            body: (self.customUrl == nil ? nil : packet)
         )
     }
     public var requiresAuthentication: Bool {
