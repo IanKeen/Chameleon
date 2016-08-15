@@ -14,7 +14,7 @@ final public class HTTPProvider: HTTP {
             //(╯°□°）╯︵ ┻━┻
             let value: String? = request.url.absoluteString
             guard let absoluteString = value
-                else { throw HTTPError.invalidURL(url: request.url.absoluteString ?? "") }
+                else { throw HTTPError.invalidURL(url: String(request.url)) }
             
             let response: Response
             

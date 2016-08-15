@@ -1,7 +1,7 @@
 import Vapor
 import HTTP
 import Routing
-@_exported import struct Foundation.URL
+//@_exported import typealias Common.URL
 
 final public class HTTPServerProvider: HTTPServer {
     //MARK: - Private

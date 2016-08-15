@@ -6,7 +6,14 @@ import Common
 import HTTP
 import JSON
 import URI
-@_exported import struct Foundation.Data
+
+#if os(Linux)
+    typealias URL = Foundation.NSURL
+    typealias Data = Foundation.NSData
+#else
+    import struct Foundation.URL
+    import struct Foundation.Data
+#endif
 
 //MARK: - Headers
 extension Sequence where Iterator.Element == (key: HeaderKey, value: String) {

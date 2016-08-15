@@ -1,4 +1,5 @@
 import Foundation
+import Common
 
 /**
  Builds a complete url to a webapi endpoint

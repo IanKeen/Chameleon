@@ -1,5 +1,6 @@
 //import Redbird
 //import Foundation
+//import Common
 //
 ///// Provides Redis based storage of key/value pairs
 //public final class RedisStorage: Storage {
