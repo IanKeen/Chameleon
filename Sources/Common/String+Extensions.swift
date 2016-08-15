@@ -40,7 +40,7 @@ public extension String {
         do {
             guard
                 let data = self.data(using: .utf8),
-                let json = try JSONSerialization.jsonObject(with: data)
+                let json = try JSONSerialization.jsonDictionary(from: data)
                 else { return [:] }
             
             return json

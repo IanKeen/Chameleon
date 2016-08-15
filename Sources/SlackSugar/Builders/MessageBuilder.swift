@@ -1,4 +1,5 @@
 import Bot
+import Foundation
 
 /// A builder to make creating Slack messages easier
 public final class SlackMessage {

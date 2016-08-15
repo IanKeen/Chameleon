@@ -4,6 +4,7 @@
 @_exported import RTMAPI
 @_exported import Models
 @_exported import Common
+import Foundation
 
 /// An extensible Slack bot user than can provide custom functionality
 public class SlackBot {

@@ -1,9 +1,9 @@
 import Foundation
 
 public extension JSONSerialization {
-    public static func jsonObject(with data: Data) throws -> [String: Any]? {
+    public static func jsonDictionary(from data: Data) throws -> [String: Any]? {
         #if os(Linux)
-            return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+            return try JSONSerialization.jsonObject(with: data) as? [String: Any]
         #else
             guard let result = try JSONSerialization.jsonObject(with: data, options: []) as? [String: AnyObject] else { return nil }
             let input = result.map { key, value -> (String, Any) in

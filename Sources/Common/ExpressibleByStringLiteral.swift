@@ -9,11 +9,11 @@ extension ExpressibleByStringLiteral where StringLiteralType == String {
     }
 }
 
-extension URL: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) {
-        self = URL(string: value)!
-    }
-}
+//extension URL: ExpressibleByStringLiteral {
+//    public init(stringLiteral value: String) {
+//        self = URL(string: value)!
+//    }
+//}
 
 extension Bool: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
