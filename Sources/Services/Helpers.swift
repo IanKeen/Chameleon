@@ -8,8 +8,7 @@ import JSON
 import URI
 
 #if os(Linux)
-//    typealias URL = Foundation.NSURL
-//    typealias Data = Foundation.NSData
+    import Foundation
 #else
     import struct Foundation.URL
     import struct Foundation.Data
