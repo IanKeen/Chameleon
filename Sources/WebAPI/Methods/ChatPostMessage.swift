@@ -69,11 +69,21 @@ public struct ChatPostMessage: WebAPIMethod {
             packet["response_type"] = response_type.rawValue
         }
         
+        let parameters: [String: String]? = (self.customUrl == nil ? packet : nil)
+        let body: [String: Any]? = (self.customUrl == nil ? nil : {
+            var result = [String: Any]()
+            for (key, value) in packet {
+                result[key] = (value as Any)
+            }
+            return result
+            }()
+        )
+        
         return HTTPRequest(
             method: (self.customUrl == nil ? .get : .post),
             url: self.customUrl ?? WebAPIURL("chat.postMessage"),
-            parameters: (self.customUrl == nil ? packet : nil),
-            body: (self.customUrl == nil ? nil : packet)
+            parameters: parameters,
+            body: body
         )
     }
     public var requiresAuthentication: Bool {
