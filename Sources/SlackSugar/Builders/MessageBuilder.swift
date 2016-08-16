@@ -68,7 +68,7 @@ public final class SlackMessage {
     }
     
     /**
-     Add a link to an `NSURL`
+     Add a link to an `URL`
      
      - parameter value:         The `URL` to link
      - parameter trailingSpace: Whether a trailing space should be added (defaults to `true`)

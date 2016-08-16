@@ -3,13 +3,13 @@ import Foundation
 /// Represents a HTTP Request
 public struct HTTPRequest {
     public let method: HTTPRequestMethod
-    public let url: NSURL
+    public let url: URL
     public let port: Int
     public let parameters: [String: String]?
     public internal(set) var headers: [String: String]?
     public let body: [String: Any]?
     
-    public init(method: HTTPRequestMethod, url: NSURL, port: Int = 443, parameters: [String: String]? = nil, headers: [String: String]? = nil, body: [String: Any]? = nil) {
+    public init(method: HTTPRequestMethod, url: URL, port: Int = 443, parameters: [String: String]? = nil, headers: [String: String]? = nil, body: [String: Any]? = nil) {
         self.method = method
         self.url = url
         self.port = port
