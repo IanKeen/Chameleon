@@ -1,7 +1,7 @@
 # [Chameleon](https://github.com/ChameleonBot/Bot)
 Chameleon is a Slack bot built with Swift.
 
-[The repository has now moved](https://github.com/ChameleonBot/Bot)
+[The repository has now moved](https://github.com/ChameleonBot/Chameleon)
 
 # Contact
 Feel free to open an issue or PR, 
